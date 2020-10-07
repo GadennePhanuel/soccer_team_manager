@@ -1,25 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { HashRouter, Route, Switch } from "react-router-dom";
+import AuthAPI from "./js/services/authAPI";
+import AuthContext from "./js/contexts/AuthContext";
+import LoginPage from "./js/pages/LoginPage";
+
 
 function App() {
+  AuthAPI.setup();
+
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    AuthAPI.isAuthenticated()
+  );
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated: isAuthenticated,
+        setIsAuthenticated: setIsAuthenticated,
+      }}
+    >
+      <HashRouter>
+        <main className="container pt-5">
+          <Switch>
+            <Route path="/login" component={LoginPage} />
+            <Route path="/" component={LoginPage} />
+          </Switch>
+        </main>
+      </HashRouter>
+    </AuthContext.Provider >
   );
 }
 
