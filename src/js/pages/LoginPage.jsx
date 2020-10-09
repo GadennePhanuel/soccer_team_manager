@@ -1,11 +1,12 @@
 import axios from "axios";
+import JwtDecode from "jwt-decode";
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import AuthContext from "../contexts/AuthContext";
 
 const LoginPage = ({ history }) => {
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
   const [credentials, setCredential] = useState({
     username: "",
@@ -38,8 +39,17 @@ const LoginPage = ({ history }) => {
 
       //affichage d'un notif
 
-      //je fait la redirection
-      history.replace("/");
+      //je fait la redirection, en fonction du role de l'user
+      const jwtData = JwtDecode(token);
+      const roles = jwtData.roles[0]
+      if (roles === "ROLE_ADMIN") {
+        history.replace("/dashboardAdmin");
+      } else if (roles === "ROLE_COACH") {
+        history.replace("/dashboardCoach");
+      } else {
+        history.replace("/dashboardPlayer");
+      }
+
     } catch (error) {
       console.log(error.response);
       setError(
