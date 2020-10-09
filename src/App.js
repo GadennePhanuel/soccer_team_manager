@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { HashRouter, Route, Switch } from "react-router-dom";
+import { HashRouter, Route, Switch, withRouter } from "react-router-dom";
 import AuthAPI from "./js/services/authAPI";
 import AuthContext from "./js/contexts/AuthContext";
 import LoginPage from "./js/pages/LoginPage";
 import RegisterAdminPage from "./js/pages/RegisterAdminPage";
-import HomePage from "./js/pages/HomePage";
+import SideNav from "./js/components/SideNav";
+import "./css/index.css";
 
 function App() {
   AuthAPI.setup();
@@ -12,6 +13,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
     AuthAPI.isAuthenticated()
   );
+
+  const SideNavWithRouter = withRouter(SideNav);
 
   return (
     <AuthContext.Provider
@@ -21,11 +24,12 @@ function App() {
       }}
     >
       <HashRouter>
-        <main className="container pt-5">
+        <SideNavWithRouter />
+        <main className="container">
           <Switch>
             <Route path="/RegisterAdmin" component={RegisterAdminPage} />
             <Route path="/login" component={LoginPage} />
-            <Route path="/" component={HomePage} />
+            <Route path="/" component={LoginPage} />
           </Switch>
         </main>
       </HashRouter>
