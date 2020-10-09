@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import AuthContext from "../contexts/AuthContext";
 
@@ -44,7 +45,6 @@ const LoginPage = ({ history }) => {
       setError(
         "Aucun compte pour cette utilisateur ou alors les informations ne correspondent pas"
       );
-
     }
   };
 
@@ -75,6 +75,9 @@ const LoginPage = ({ history }) => {
           <button type="submit" className="btn btn-success">
             Je me connecter
           </button>
+          <Link to="/registerAdmin" className="btn btn-link">
+            Inscription
+          </Link>
         </div>
       </form>
     </>
