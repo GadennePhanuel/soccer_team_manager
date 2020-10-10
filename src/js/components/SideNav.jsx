@@ -1,8 +1,8 @@
-import JwtDecode from "jwt-decode";
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
+import usersAPI from "../services/usersAPI";
 
 const SideNav = (props) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -15,16 +15,9 @@ const SideNav = (props) => {
   };
 
   const token = window.localStorage.getItem("authToken");
-  let roles = "";
-  let club = "";
   if (token) {
-    const jwtData = JwtDecode(token)
-    roles = jwtData.roles[0]
-    club = jwtData.club
-    if (club === null) {
-      club = 'new'
-    }
-    console.log(club)
+    var roles = usersAPI.checkRole();
+    var club = usersAPI.checkClub()
   }
 
 
