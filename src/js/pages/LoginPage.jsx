@@ -1,12 +1,12 @@
-import axios from "axios";
 import JwtDecode from "jwt-decode";
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import AuthContext from "../contexts/AuthContext";
+import AuthAPI from "../services/authAPI";
 
 const LoginPage = ({ history }) => {
-  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const [credentials, setCredential] = useState({
     username: "",
@@ -27,18 +27,13 @@ const LoginPage = ({ history }) => {
     event.preventDefault();
 
     try {
-      const token = await axios
-        .post("http://localhost:8000/api/login_check", credentials)
-        .then((response) => response.data.token);
-
+      await AuthAPI.authenticate(credentials);
       setError("");
-
       setIsAuthenticated(true);
-      //je stocke mon token dans le localStorage
-      window.localStorage.setItem("authToken", token);
 
-      //affichage d'un notif
+      //TODO : affichage d'un notif 
 
+      const token = window.localStorage.getItem("authToken");
       //je fait la redirection, en fonction du role de l'user
       const jwtData = JwtDecode(token);
       const roles = jwtData.roles[0]

@@ -2,23 +2,29 @@ import JwtDecode from "jwt-decode";
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
+import AuthAPI from "../services/authAPI";
 
 const SideNav = (props) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
 
   //supression du token du localStorage
   const handleLogout = () => {
-    window.localStorage.removeItem("authToken");
+    AuthAPI.logout();
     setIsAuthenticated(false);
     props.history.push("/login");
   };
 
   const token = window.localStorage.getItem("authToken");
   let roles = "";
+  let club = "";
   if (token) {
     const jwtData = JwtDecode(token)
-    console.log(jwtData)
     roles = jwtData.roles[0]
+    club = jwtData.club
+    if (club === null) {
+      club = 'new'
+    }
+    console.log(club)
   }
 
 
@@ -38,7 +44,12 @@ const SideNav = (props) => {
                 <li className="nav-item">
                   <NavLink to="/dashboardAdmin" className="home">
                     home
-              </NavLink>
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink to={'/createClub/' + club} className="home">
+                    Club
+                  </NavLink>
                 </li>
                 <li>
                   <NavLink to="/coachs" >
