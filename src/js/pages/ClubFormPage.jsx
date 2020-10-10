@@ -66,10 +66,8 @@ const ClubFormPage = (props) => {
                 props.history.replace('/dashboardAdmin');
             } else {
                 const response = await Axios.post("http://localhost:8000/api/clubs", club)
-                console.log(response.data.id)
 
-                const response2 = await Axios.put("http://localhost:8000/api/user/" + userId + "/club/" + response.data.id)
-                console.log(response2)
+                await Axios.put("http://localhost:8000/api/user/" + userId + "/club/" + response.data.id)
 
                 //TODO: falsh Success
                 //déconnection auto pour forcer un relog
