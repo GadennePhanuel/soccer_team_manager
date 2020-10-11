@@ -15,6 +15,10 @@ function putUserClub(userId, clubId) {
   return Axios.put("http://localhost:8000/api/user/" + userId + "/club/" + clubId)
 }
 
+function putUserProfil(userId, user) {
+  return Axios.put("http://localhost:8000/api/users/" + userId, user)
+}
+
 function checkRole() {
   const token = window.localStorage.getItem("authToken");
   const jwtData = JwtDecode(token)
@@ -45,5 +49,6 @@ export default {
   checkRole,
   checkClub,
   findUserId,
-  putUserClub
+  putUserClub,
+  putUserProfil
 };

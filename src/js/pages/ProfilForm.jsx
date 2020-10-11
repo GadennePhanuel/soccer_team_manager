@@ -2,6 +2,7 @@ import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Field from '../components/forms/Field';
 import usersAPI from '../services/usersAPI';
+import dateFormat from 'dateformat';
 
 const ProfilForm = (props) => {
     //si c'est un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
@@ -38,7 +39,7 @@ const ProfilForm = (props) => {
             const email = response.data.email;
             const lastName = response.data.lastName;
             const firstName = response.data.firstName;
-            const birthday = response.data.birthday;
+            const birthday = dateFormat(response.data.birthday, "yyyy-mm-dd");
             const phone = response.data.phone;
 
             setUser({ email, lastName, firstName, birthday, phone })
@@ -59,8 +60,36 @@ const ProfilForm = (props) => {
     };
 
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+
+        const apiErrors = {};
+        if (user.password !== user.passwordConfirm) {
+            apiErrors.passwordConfirm =
+                "Votre confimation de mot de passe n'est pas conforme";
+            setErrors(apiErrors);
+            return;
+        }
+
+        try {
+            await usersAPI.putUserProfil(userId, user)
+
+            //TODO : faire un Flash Success
+
+            setErrors('')
+            //redirection vers dashboard
+            props.history.replace('/dashboardAdmin')
+
+        } catch (error) {
+            const { violations } = error.response.data;
+            const apiErrors = [''];
+            if (violations) {
+                violations.forEach((violation) => {
+                    apiErrors[violation.propertyPath] = violation.message;
+                });
+                setErrors(apiErrors);
+            }
+        }
     }
 
     return (
