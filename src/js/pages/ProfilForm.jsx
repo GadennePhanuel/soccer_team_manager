@@ -32,6 +32,9 @@ const ProfilForm = (props) => {
         passwordConfirm: "",
     });
 
+    //setUser au chargement de la page via requete HTTP
+
+
     //gestion des changements des inputs dans le formulaire
     const handleChange = (event) => {
         const { name, value } = event.currentTarget;
