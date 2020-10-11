@@ -92,7 +92,7 @@ const ClubFormPage = (props) => {
     return (
         <>
             {(!editing && <h1>Création de votre club</h1>) || <h1>Modification du club</h1>}
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className='formClub'>
                 <Field
                     name="label"
                     label="Nom de votre club"
