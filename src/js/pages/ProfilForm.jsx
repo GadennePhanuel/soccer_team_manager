@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import Axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import Field from '../components/forms/Field';
 import usersAPI from '../services/usersAPI';
 
@@ -31,8 +32,25 @@ const ProfilForm = (props) => {
         passwordConfirm: "",
     });
 
-    //setUser au chargement de la page via requete HTTP
+    const fetchUser = async id => {
+        try {
+            const response = await Axios.get("http://localhost:8000/api/users/" + id)
+            const email = response.data.email;
+            const lastName = response.data.lastName;
+            const firstName = response.data.firstName;
+            const birthday = response.data.birthday;
+            const phone = response.data.phone;
 
+            setUser({ email, lastName, firstName, birthday, phone })
+        } catch (error) {
+            console.log(error.response)
+        }
+    }
+
+    // au chargement de la page, récupérer les infos de l'user connecté via requete HTTP
+    useEffect(() => {
+        fetchUser(userId);
+    }, [userId])
 
     //gestion des changements des inputs dans le formulaire
     const handleChange = (event) => {
@@ -42,7 +60,7 @@ const ProfilForm = (props) => {
 
 
     const handleSubmit = (event) => {
-        event.preventdefault();
+        event.preventDefault();
     }
 
     return (
