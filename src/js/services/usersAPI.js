@@ -11,6 +11,10 @@ function registerAdmin(response) {
   });
 }
 
+function putUserClub(userId, clubId) {
+  return Axios.put("http://localhost:8000/api/user/" + userId + "/club/" + clubId)
+}
+
 function checkRole() {
   const token = window.localStorage.getItem("authToken");
   const jwtData = JwtDecode(token)
@@ -40,5 +44,6 @@ export default {
   registerAdmin,
   checkRole,
   checkClub,
-  findUserId
+  findUserId,
+  putUserClub
 };

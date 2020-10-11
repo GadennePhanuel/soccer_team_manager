@@ -10,7 +10,6 @@ const ProfilForm = (props) => {
     }
 
     const userId = usersAPI.findUserId();
-    console.log(userId)
 
     const [user, setUser] = useState({
         email: "",

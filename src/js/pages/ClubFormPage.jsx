@@ -5,6 +5,8 @@ import { useState } from 'react';
 import Field from '../components/forms/Field';
 import AuthContext from '../contexts/AuthContext';
 import AuthAPI from '../services/authAPI';
+import clubAPI from '../services/clubAPI';
+import usersAPI from '../services/usersAPI';
 
 const ClubFormPage = (props) => {
     const { setIsAuthenticated } = useContext(AuthContext);
@@ -38,8 +40,7 @@ const ClubFormPage = (props) => {
     const fetchClub = async id => {
         //si on est sur la modif de son club, requete HTTP pour récupérer le club en question
         try {
-            const data = await Axios.get("http://localhost:8000/api/clubs/" + id)
-                .then(response => response.data);
+            const data = await clubAPI.findClub(id)
             const { label } = data;
             setClub({ label })
         } catch (error) {
@@ -59,15 +60,16 @@ const ClubFormPage = (props) => {
 
         try {
             if (editing) {
-                const response = await Axios.put("http://localhost:8000/api/clubs/" + id, club)
-                console.log(response.data)
+                await clubAPI.putClub(id, club)
+
                 //TODO : falsh success
                 //redirection sur le dashboardAdmin
                 props.history.replace('/dashboardAdmin');
             } else {
-                const response = await Axios.post("http://localhost:8000/api/clubs", club)
+                const response = await clubAPI.postClub(club)
+                const clubId = response.data.id
 
-                await Axios.put("http://localhost:8000/api/user/" + userId + "/club/" + response.data.id)
+                await usersAPI.putUserClub(userId, clubId)
 
                 //TODO: falsh Success
                 //déconnection auto pour forcer un relog
