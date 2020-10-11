@@ -28,9 +28,17 @@ function checkClub() {
   return club;
 }
 
+function findUserId() {
+  const token = window.localStorage.getItem("authToken");
+  const jwtData = JwtDecode(token)
+  const userId = jwtData.id
+  return userId;
+}
+
 export default {
   registerUser,
   registerAdmin,
   checkRole,
-  checkClub
+  checkClub,
+  findUserId
 };

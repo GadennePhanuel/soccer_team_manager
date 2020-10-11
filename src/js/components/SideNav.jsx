@@ -119,6 +119,11 @@ const SideNav = (props) => {
                 Messagerie
                   </NavLink>
             </li>
+            <li>
+              <NavLink to="/profil" >
+                Profil
+                  </NavLink>
+            </li>
           </ul>
         </nav>
       )}

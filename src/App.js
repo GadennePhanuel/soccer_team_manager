@@ -16,6 +16,7 @@ import PlayersAdminPage from "./js/pages/PlayersAdminPage";
 import TeamsAdminPage from "./js/pages/TeamsAdminPage";
 import MailPage from "./js/pages/MailPage";
 import ClubFormPage from "./js/pages/ClubFormPage";
+import ProfilForm from "./js/pages/ProfilForm";
 
 function App() {
   AuthAPI.setup();
@@ -37,18 +38,17 @@ function App() {
         <SideNavWithRouter />
         <main className="container">
           <Switch>
+            <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
             <Route path="/RegisterAdmin" component={RegisterAdminPage} />
             <Route path="/login" component={LoginPage} />
             <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
             <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
             <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
-            <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
             <PrivateRoute path="/coachs" component={CoachAdminPage} />
             <PrivateRoute path="/players" component={PlayersAdminPage} />
             <PrivateRoute path="/teams" component={TeamsAdminPage} />
             <PrivateRoute path="/mail" component={MailPage} />
-
-
+            <PrivateRoute path="/profil" component={ProfilForm} />
             <Route path="/" component={LoginPage} />
           </Switch>
         </main>
