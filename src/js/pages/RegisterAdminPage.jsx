@@ -59,7 +59,6 @@ const RegisterAdminPage = ({ history }) => {
         setErrors("");
         history.replace("/login");
       } catch (error) {
-        console.log(error.response);
         alert(
           "Erreur interne, compte utilisateur créé mais non assigné en tant que ROLE_ADMIN. contactez administrateur du site"
         );
