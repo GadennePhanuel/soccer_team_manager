@@ -6,7 +6,6 @@ import LoginPage from "./js/pages/LoginPage";
 import RegisterAdminPage from "./js/pages/RegisterAdminPage";
 import SideNav from "./js/components/SideNav";
 import PrivateRoute from "./js/components/PrivateRoute";
-
 import "./css/index.css";
 import DashboardAdminPage from "./js/pages/DashboardAdminPage";
 import DashboardCoachPage from "./js/pages/DashboardCoachPage";

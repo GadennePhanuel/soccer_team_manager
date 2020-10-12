@@ -8,6 +8,8 @@ import clubAPI from '../services/clubAPI';
 import usersAPI from '../services/usersAPI';
 
 const ClubFormPage = (props) => {
+    authAPI.setup();
+
     const { setIsAuthenticated } = useContext(AuthContext);
     const { id } = props.match.params;
 
@@ -78,6 +80,7 @@ const ClubFormPage = (props) => {
             }
             setErrors('')
         } catch (error) {
+            console.log(error.response)
             const { violations } = error.response.data;
             const apiErrors = [''];
             if (violations) {

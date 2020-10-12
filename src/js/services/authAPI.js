@@ -3,7 +3,10 @@ import jwtDecode from "jwt-decode";
 
 function logout() {
   window.localStorage.removeItem("authToken");
-  delete Axios.defaults.headers["Authorization"];
+  if (Axios.defaults.headers["Authorization"]){
+    delete Axios.defaults.headers["Authorization"];
+    window.location.href='/login'
+  }
 }
 
 function authenticate(credentials) {
