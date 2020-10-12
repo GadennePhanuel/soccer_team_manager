@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 import Field from '../components/forms/Field';
 import usersAPI from '../services/usersAPI';
 import dateFormat from 'dateformat';
+import authAPI from '../services/authAPI';
 
 const ProfilForm = (props) => {
+    authAPI.setup();
     //si c'est un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
     const club = usersAPI.checkClub();
     if (club === "new") {

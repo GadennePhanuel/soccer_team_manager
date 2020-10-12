@@ -1,7 +1,10 @@
 import React from 'react';
+import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 
 const CoachAdminPage = (props) => {
+    authAPI.setup();
+
     // si role != ROLE_ADMIN -> redirection vers le dashboard qui lui correspond
     const role = usersAPI.checkRole();
     if (role === 'ROLE_COACH') {
