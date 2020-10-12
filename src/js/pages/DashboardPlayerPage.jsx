@@ -1,4 +1,5 @@
 import React from 'react';
+import authAPI from '../services/authAPI';
 
 const DashboardPlayerPage = (props) => {
     authAPI.setup();

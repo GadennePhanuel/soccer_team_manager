@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Field from '../components/forms/Field';
 import usersAPI from '../services/usersAPI';
 import dateFormat from 'dateformat';
+import authAPI from '../services/authAPI';
 
 const ProfilForm = (props) => {
     authAPI.setup();

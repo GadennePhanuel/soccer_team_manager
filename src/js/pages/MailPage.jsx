@@ -1,4 +1,5 @@
 import React from 'react';
+import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 
 const MailPage = (props) => {

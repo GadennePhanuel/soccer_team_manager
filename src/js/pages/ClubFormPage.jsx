@@ -3,6 +3,7 @@ import React, { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import Field from '../components/forms/Field';
 import AuthContext from '../contexts/AuthContext';
+import authAPI from '../services/authAPI';
 import AuthAPI from '../services/authAPI';
 import clubAPI from '../services/clubAPI';
 import usersAPI from '../services/usersAPI';
