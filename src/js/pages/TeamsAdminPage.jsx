@@ -1,4 +1,5 @@
 import React, {useEffect, useState } from 'react';
+import {Image} from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Axios from "axios";
@@ -25,6 +26,32 @@ const TeamsAdminPage = (props) => {
             .then(response => response.data['hydra:member'])
             .then(data => setTeams(data))
     },[])
+
+    function DisplayPlayer(props){
+        return (
+                <table>
+                    <tr><td rowpan={5}>
+                        {/*faire une route pour recuperer endpoint les images voulu
+                        <Image source={require('http://localhost:8000/public/storage/images/' + props.player.picture + '.jpg')} />;
+                    */}
+                    </td></tr>
+                    <tr><td>{props.player.firstName}</td> </tr>
+                    <tr> <td>{props.player.lastName}</td> </tr>
+                    <tr> <td>{props.player.email}</td> </tr>
+                    <tr> <td>{props.player.phone}</td> </tr>
+                </table>
+            );
+    }
+
+    function changePlayers(props){
+        return (
+            <div>
+                {props.team.players.map((player) => (
+                    <DisplayPlayer player={player} />
+                ))}
+            </div>
+        );
+    }
 
     console.log(teams);
 
@@ -54,7 +81,7 @@ const TeamsAdminPage = (props) => {
                                     <ul>
                                         <li>{player.user.firstName}
                                             {player.user.lastName}
-                                            <img href="public/storage/images"{player.picture}
+                                            {player.picture}
                                         </li>
                                     </ul>
                                 )}
