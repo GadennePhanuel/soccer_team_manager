@@ -87,19 +87,29 @@ const CoachAdminPage = (props) => {
 
         //call ajax vers controller particulier
         //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du coach) vers le back qui se chargera d'envoyer un mail au coach qui se fait inviter
-        Axios.post("http://localhost:8000/api/emailCoach", 
-            {params: {
+        Axios.post("http://localhost:8000/api/emailCoach",
+            {
                 url: 'http://localhost:3000/#/registerCoach/',
-                email: {email}
-            }}
-            )
+                email
+            }
+        )
             .then(response => {
                 console.log(response.data)
-                //2.si tout s'est bien passé -> flash success, on cache le formulaire et on fait réaparaitre le button d'invit & on vide le formulaire email -> setEmail("")
+                //2.si tout s'est bien passé -> flash success, on cache le formulaire et on fait réaparaitre le button d'invit & on vide le formulaire email -> setEmail("") et setError('')
+                setError('');
+                //TODO : flash success
+                document.getElementById('btn-invit').hidden = false
+                document.getElementById('form-invit').hidden = true
+                setEmail('');
+
+
+
             })
             .catch(error => {
-                console.log(error.response)
-
+                const { violations } = error.response.data;
+                if (violations) {
+                    setError(violations);
+                }
             })
 
     }
