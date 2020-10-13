@@ -24,6 +24,8 @@ const CoachAdminPage = (props) => {
 
     const [email, setEmail] = useState('')
 
+    const [error, setError] = useState('')
+
     const handleChange = (event) => {
         const { value } = event.currentTarget;
         setEmail(value);
@@ -84,8 +86,21 @@ const CoachAdminPage = (props) => {
         event.preventDefault()
 
         //call ajax vers controller particulier
-        //1.envoie du mail renseigné au back qui se chargere d'envoyer un mail au coach invité
-        //2.si tout s'est bien passé -> flash success, on cache le formulaire et on fait réaparaitre le button d'invit
+        //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du coach) vers le back qui se chargera d'envoyer un mail au coach qui se fait inviter
+        Axios.post("http://localhost:8000/api/emailCoach", 
+            {params: {
+                url: 'http://localhost:3000/#/registerCoach/',
+                email: {email}
+            }}
+            )
+            .then(response => {
+                console.log(response.data)
+                //2.si tout s'est bien passé -> flash success, on cache le formulaire et on fait réaparaitre le button d'invit & on vide le formulaire email -> setEmail("")
+            })
+            .catch(error => {
+                console.log(error.response)
+
+            })
 
     }
 
@@ -108,6 +123,7 @@ const CoachAdminPage = (props) => {
                             value={email}
                             placeholder="adresse email"
                             onChange={handleChange}
+                            error={error}
                         >
                         </Field>
                         <div>

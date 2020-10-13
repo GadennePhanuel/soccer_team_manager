@@ -48,7 +48,7 @@ const RegisterAdminPage = ({ history }) => {
     //création User
     try {
       const response = await UserAPI.registerUser(users);
-
+      console.log(response)
       //création Admin
       try {
         await UserAPI.registerAdmin(response);
