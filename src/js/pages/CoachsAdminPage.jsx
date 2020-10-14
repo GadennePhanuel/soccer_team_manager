@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from '../components/forms/Field'
+import coachAPI from '../services/coachAPI';
+import teamAPI from '../services/teamAPI';
 
 const CoachAdminPage = (props) => {
     authAPI.setup();
@@ -33,9 +35,9 @@ const CoachAdminPage = (props) => {
 
 
     useEffect(() => {
-        Axios.get('http://localhost:8000/api/coaches')
-            .then(response => response.data['hydra:member'])
-            .then(data => setCoachs(data))
+       coachAPI.findAllCoach()
+           .then(data => setCoachs(data))
+           .catch(error => console.log(error.response))
     }, [])
 
 
@@ -46,7 +48,7 @@ const CoachAdminPage = (props) => {
         //supression de l'affichage du coach selectionné
         setCoachs(coachs.filter((coach) => coach.id !== id));
 
-        Axios.delete("http://localhost:8000/api/coaches/" + id)
+        coachAPI.deleteCoach(id)
             .then(response => console.log("ok"))
             .catch(error => {
                 setCoachs(originalCoachs);
@@ -55,14 +57,10 @@ const CoachAdminPage = (props) => {
     }
 
     const handeDeleteTeam = (id) => {
-        console.log(id)
-        Axios.put("http://localhost:8000/api/teams/" + id,
-            { coach: null }
-        )
+        teamAPI.deleteCoachOnTeam(id)
             .then(response => {
                 console.log("ok")
-                Axios.get('http://localhost:8000/api/coaches')
-                    .then(response => response.data['hydra:member'])
+                coachAPI.findAllCoach()
                     .then(data => setCoachs(data))
             })
             .catch(error => {
@@ -87,12 +85,7 @@ const CoachAdminPage = (props) => {
 
         //call ajax vers controller particulier
         //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du coach) vers le back qui se chargera d'envoyer un mail au coach qui se fait inviter
-        Axios.post("http://localhost:8000/api/emailCoach",
-            {
-                url: 'http://localhost:3000/#/registerCoach/',
-                email
-            }
-        )
+        coachAPI.sendMailToCoach(email, club)
             .then(response => {
                 console.log(response.data)
                 //2.si tout s'est bien passé -> flash success, on cache le formulaire et on fait réaparaitre le button d'invit & on vide le formulaire email -> setEmail("") et setError('')
