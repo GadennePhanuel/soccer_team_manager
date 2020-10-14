@@ -44,6 +44,7 @@ const TeamsAdminPage = (props) => {
     }
 
     function changePlayers(props){
+        console.log(props);
         return (
             <>
                 {props.team.players.map((player) => (
@@ -77,7 +78,7 @@ const TeamsAdminPage = (props) => {
                             <td>{team.coach.user.firstName} {team.coach.user.lastName}</td>
                             <td>{team.category}</td>
                             <td>
-                                <button  onClick={changePlayers(team.players)}>voir</button>
+                                <button  onClick={changePlayers.bind(team)}>voir</button>
                             </td>
                             <td>
                                 {team.players.map((player) =>
