@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
@@ -35,9 +34,9 @@ const CoachAdminPage = (props) => {
 
 
     useEffect(() => {
-       coachAPI.findAllCoach()
-           .then(data => setCoachs(data))
-           .catch(error => console.log(error.response))
+        coachAPI.findAllCoach()
+            .then(data => setCoachs(data))
+            .catch(error => console.log(error.response))
     }, [])
 
 
