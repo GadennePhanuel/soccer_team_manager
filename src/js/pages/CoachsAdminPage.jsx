@@ -129,7 +129,7 @@ const CoachAdminPage = (props) => {
                         >
                         </Field>
                         <div>
-                            <button onClick={() => handleCancelInvit()}>
+                            <button type="button" onClick={() => handleCancelInvit()}>
                                 Annuler
                             </button>
                             <button type="submit">

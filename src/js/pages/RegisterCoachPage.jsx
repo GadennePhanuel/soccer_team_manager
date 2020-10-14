@@ -6,9 +6,9 @@ import UserAPI from "../services/usersAPI";
 import { Link } from 'react-router-dom';
 
 const RegisterCoachPage = (props) => {
-    const { token } = props.match.params;
+  const { token } = props.match.params;
 
-    const [users, setUsers] = useState({
+  const [users, setUsers] = useState({
     club: "",
     roles: ["ROLE_COACH"],
     email: "",
@@ -29,27 +29,28 @@ const RegisterCoachPage = (props) => {
     passwordConfirm: "",
   });
 
-    //à l'arrivée sur la page -> série de controle
-    //1. je logout si jamais il y a déja un token de stocké dans le localstorage (cas où un autre utilisateur s'est connecté à l'appil précédemment avec le meme ordi/tablette )
-    if(window.localStorage.getItem("authToken")){
-        //TODO : message flash pour lui dire de recliquer sur le lien qu'il a reçu par email
-        authAPI.logout();
-    }
+  //à l'arrivée sur la page -> série de controle
+  //1. je logout si jamais il y a déja un token de stocké dans le localstorage (cas où un autre utilisateur s'est connecté à l'appil précédemment avec le meme ordi/tablette )
+  if (window.localStorage.getItem("authToken")) {
+    //TODO : message flash pour lui dire de recliquer sur le lien qu'il a reçu par email
+    authAPI.logout();
+  }
 
-    //2. je vérifie si le token de l'url est valide
-    useEffect(() => {
-    try{
-        const decoded = jwt_decode(token);
-        setUsers({...users, 
-            ['club']: '/api/clubs/' + decoded.club, 
-            ['email']: decoded.username
-        })
-    }catch(error) {
-        console.log(error.message)
-        //TODO : flash error -> token invalide ! 
-        props.history.push('/login')
+  //2. je vérifie si le token de l'url est valide
+  useEffect(() => {
+    try {
+      const decoded = jwt_decode(token);
+      setUsers({
+        ...users,
+        'club': '/api/clubs/' + decoded.club,
+        'email': decoded.username
+      })
+    } catch (error) {
+      console.log(error.message)
+      //TODO : flash error -> token invalide ! 
+      props.history.push('/login')
     };
-  }, [props, token])
+  }, [])
 
 
   //gestion des changements des inputs dans le formulaire
@@ -58,10 +59,10 @@ const RegisterCoachPage = (props) => {
     setUsers({ ...users, [name]: value });
   };
 
-/**
-* Call ajax lors de la soumission du formulaire pour créer le coach et l'utilisateur associé
-*/
-const handleSubmit = async (event) => {
+  /**
+  * Call ajax lors de la soumission du formulaire pour créer le coach et l'utilisateur associé
+  */
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     const apiErrors = {};
@@ -91,23 +92,23 @@ const handleSubmit = async (event) => {
       }
     } catch (error) {
       const { violations } = error.response.data;
-        //si l'utilisateur essaye de se créer un second compte à partir du lien d'inscription qu'il a reçu, il y aura dans les violations
-        //  le message concernant l'adresse mail (violations['email'] = 'cette email est déja utilisé)
-        // dans ce cas redirigé l'utilisateur vers la page de login avec un flash -> "vous avez deja créer votre compte"
-        if (violations) {
-            violations.forEach((violation) => {
-                if(violation.propertyPath === 'email'){
-                    props.history.push("/login");
-                }
-            apiErrors[violation.propertyPath] = violation.message;
-            });
-            setErrors(apiErrors);
-        }
+      //si l'utilisateur essaye de se créer un second compte à partir du lien d'inscription qu'il a reçu, il y aura dans les violations
+      //  le message concernant l'adresse mail (violations['email'] = 'cette email est déja utilisé)
+      // dans ce cas redirigé l'utilisateur vers la page de login avec un flash -> "vous avez deja créer votre compte"
+      if (violations) {
+        violations.forEach((violation) => {
+          if (violation.propertyPath === 'email') {
+            props.history.push("/login");
+          }
+          apiErrors[violation.propertyPath] = violation.message;
+        });
+        setErrors(apiErrors);
+      }
     }
-}
+  }
 
-    return ( 
-           <>
+  return (
+    <>
       <h1>Inscription Nouveau Coach</h1>
       <form onSubmit={handleSubmit}>
         <Field
@@ -165,13 +166,13 @@ const handleSubmit = async (event) => {
           <button type="submit" className="btn btn-success">
             Confirmation
           </button>
-           <Link to="/login" className="btn btn-link">
+          <Link to="/login" className="btn btn-link">
             J'ai déjà un compte
           </Link>
         </div>
       </form>
     </>
-     );
+  );
 }
- 
+
 export default RegisterCoachPage;
