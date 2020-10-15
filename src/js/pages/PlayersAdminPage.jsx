@@ -153,7 +153,10 @@ const PlayersAdminPage = (props) => {
                                 <td>{player.user.firstName} {player.user.lastName}</td>
                                 <td>{player.user.email}</td>
                                 <td>{player.user.phone}</td>
-                                <td>{player.team.label}</td>
+                                <td>{
+                                     player.team ? player.team.label : 'non attribué'
+                                    }
+                                </td>
                                 <td>
                                     <button
                                         onClick={() => handleDelete(player.id)}
