@@ -23,6 +23,7 @@ const PlayersAdminPage = (props) => {
     //déclare une variable d'état "players", son état initial est un tableau vide
     const [players, setPlayers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [search, setSearch] = useState("");
 
     const [email, setEmail] = useState('')
 
@@ -34,7 +35,7 @@ const PlayersAdminPage = (props) => {
     };
 
     useEffect(() => {
-       playerAPI.findAllPlayers()
+        playerAPI.findAllPlayers()
             .then(data => setPlayers(data))
             .catch(error => console.log(error.response));
     }, [])
@@ -58,8 +59,19 @@ const PlayersAdminPage = (props) => {
         setCurrentPage(page);
     }
 
+    const handleSearch = event => {
+        const value = event.currentTarget.value;
+        setSearch(value);
+        setCurrentPage(1);
+    }
+
     const itemsPerPage = 15;
-    const paginatedPlayers = Pagination.getData(players, currentPage, itemsPerPage);
+    const filteredPlayers = players.filter(p =>
+        p.user.firstName.toLowerCase().includes(search.toLowerCase()) ||
+        p.user.lastName.toLowerCase().includes(search.toLowerCase()) ||
+        p.team.label && p.team.label.toLowerCase().includes(search.toLowerCase()))
+
+    const paginatedPlayers = Pagination.getData(filteredPlayers, currentPage, itemsPerPage);
 
 
     const handleInvit = () => {
@@ -129,6 +141,9 @@ const PlayersAdminPage = (props) => {
                     </form>
                 </div>
             </div>
+            <div className="form-group">
+                <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
+            </div>
             <div>
                 <table className="table table-hover">
                     <thead>
@@ -150,8 +165,8 @@ const PlayersAdminPage = (props) => {
                                 <td>{player.user.email}</td>
                                 <td>{player.user.phone}</td>
                                 <td>{
-                                     player.team ? player.team.label : 'non attribué'
-                                    }
+                                    player.team ? player.team.label : 'non attribué'
+                                }
                                 </td>
                                 <td>
                                     <button
@@ -165,7 +180,9 @@ const PlayersAdminPage = (props) => {
                     </tbody>
                 </table>
 
-                <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={players.length} onPageChanged={handlePageChange} />
+                {itemsPerPage < filteredPlayers.length &&
+                    <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredPlayers.length} onPageChanged={handlePageChange} />
+                }
             </div>
         </>
     );
