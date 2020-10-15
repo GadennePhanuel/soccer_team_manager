@@ -5,12 +5,12 @@ import jwt_decode from "jwt-decode";
 import UserAPI from "../services/usersAPI";
 import { Link } from 'react-router-dom';
 
-const RegisterCoachPage = (props) => {
+const RegisterUserPage = (props) => {
   const { token } = props.match.params;
 
   const [users, setUsers] = useState({
     club: "",
-    roles: ["ROLE_COACH"],
+    roles: [""],
     email: "",
     lastName: "",
     firstName: "",
@@ -43,7 +43,8 @@ const RegisterCoachPage = (props) => {
       setUsers({
         ...users,
         'club': '/api/clubs/' + decoded.club,
-        'email': decoded.username
+        'email': decoded.username,
+        'roles': [decoded.roles[0]]
       })
     } catch (error) {
       console.log(error.message)
@@ -64,7 +65,7 @@ const RegisterCoachPage = (props) => {
   */
   const handleSubmit = async (event) => {
     event.preventDefault()
-
+    console.log(users)
     const apiErrors = {};
     if (users.password !== users.passwordConfirm) {
       apiErrors.passwordConfirm =
@@ -78,7 +79,11 @@ const RegisterCoachPage = (props) => {
       const response = await UserAPI.registerUser(users);
       //création Coach
       try {
-        await UserAPI.registerCoach(response, token)
+        if(users.roles[0] === "ROLE_COACH"){
+          await UserAPI.registerCoach(response, token)
+        }else if (users.roles[0] === "ROLE_PLAYER"){
+          await UserAPI.registerPlayer(response, token)
+        }
 
         //TODO : faire un petit FLASH de success
 
@@ -109,7 +114,7 @@ const RegisterCoachPage = (props) => {
 
   return (
     <>
-      <h1>Inscription Nouveau Coach</h1>
+      { (users.roles[0] === "ROLE_COACH") ? <h1>Inscription Nouveau Coach</h1> : <h1>Inscription Nouveau Joueur</h1> }
       <form onSubmit={handleSubmit}>
         <Field
           name="firstName"
@@ -175,4 +180,4 @@ const RegisterCoachPage = (props) => {
   );
 }
 
-export default RegisterCoachPage;
+export default RegisterUserPage;

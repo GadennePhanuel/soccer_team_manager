@@ -23,6 +23,18 @@ function registerCoach(response, token) {
   });
 }
 
+function registerPlayer(response, token) {
+  console.log(response.data.id)
+  return Axios.post("http://localhost:8000/api/players", {
+    user: "/api/users/" + response.data.id,
+    injured: false
+  }, {
+    headers: {
+      'Authorization': "Bearer " + token
+    }
+  });
+}
+
 function putUserClub(userId, clubId) {
   return Axios.put("http://localhost:8000/api/user/" + userId + "/club/" + clubId)
 }
@@ -63,5 +75,6 @@ export default {
   checkClub,
   findUserId,
   putUserClub,
-  putUserProfil
+  putUserProfil,
+  registerPlayer
 };

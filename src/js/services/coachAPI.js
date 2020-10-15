@@ -16,7 +16,7 @@ function sendMailToCoach(email, club){
     return Axios
             .post("http://localhost:8000/api/emailCoach",
                 {
-                    url: 'http://localhost:3000/#/registerCoach/',
+                    url: 'http://localhost:3000/#/registerUser/',
                     email,
                     club
                 }
