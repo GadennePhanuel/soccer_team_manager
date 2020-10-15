@@ -25,33 +25,30 @@ const TeamsAdminPage = (props) => {
         Axios.get('http://localhost:8000/api/teams')
             .then(response => response.data['hydra:member'])
             .then(data => setTeams(data))
-    },[])
+            .catch(error => console.log(error.response));
+    },[]);
 
-    function DisplayPlayer(props){
+    function DisplayPlayers(props) {
         return (
+            <>
+            {props.map((player) => (
                 <table>
-                    <tr key={props.player.id}><td rowpan={5}>
-                        {/*faire une route pour recuperer endpoint les images voulu
-                        <Image source={require('http://localhost:8000/public/storage/images/' + props.player.picture + '.jpg')} />;
-                    */}
+                    <tr key={player.id}>
+                    <td rowpan={5}>
+                        <img src={"http://localhost:8000/storage/images/"+player.picture} alt=""/>
                     </td></tr>
-                    <tr><td>{props.player.firstName}</td> </tr>
-                    <tr> <td>{props.player.lastName}</td> </tr>
-                    <tr> <td>{props.player.email}</td> </tr>
-                    <tr> <td>{props.player.phone}</td> </tr>
+                    <tr><td>{player.firstName}</td> </tr>
+                    <tr> <td>{player.lastName}</td> </tr>
+                    <tr> <td>{player.email}</td> </tr>
+                    <tr> <td>{player.phone}</td> </tr>
                 </table>
+                ))}
+            </>
             );
     }
 
     function changePlayers(props){
         console.log(props);
-        return (
-            <>
-                {props.team.players.map((player) => (
-                    <DisplayPlayer player={player} />
-                ))}
-            </>
-        );
     }
 
     console.log(teams);
@@ -80,27 +77,15 @@ const TeamsAdminPage = (props) => {
                             <td>
                                 <button  onClick={changePlayers.bind(team)}>voir</button>
                             </td>
-                            <td>
-                                {team.players.map((player) =>
-                                    <ul>
-                                        <li>{player.user.firstName}
-                                            {player.user.lastName}
-                                            {player.picture}
-                                        </li>
-                                    </ul>
-                                )}
-                                {/*
-                                <button onClick={() => handleDelete(team.id)}>
-                                    Supprimer
-                                </button>
-                                */}
-                            </td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
             </div>
-            <div>
+            <div id="dPlay">
+                {teams.map((team) => (
+                    <DisplayPlayers player={team.players} />
+                ))}
             </div>
         </>
     );
