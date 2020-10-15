@@ -6,14 +6,12 @@ function registerUser(users) {
 }
 
 function registerAdmin(response) {
-  console.log(response.data.id)
   return Axios.post("http://localhost:8000/api/admins", {
     user: "/api/users/" + response.data.id,
   });
 }
 
 function registerCoach(response, token) {
-  console.log(response.data.id)
   return Axios.post("http://localhost:8000/api/coaches", {
     user: "/api/users/" + response.data.id,
   }, {

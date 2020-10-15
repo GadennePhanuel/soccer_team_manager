@@ -65,7 +65,6 @@ const RegisterUserPage = (props) => {
   */
   const handleSubmit = async (event) => {
     event.preventDefault()
-    console.log(users)
     const apiErrors = {};
     if (users.password !== users.passwordConfirm) {
       apiErrors.passwordConfirm =
