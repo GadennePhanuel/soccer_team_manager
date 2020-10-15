@@ -51,6 +51,7 @@ const RegisterUserPage = (props) => {
       //TODO : flash error -> token invalide ! 
       props.history.push('/login')
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 
