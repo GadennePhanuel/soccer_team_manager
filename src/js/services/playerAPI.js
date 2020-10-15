@@ -1,7 +1,15 @@
-const { default: Axios } = require("axios");
+import Axios from "axios";
 
+function findAllPlayers(){
+    return Axios
+            .get("http://localhost:8000/api/players")
+            .then(response => response.data['hydra:member'])
+}
 
-
+function deletePlayer(id){
+    return Axios
+            .delete("http://localhost:8000/api/players/" + id)
+}
 
 function sendMailToPlayer(email, club) {
     return Axios
@@ -15,5 +23,7 @@ function sendMailToPlayer(email, club) {
 }
 
 export default {
-    sendMailToPlayer
+    sendMailToPlayer,
+    findAllPlayers,
+    deletePlayer
 }

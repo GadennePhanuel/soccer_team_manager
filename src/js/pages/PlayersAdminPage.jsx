@@ -35,9 +35,7 @@ const PlayersAdminPage = (props) => {
     };
 
     useEffect(() => {
-        axios
-            .get("http://localhost:8000/api/players")
-            .then(response => response.data['hydra:member'])
+       playerAPI.findAllPlayers()
             .then(data => setPlayers(data))
             .catch(error => console.log(error.response));
     }, [])
@@ -51,8 +49,7 @@ const PlayersAdminPage = (props) => {
         setPlayers(players.filter(player => player.id !== id))
 
         //si la suppression coté serveur n'a pas fonctionné, je raffiche mon tableau initial 
-        axios
-            .delete("http://localhost:8000/api/players/" + id)
+        playerAPI.deletePlayer(id)
             .then(response => console.log("ok"))
             .catch(error => {
                 setPlayers(originalPlayers);
