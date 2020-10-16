@@ -17,6 +17,7 @@ import MailPage from "./js/pages/MailPage";
 import ClubFormPage from "./js/pages/ClubFormPage";
 import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
+import CurrentUser from "./js/components/CurrentUser";
 
 function App() {
   AuthAPI.setup();
@@ -36,6 +37,7 @@ function App() {
     >
       <HashRouter>
         <SideNavWithRouter />
+        <CurrentUser />
         <main className="container">
           <Switch>
             <PrivateRoute path="/createClub/:id" component={ClubFormPage} />

@@ -4,6 +4,7 @@ import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
+import Axios from "axios";
 
 
 const PlayersAdminPage = (props) => {
@@ -85,7 +86,6 @@ const PlayersAdminPage = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-
         //call ajax vers controller particulier
         //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du coach) vers le back qui se chargera d'envoyer un mail au coach qui se fait inviter
         playerAPI.sendMailToPlayer(email, club)
@@ -106,6 +106,32 @@ const PlayersAdminPage = (props) => {
             })
 
     }
+
+    const handleChoice = (player) => {
+        console.log(player)
+        //je récupére l'id de la team courante
+        let select = document.getElementById('team');
+        let teamId = select.options[select.selectedIndex].value;
+
+        Axios.put("http://localhost:8000/api/players/" + player.id, {
+            "user": "/api/users/" + player.user.id,
+            "team": "/api/teams/" + teamId
+            })
+            .then(response => {
+                console.log(response.data)
+                 playerAPI.findAllPlayers()
+                        .then(data => setPlayers(data))
+                        .catch(error => console.log(error.response));
+                //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
+                //setPlayers(...players.push(player) )
+
+            })
+            .catch(error => console.log(error.response))
+
+
+    }
+
+
 
     return (
         <>
@@ -177,7 +203,16 @@ const PlayersAdminPage = (props) => {
                                             onClick={() => handleDelete(player.id)}
                                             className="btn btn-sm btn-danger">
                                             Supprimer
-                                    </button>
+                                        </button>
+                                    </td>
+                                }
+                                {role === 'ROLE_COACH' &&
+                                    <td>
+                                         {!player.team && 
+                                        <button onClick={() => handleChoice(player)} >
+                                            Selectionner
+                                        </button>
+                                        }
                                     </td>
                                 }
                             </tr>

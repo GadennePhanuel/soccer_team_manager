@@ -71,7 +71,7 @@ td:not([align]),
 th:not([align]) {
   text-align: left;
 }
-a{
+a {
   color: inherit;
   text-decoration: none;
 }
@@ -81,6 +81,12 @@ a{
   width: 100px;
   height: 100%;
   background-color: #1f4068;
+}
+
+.currentUser {
+  position: absolute;
+  top: 5px;
+  right: 10px;
 }
 
 .container {

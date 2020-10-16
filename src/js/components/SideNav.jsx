@@ -66,7 +66,7 @@ const SideNav = (props) => {
                 <li className="nav-item">
                   <NavLink to="/dashboardCoach" className="home">
                     home
-              </NavLink>
+                  </NavLink>
                 </li>
                 <li>
                   <NavLink to="/players" >
