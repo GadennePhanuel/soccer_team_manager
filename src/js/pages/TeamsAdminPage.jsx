@@ -68,7 +68,6 @@ const TeamsAdminPage = (props) => {
             <UserComponent key={user.id} user={user}/>
         </div>
     )
-
     return (
         <>
             <h1>Equipes du club</h1>
@@ -87,7 +86,24 @@ const TeamsAdminPage = (props) => {
                     <tbody>
                     {teams.map(team => (
                         <tr key={team.id}>
-                            <TeamComponent team={team}  />
+                                <td>{team.label}</td>
+                                <td>{team.category}</td>
+                                <td>
+                                    <table key={team.coach.id}>
+                                        <thead>
+                                        <tr colSpan={4}>
+                                            <td>Coach</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr><td>{team.coach.user.firstName}</td></tr>
+                                            <tr><td>{team.coach.user.lastName}</td></tr>
+                                            <tr><td>{team.coach.user.email}</td></tr>
+                                            <tr><td>{team.coach.user.phone}</td></tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td><button onClick={() => teamAPI.changePlayers(team.players)}>voir joueurs</button></td>
                         </tr>
                     ))}
                     </tbody>
