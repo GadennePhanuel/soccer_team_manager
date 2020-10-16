@@ -68,7 +68,7 @@ const PlayersAdminPage = (props) => {
     const filteredPlayers = players.filter(p =>
         p.user.firstName.toLowerCase().includes(search.toLowerCase()) ||
         p.user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-        p.team.label && p.team.label.toLowerCase().includes(search.toLowerCase()))
+        (p.team && p.team.label.toLowerCase().includes(search.toLowerCase())))
 
     const paginatedPlayers = Pagination.getData(filteredPlayers, currentPage, itemsPerPage);
 
