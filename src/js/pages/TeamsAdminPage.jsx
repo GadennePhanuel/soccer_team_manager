@@ -1,8 +1,7 @@
 import React, {useEffect, useState } from 'react';
-import {Image} from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
-import Axios from "axios";
+import teamAPI from "../services/teamAPI";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -22,42 +21,59 @@ const TeamsAdminPage = (props) => {
     const [teams, setTeams] = useState([])
 
     useEffect(() => {
-        Axios.get('http://localhost:8000/api/teams')
-            .then(response => response.data['hydra:member'])
+        teamAPI.findAllTeams()
             .then(data => setTeams(data))
             .catch(error => console.log(error.response));
     },[]);
 
-    function DisplayPlayers(props) {
-        return (
-            <>
-            {props.map((player) => (
-                <table>
-                    <tr key={player.id}>
-                    <td rowpan={5}>
-                        <img src={"http://localhost:8000/storage/images/"+player.picture} alt=""/>
-                    </td></tr>
-                    <tr><td>{player.firstName}</td> </tr>
-                    <tr> <td>{player.lastName}</td> </tr>
-                    <tr> <td>{player.email}</td> </tr>
-                    <tr> <td>{player.phone}</td> </tr>
-                </table>
-                ))}
-            </>
-            );
-    }
+    console.log(teams)
 
-    function changePlayers(props){
-        console.log(props);
-    }
+    const TeamComponent = (team) => (
+        <>
+            <td>{team.label}</td>
+            <td>{team.category}</td>
+            <td>
+                <CoachComponent coach={team.coach}/>
+            </td>
+            <td><button onClick={() => teamAPI.changePlayers(team.players)}>voir joueurs</button></td>
+        </>
+    )
 
-    console.log(teams);
+    const CoachComponent = (coach) => (
+        <table key={coach.id}>
+            <thead>
+                <tr colSpan={4}>
+                    <td>Coach</td>
+                </tr>
+            </thead>
+            <tbody>
+                <UserComponent user={coach.user} />
+            </tbody>
+        </table>
+    )
+
+    const UserComponent = (user) => (
+        <>
+            <tr><td>{user.firstName}</td></tr>
+            <tr><td>{user.lastName}</td></tr>
+            <tr><td>{user.email}</td></tr>
+            <tr><td>{user.phone}</td></tr>
+        </>
+    )
+
+    //todo
+    const PlayerComponent = (id, picture, user) => (
+        <div key={id}>
+            <img src={"http://localhost:8000/public/storage/images/"+picture} alt=""/>
+            <UserComponent key={user.id} user={user}/>
+        </div>
+    )
 
     return (
         <>
-            <h1>Pages des équipes pour l'admin</h1>
+            <h1>Equipes du club</h1>
 
-            <div>
+            <div id="teamsBox">
                 <h2>Liste des teams du club</h2>
                 <table>
                     <thead>
@@ -69,23 +85,15 @@ const TeamsAdminPage = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                    {teams.map((team) => (
+                    {teams.map(team => (
                         <tr key={team.id}>
-                            <td>{team.label}</td>
-                            <td>{team.coach.user.firstName} {team.coach.user.lastName}</td>
-                            <td>{team.category}</td>
-                            <td>
-                                <button  onClick={changePlayers.bind(team)}>voir</button>
-                            </td>
+                            <TeamComponent team={team}  />
                         </tr>
                     ))}
                     </tbody>
                 </table>
             </div>
-            <div id="dPlay">
-                {teams.map((team) => (
-                    <DisplayPlayers player={team.players} />
-                ))}
+            <div id="playersBox">
             </div>
         </>
     );
