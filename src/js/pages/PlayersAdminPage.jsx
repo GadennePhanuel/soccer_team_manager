@@ -10,11 +10,10 @@ const PlayersAdminPage = (props) => {
     authAPI.setup();
     // si role != ROLE_ADMIN -> redirection vers le dashboard qui lui correspond
     const role = usersAPI.checkRole();
-    if (role === 'ROLE_COACH') {
-        props.history.replace("/dashboardCoach")
-    } else if (role === 'ROLE_PLAYER') {
+    if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
     }
+
     //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
     const club = usersAPI.checkClub();
     if (club === "new") {
@@ -110,14 +109,16 @@ const PlayersAdminPage = (props) => {
 
     return (
         <>
-            <h1>Page des joueurs pour l'admin</h1>
+            <h1>Page des joueurs</h1>
 
             <div>
-                <div id="btn-invit">
-                    <button onClick={() => handleInvit()}>
-                        Inviter un nouveau joueur
+                {role === 'ROLE_ADMIN' &&
+                    <div id="btn-invit">
+                        <button onClick={() => handleInvit()}>
+                            Inviter un nouveau joueur
                     </button>
-                </div>
+                    </div>
+                }
                 <div id="form-invit" hidden>
                     <form onSubmit={handleSubmit}>
                         <Field
@@ -152,7 +153,9 @@ const PlayersAdminPage = (props) => {
                             <th>Email</th>
                             <th>Telephone</th>
                             <th>Equipe</th>
-                            <th />
+                            {role === 'ROLE_ADMIN' &&
+                                <th />
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -168,13 +171,15 @@ const PlayersAdminPage = (props) => {
                                     player.team ? player.team.label : 'non attribué'
                                 }
                                 </td>
-                                <td>
-                                    <button
-                                        onClick={() => handleDelete(player.id)}
-                                        className="btn btn-sm btn-danger">
-                                        Supprimer
+                                {role === 'ROLE_ADMIN' &&
+                                    <td>
+                                        <button
+                                            onClick={() => handleDelete(player.id)}
+                                            className="btn btn-sm btn-danger">
+                                            Supprimer
                                     </button>
-                                </td>
+                                    </td>
+                                }
                             </tr>
                         ))}
                     </tbody>
