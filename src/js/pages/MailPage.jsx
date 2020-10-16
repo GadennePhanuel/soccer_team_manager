@@ -53,11 +53,29 @@ const MailPage = (props) => {
 
     const handleSelect = (event) => {
         event.preventDefault()
+        //je récupére la value du button (->correspond au tableau à l'id du même nom )
         const value = event.currentTarget.innerText;
+        //je hide and show le tableau au clique et je passe les autre buttons en disabled
         if (document.getElementById(value).hidden === true) {
             document.getElementById(value).hidden = false
+            //je selectionne tous les buttons de la class btnSelectList
+            let btnList = document.querySelectorAll(".btnSelectList")
+            //je parcours le tableau des buttons et je disabled tout ceux qui ne correspondent pas à celui cliqué 
+            btnList.forEach(btn => {
+                if (btn.innerText !== value){
+                    btn.disabled = true
+                }
+            })
         } else {
             document.getElementById(value).hidden = true
+            //je selectionne tous les buttons de la class btnSelectList
+            let btnList = document.querySelectorAll(".btnSelectList")
+            //je parcours le tableau des buttons et je disabled tout ceux qui ne correspondent pas à celui cliqué 
+            btnList.forEach(btn => {
+                if (btn.innerText !== value){
+                    btn.disabled = false
+                }
+            })
         }
     }
 
@@ -151,13 +169,13 @@ const MailPage = (props) => {
         <>
             <h1>Page de messagerie</h1>
             <div>
-                <button onClick={handleSelect}>
+                <button onClick={handleSelect} className="btnSelectList">
                     Coachs
                 </button>
-                <button onClick={handleSelect}>
+                <button onClick={handleSelect} className="btnSelectList">
                     Joueurs
                 </button>
-                <button onClick={handleSelect}>
+                <button onClick={handleSelect} className="btnSelectList">
                     Equipes
                 </button>
             </div>
@@ -225,6 +243,7 @@ const MailPage = (props) => {
                         onChange={handleChange}
                         rows="5"
                         cols="90"
+                        disabled={true}
                     ></Textarea>
                     <Field
                         name="subject"

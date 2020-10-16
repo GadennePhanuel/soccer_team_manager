@@ -19,6 +19,7 @@ const Textarea = ({
     error = "",
     rows = 5,
     cols = 33,
+    disabled = false
 }) => {
     return (
         <div className="form-group">
@@ -32,6 +33,7 @@ const Textarea = ({
                 className={"form-control" + (error && " is-invalid")}
                 rows={rows}
                 cols={cols}
+                disabled={disabled}
             />
             {error && <p className="invalid-feedback">{error}</p>}
         </div>
