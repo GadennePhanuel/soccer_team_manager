@@ -62,7 +62,7 @@ const MailPage = (props) => {
             let btnList = document.querySelectorAll(".btnSelectList")
             //je parcours le tableau des buttons et je disabled tout ceux qui ne correspondent pas à celui cliqué 
             btnList.forEach(btn => {
-                if (btn.innerText !== value){
+                if (btn.innerText !== value) {
                     btn.disabled = true
                 }
             })
@@ -72,7 +72,7 @@ const MailPage = (props) => {
             let btnList = document.querySelectorAll(".btnSelectList")
             //je parcours le tableau des buttons et je disabled tout ceux qui ne correspondent pas à celui cliqué 
             btnList.forEach(btn => {
-                if (btn.innerText !== value){
+                if (btn.innerText !== value) {
                     btn.disabled = false
                 }
             })
@@ -167,106 +167,108 @@ const MailPage = (props) => {
 
     return (
         <>
-            <h1>Page de messagerie</h1>
-            <div>
-                <button onClick={handleSelect} className="btnSelectList">
-                    Coachs
+            <div className="MailPage">
+                <h1>Page de messagerie</h1>
+                <div>
+                    <button onClick={handleSelect} className="btnSelectList">
+                        Coachs
                 </button>
-                <button onClick={handleSelect} className="btnSelectList">
-                    Joueurs
+                    <button onClick={handleSelect} className="btnSelectList">
+                        Joueurs
                 </button>
-                <button onClick={handleSelect} className="btnSelectList">
-                    Equipes
+                    <button onClick={handleSelect} className="btnSelectList">
+                        Equipes
                 </button>
-            </div>
-            <div>
-                <table id="Coachs" hidden>
-                    <tbody>
-                        {coachs.map((coach) => (
-                            <tr key={coach.id}>
-                                <td>
-                                    <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email + '_add'}>
-                                        +
+                </div>
+                <div>
+                    <table id="Coachs" hidden>
+                        <tbody>
+                            {coachs.map((coach) => (
+                                <tr key={coach.id}>
+                                    <td>
+                                        <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email + '_add'}>
+                                            +
                                     </button>
-                                    <button onClick={() => handleRemove(coach.user.email)} id={coach.user.email + '_remove'} hidden>
-                                        -
+                                        <button onClick={() => handleRemove(coach.user.email)} id={coach.user.email + '_remove'} hidden>
+                                            -
                                     </button>
-                                </td>
-                                <td>{coach.user.lastName} {coach.user.firstName}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <table id="Joueurs" hidden>
-                    <tbody>
-                        {players.map((player) => (
-                            <tr key={player.id}>
-                                <td>
-                                    <button onClick={() => handleAdd(player.user.email)} id={player.user.email + '_add'}>
-                                        +
+                                    </td>
+                                    <td>{coach.user.lastName} {coach.user.firstName}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <table id="Joueurs" hidden>
+                        <tbody>
+                            {players.map((player) => (
+                                <tr key={player.id}>
+                                    <td>
+                                        <button onClick={() => handleAdd(player.user.email)} id={player.user.email + '_add'}>
+                                            +
                                     </button>
-                                    <button onClick={() => handleRemove(player.user.email)} id={player.user.email + '_remove'} hidden>
-                                        -
+                                        <button onClick={() => handleRemove(player.user.email)} id={player.user.email + '_remove'} hidden>
+                                            -
                                     </button>
-                                </td>
-                                <td>{player.user.lastName} {player.user.firstName}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                <table id="Equipes" hidden>
-                    <tbody>
-                        {teams.map((team) => (
-                            <tr key={team.id}>
-                                <td>
-                                    <button onClick={() => handleAddTeam(team)} id={team.label + team.category + '_add'}>
-                                        +
+                                    </td>
+                                    <td>{player.user.lastName} {player.user.firstName}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    <table id="Equipes" hidden>
+                        <tbody>
+                            {teams.map((team) => (
+                                <tr key={team.id}>
+                                    <td>
+                                        <button onClick={() => handleAddTeam(team)} id={team.label + team.category + '_add'}>
+                                            +
                                     </button>
-                                    <button onClick={() => handleRemoveTeam(team)} id={team.label + team.category + '_remove'} hidden>
-                                        -
+                                        <button onClick={() => handleRemoveTeam(team)} id={team.label + team.category + '_remove'} hidden>
+                                            -
                                     </button>
-                                </td>
-                                <td>{team.label} {team.category}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <form onSubmit={handleSubmit}>
-                    <Textarea
-                        name="receivers"
-                        label="Destinataires"
-                        placeholder="Destinataires"
-                        value={email.receivers}
-                        error={errors.receivers}
-                        onChange={handleChange}
-                        rows="5"
-                        cols="90"
-                        disabled={true}
-                    ></Textarea>
-                    <Field
-                        name="subject"
-                        label="Sujet"
-                        placeholder="Sujet de l'email..."
-                        value={email.subject}
-                        error={errors.subject}
-                        onChange={handleChange}
-                    ></Field>
-                    <Textarea
-                        name="message"
-                        label="Votre message"
-                        placeholder="Ecrivez votre message..."
-                        value={email.message}
-                        error={errors.message}
-                        onChange={handleChange}
-                        rows="15"
-                        cols="90"
-                    ></Textarea>
-                    <button>
-                        Envoyer
+                                    </td>
+                                    <td>{team.label} {team.category}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <form onSubmit={handleSubmit}>
+                        <Textarea
+                            name="receivers"
+                            label="Destinataires"
+                            placeholder="Destinataires"
+                            value={email.receivers}
+                            error={errors.receivers}
+                            onChange={handleChange}
+                            rows="5"
+                            cols="90"
+                            disabled={true}
+                        ></Textarea>
+                        <Field
+                            name="subject"
+                            label="Sujet"
+                            placeholder="Sujet de l'email..."
+                            value={email.subject}
+                            error={errors.subject}
+                            onChange={handleChange}
+                        ></Field>
+                        <Textarea
+                            name="message"
+                            label="Votre message"
+                            placeholder="Ecrivez votre message..."
+                            value={email.message}
+                            error={errors.message}
+                            onChange={handleChange}
+                            rows="15"
+                            cols="90"
+                        ></Textarea>
+                        <button>
+                            Envoyer
                     </button>
-                </form>
+                    </form>
+                </div>
             </div>
         </>
     );
