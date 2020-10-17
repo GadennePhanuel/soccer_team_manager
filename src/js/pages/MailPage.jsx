@@ -7,6 +7,7 @@ import coachAPI from '../services/coachAPI';
 import playerAPI from '../services/playerAPI';
 import teamAPI from '../services/teamAPI';
 import Axios from 'axios';
+import "../../scss/pages/MailPage.scss";
 
 const MailPage = (props) => {
     authAPI.setup();

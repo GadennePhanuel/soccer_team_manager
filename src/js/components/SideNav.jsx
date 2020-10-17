@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
 import usersAPI from "../services/usersAPI";
+import "../../scss/layout/SideNav.scss";
 
 const SideNav = (props) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -24,7 +25,7 @@ const SideNav = (props) => {
   return (
     <>
       {isAuthenticated && (
-        <nav className="sideNav">
+        <nav className="SideNav">
           <ul className="sideNav-menu">
             <li className="nav-item">
               <button onClick={handleLogout} className="logout">
@@ -127,7 +128,6 @@ const SideNav = (props) => {
           </ul>
         </nav>
       )}
-
     </>
   );
 };

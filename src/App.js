@@ -17,7 +17,6 @@ import ClubFormPage from "./js/pages/ClubFormPage";
 import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
 import CurrentUser from "./js/components/CurrentUser";
-import "./css/index.css";
 
 function App() {
   AuthAPI.setup();
