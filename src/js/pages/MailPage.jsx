@@ -81,55 +81,58 @@ const MailPage = (props) => {
     }
 
     const handleAdd = (emailTo) => {
-        document.getElementById(emailTo + '_add').hidden = true
-        document.getElementById(emailTo + '_remove').hidden = false
-        setEmail({
-            ...email,
-            'receivers': email.receivers + emailTo + ";"
-        })
+        let user = document.getElementById(emailTo)
+        if (!user.classList.contains('choose')) {
+            setEmail({
+                ...email,
+                'receivers': email.receivers + emailTo + ";"
+            })
+            user.classList.add("choose")
+        } else {
+            setEmail({
+                ...email,
+                'receivers': email.receivers.replace(emailTo + ";", '')
+            })
+            user.classList.remove("choose")
+        }
+
     }
-    const handleRemove = (emailTo) => {
-        document.getElementById(emailTo + '_add').hidden = false
-        document.getElementById(emailTo + '_remove').hidden = true
-        setEmail({
-            ...email,
-            'receivers': email.receivers.replace(emailTo + ";", '')
-        })
-    }
+
     const handleAddTeam = (team) => {
+        let users = document.getElementById(team.label + team.category)
         let emailTo = ""
-        document.getElementById(team.label + team.category + '_add').hidden = true
-        document.getElementById(team.label + team.category + '_remove').hidden = false
-        //je parcours la liste des players
-        players.forEach((player) => {
-            team.players.forEach((playerTeam) => {
-                if (player.id === playerTeam.id) {
-                    emailTo = emailTo + player.user.email + ";"
-                }
+
+        if (!users.classList.contains('choose')) {
+            //je parcours la liste des players
+            players.forEach((player) => {
+                team.players.forEach((playerTeam) => {
+                    if (player.id === playerTeam.id) {
+                        emailTo = emailTo + player.user.email + ";"
+                    }
+                })
             })
-        })
-        setEmail({
-            ...email,
-            'receivers': email.receivers + emailTo
-        })
-    }
-    const handleRemoveTeam = (team) => {
-        let emailTo = ""
-        document.getElementById(team.label + team.category + '_add').hidden = false
-        document.getElementById(team.label + team.category + '_remove').hidden = true
-        //je parcours la liste des players
-        players.forEach((player) => {
-            team.players.forEach((playerTeam) => {
-                if (player.id === playerTeam.id) {
-                    emailTo = emailTo + player.user.email + ";"
-                }
+            setEmail({
+                ...email,
+                'receivers': email.receivers + emailTo
             })
-        })
-        setEmail({
-            ...email,
-            'receivers': email.receivers.replace(emailTo, '')
-        })
+            users.classList.add("choose")
+        } else {
+            //je parcours la liste des players
+            players.forEach((player) => {
+                team.players.forEach((playerTeam) => {
+                    if (player.id === playerTeam.id) {
+                        emailTo = emailTo + player.user.email + ";"
+                    }
+                })
+            })
+            setEmail({
+                ...email,
+                'receivers': email.receivers.replace(emailTo, '')
+            })
+            users.classList.remove("choose")
+        }
     }
+
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -168,105 +171,81 @@ const MailPage = (props) => {
 
     return (
         <div className="MailPage wrapper_container">
-            <h1>Page de messagerie</h1>
             <div>
-                <button onClick={handleSelect} className="btnSelectList">
-                    Coachs
+                <div className="SelectList">
+                    <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                        Coachs
                 </button>
-                <button onClick={handleSelect} className="btnSelectList">
-                    Joueurs
+                    <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                        Joueurs
                 </button>
-                <button onClick={handleSelect} className="btnSelectList">
-                    Equipes
+                    <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                        Equipes
                 </button>
-            </div>
-            <div>
-                <table id="Coachs" hidden>
-                    <tbody>
+                </div>
+                <div>
+                    <div className="btnSelectItem" id="Coachs" hidden>
                         {coachs.map((coach) => (
-                            <tr key={coach.id}>
-                                <td>
-                                    <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email + '_add'}>
-                                        +
-                                    </button>
-                                    <button onClick={() => handleRemove(coach.user.email)} id={coach.user.email + '_remove'} hidden>
-                                        -
-                                    </button>
-                                </td>
-                                <td>{coach.user.lastName} {coach.user.firstName}</td>
-                            </tr>
+                            <div key={coach.id}>
+                                <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email}>
+                                    {coach.user.lastName} {coach.user.firstName}
+                                </button>
+                            </div>
                         ))}
-                    </tbody>
-                </table>
-                <table id="Joueurs" hidden>
-                    <tbody>
+                    </div>
+                    <div className="btnSelectItem" id="Joueurs" hidden>
                         {players.map((player) => (
-                            <tr key={player.id}>
-                                <td>
-                                    <button onClick={() => handleAdd(player.user.email)} id={player.user.email + '_add'}>
-                                        +
-                                    </button>
-                                    <button onClick={() => handleRemove(player.user.email)} id={player.user.email + '_remove'} hidden>
-                                        -
-                                    </button>
-                                </td>
-                                <td>{player.user.lastName} {player.user.firstName}</td>
-                            </tr>
+                            <div key={player.id}>
+                                <button onClick={() => handleAdd(player.user.email)} id={player.user.email}>
+                                    {player.user.lastName} {player.user.firstName}
+                                </button>
+                            </div>
                         ))}
-                    </tbody>
-                </table>
-                <table id="Equipes" hidden>
-                    <tbody>
+                    </div>
+                    <div className="btnSelectItem" id="Equipes" hidden>
                         {teams.map((team) => (
-                            <tr key={team.id}>
-                                <td>
-                                    <button onClick={() => handleAddTeam(team)} id={team.label + team.category + '_add'}>
-                                        +
-                                    </button>
-                                    <button onClick={() => handleRemoveTeam(team)} id={team.label + team.category + '_remove'} hidden>
-                                        -
-                                    </button>
-                                </td>
-                                <td>{team.label} {team.category}</td>
-                            </tr>
+                            <div key={team.id}>
+                                <button onClick={() => handleAddTeam(team)} id={team.label + team.category}>
+                                    {team.label} {team.category}
+                                </button>
+                            </div>
                         ))}
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </div>
             <div>
                 <form onSubmit={handleSubmit}>
                     <Textarea
                         name="receivers"
-                        label="Destinataires"
                         placeholder="Destinataires"
                         value={email.receivers}
                         error={errors.receivers}
                         onChange={handleChange}
-                        rows="5"
+                        rows="3"
                         cols="90"
                         disabled={true}
                     ></Textarea>
                     <Field
                         name="subject"
-                        label="Sujet"
                         placeholder="Sujet de l'email..."
                         value={email.subject}
                         error={errors.subject}
                         onChange={handleChange}
                     ></Field>
-                    <Textarea
-                        name="message"
-                        label="Votre message"
-                        placeholder="Ecrivez votre message..."
-                        value={email.message}
-                        error={errors.message}
-                        onChange={handleChange}
-                        rows="15"
-                        cols="90"
-                    ></Textarea>
-                    <button>
-                        Envoyer
-                    </button>
+                    <div>
+                        <Textarea
+                            name="message"
+                            placeholder="Ecrivez votre message..."
+                            value={email.message}
+                            error={errors.message}
+                            onChange={handleChange}
+                            rows="10"
+                            cols="100"
+                        ></Textarea>
+                        <button>
+
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
