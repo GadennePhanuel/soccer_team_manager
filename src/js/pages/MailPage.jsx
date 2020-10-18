@@ -167,7 +167,7 @@ const MailPage = (props) => {
     }
 
     return (
-        <div className="MailPage">
+        <div className="MailPage wrapper_container">
             <h1>Page de messagerie</h1>
             <div>
                 <button onClick={handleSelect} className="btnSelectList">

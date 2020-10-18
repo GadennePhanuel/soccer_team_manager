@@ -37,7 +37,7 @@ function App() {
       <HashRouter>
         <SideNavWithRouter />
         <CurrentUser />
-        <main className="container">
+        <main className="container-fluid">
           <Switch>
             <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
             <Route path="/RegisterAdmin" component={RegisterAdminPage} />

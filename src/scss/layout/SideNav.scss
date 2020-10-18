@@ -3,5 +3,69 @@
 .SideNav{
   position: absolute;
   width: 100px;
+  min-height: 100vh;
   background-color: $second-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .SideNav-items{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logout{
+    width: 100px;
+    height: 100px;
+    background: url("../img/logout-white.png") center center no-repeat;
+    background-size: 50%;
+    border: none;
+  }
+
+  a {
+    width: 100px;
+    height: 70px;
+  }
+
+  .home {
+    background: url("../img/home.png") center center no-repeat;
+    background-size: 40%;
+  }
+
+  .club {
+    background: url("../img/football-club.png") center center no-repeat;
+    background-size: 40%;
+  }
+
+  .coachs {
+    background: url("../img/coach.png") center center no-repeat;
+    background-size: 35%;
+  }
+
+  .players {
+    background: url("../img/soccer-player.png") center center no-repeat;
+    background-size: 35%;
+  }
+
+  .teams {
+    background: url("../img/team.png") center center no-repeat;
+    background-size: 40%;
+  }
+
+  .mail {
+    background: url("../img/mail.png") center center no-repeat;
+    background-size: 40%;
+  }
+
+  .profil {
+    background: url("../img/profile.png") center center no-repeat;
+    background-size: 40%;
+  }
+  
+
+  .active{
+      background-color: rgba(0,0,0,0.4);
+    }
+
 }
