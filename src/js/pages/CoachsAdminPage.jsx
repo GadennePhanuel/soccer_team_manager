@@ -4,6 +4,7 @@ import usersAPI from '../services/usersAPI';
 import Field from '../components/forms/Field'
 import coachAPI from '../services/coachAPI';
 import teamAPI from '../services/teamAPI';
+import "../../scss/pages/CoachsAdminPage.scss";
 
 const CoachAdminPage = (props) => {
     authAPI.setup();
@@ -107,19 +108,21 @@ const CoachAdminPage = (props) => {
     }
 
     return (
-        <>
-            <h1>Page des coachs pour l'admin</h1>
+        <div className="CoachsAdminPage wrapper_container">
+            <h1>Coachs</h1>
 
             <div>
                 <div id="btn-invit">
-                    <button onClick={() => handleInvit()}>
+                    <button onClick={() => handleInvit()} className="btn btn-primary">
                         Inviter un nouveau coach
                     </button>
                 </div>
                 <div id="form-invit" hidden>
                     <form onSubmit={handleSubmit}>
+                        <button type="button" onClick={() => handleCancelInvit()} className="cancelBtn">
+
+                        </button>
                         <Field
-                            label="Email"
                             type="email"
                             name="email"
                             value={email}
@@ -128,36 +131,28 @@ const CoachAdminPage = (props) => {
                             error={error}
                         >
                         </Field>
-                        <div>
-                            <button type="button" onClick={() => handleCancelInvit()}>
-                                Annuler
-                            </button>
-                            <button type="submit">
-                                Envoyer
-                            </button>
-                        </div>
+                        <button type="submit" className="sendBtn">
+
+                        </button>
                     </form>
                 </div>
             </div>
 
             <div>
-                <h2>Liste des coachs du club</h2>
-                <table>
+                <table className="table table-striped">
                     <thead>
                         <tr>
                             <th>Nom</th>
-                            <th>Prénom</th>
                             <th>Email</th>
-                            <th>phone</th>
-                            <th>Equipes</th>
-                            <th>action</th>
+                            <th>Téléphone</th>
+                            <th className="text-center">Equipes</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {coachs.map((coach) => (
                             <tr key={coach.id}>
-                                <td>{coach.user.lastName}</td>
-                                <td>{coach.user.firstName}</td>
+                                <td>{coach.user.lastName} {coach.user.firstName}</td>
                                 <td>{coach.user.email}</td>
                                 <td>{coach.user.phone}</td>
                                 <td>
@@ -167,7 +162,7 @@ const CoachAdminPage = (props) => {
                                                 <tr key={team.id}>
                                                     <td>{team.label} - {team.category}</td>
                                                     <td>
-                                                        <button onClick={() => handeDeleteTeam(team.id)}>-X-</button>
+                                                        <button onClick={() => handeDeleteTeam(team.id)} className="cancelBtn"></button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -175,7 +170,7 @@ const CoachAdminPage = (props) => {
                                     </table>
                                 </td>
                                 <td>
-                                    <button onClick={() => handleDelete(coach.id)}>
+                                    <button onClick={() => handleDelete(coach.id)} className="btn btn-warning">
                                         Supprimer
                                 </button>
                                 </td>
@@ -184,7 +179,7 @@ const CoachAdminPage = (props) => {
                     </tbody>
                 </table>
             </div>
-        </>
+        </div>
     );
 }
 
