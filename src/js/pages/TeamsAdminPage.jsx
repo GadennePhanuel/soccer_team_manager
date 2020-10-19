@@ -4,7 +4,9 @@ import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
+import Select from "../components/forms/Select";
 import clubAPI from "../services/clubAPI";
+import UserAPI from "../services/usersAPI";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -26,6 +28,8 @@ const TeamsAdminPage = (props) => {
     const [coachs, setCoachs] = useState([])
     const [errors, setErrors] = useState({
         label: ""
+    });
+    const [team, setTeam] = useState ({
     });
 
     useEffect(() => {
@@ -56,6 +60,12 @@ const TeamsAdminPage = (props) => {
     };
 
     const handleChange = (event) => {
+        const { name, value } = event.currentTarget;
+        setTeam({ ...team, [name]: value });
+    };
+
+    {/*
+    const handleChange = (event) => {
         console.log( event.target.value);
         let [newCoach, team] = event.target.value.split('/');
         team.coach.id = newCoach.id;
@@ -66,9 +76,16 @@ const TeamsAdminPage = (props) => {
             .then(response => console.log("change success"))
             .catch(error => console.log(error.response))
     }
+    */}
 
+    //todo je ne parvient pas à passer le club... youpi
     const handleSubmit = async (event) => {
         event.preventDefault();
+        team.club_id = usersAPI.checkClub();
+        console.log(team);
+        teamAPI.postTeam(team)
+            .then(response => console.log("create success"))
+            .catch(error => console.log(error.response))
        // const response = await teamAPI.postTeam(team)
     }
 
@@ -81,10 +98,12 @@ const TeamsAdminPage = (props) => {
                         name="label"
                         label="Nom d'équipe"
                         placeholder="Nom d'équipe'..."
+                        onChange={handleChange}
+                        value={team.label}
                         error={errors.label}
                     >
                     </Field>
-                    <select name="category">
+                    <select name="category" onChange={handleChange}>
                         {categories.map(category => (
                             <option key={categories.index} value={category}>
                                 {category}
@@ -92,9 +111,9 @@ const TeamsAdminPage = (props) => {
                             )
                         )}
                     </select>
-                    <select name="coach">
+                    <select name="coach" onChange={handleChange}>
                         {coachs.map(coach => (
-                                <option key={coach.id} value={coach.id}>
+                                <option key={coach.id} value={coach}>
                                     {coach.user.firstName} {coach.user.lastName}
                                 </option>
                             )
@@ -124,7 +143,9 @@ const TeamsAdminPage = (props) => {
                             <td>{team.label}</td>
                             <td>{team.category}</td>
                             <td>
-                                <select onChange={handleChange}>
+                                <select defaultValue={{ label: team.coach.user.firstName +' '+team.coach.user.lastName, value: team.coach.id }}
+                                       // onChange={handleChange}
+                                >
                                     {coachs.map(coach => (
                                         <option key={coach.id}
                                             value={coach +'/'+ team}

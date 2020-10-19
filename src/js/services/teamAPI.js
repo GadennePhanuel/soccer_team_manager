@@ -7,7 +7,8 @@ function findAllTeams(){
 }
 
 function postTeam(team) {
-    return Axios.post("http://localhost:8000/api/clubs", team)
+    team.club_id = "/api/clubs/" + team.club_id;
+    return Axios.post("http://localhost:8000/api/teams", team)
 }
 
 function deleteTeam(id){
