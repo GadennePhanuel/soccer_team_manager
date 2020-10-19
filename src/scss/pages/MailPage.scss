@@ -20,9 +20,10 @@
   }
 
   .btnSelectItem {
+    margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: center;
     button {
       margin: 2.5px;
       padding: 5px 10px;
@@ -37,10 +38,6 @@
     }
     .choose {
       background-color: rgba($color: $fourth-color, $alpha: 0.5);
-    }
-    .btnSelectAll {
-      display: inline-block;
-      background-color: $third-color;
     }
   }
   form {
