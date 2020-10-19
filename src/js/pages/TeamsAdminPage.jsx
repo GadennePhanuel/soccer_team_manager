@@ -2,6 +2,9 @@ import React, {useEffect, useState } from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
+import coachAPI from "../services/coachAPI";
+import Field from "../components/forms/Field";
+import clubAPI from "../services/clubAPI";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -19,58 +22,92 @@ const TeamsAdminPage = (props) => {
     }
 
     const [teams, setTeams] = useState([])
+    const [categories, setCategories] = useState([])
+    const [coachs, setCoachs] = useState([])
+    const [errors, setErrors] = useState({
+        label: ""
+    });
 
     useEffect(() => {
+        setCategories(["Cadet", "Junior", "Senior"]);
         teamAPI.findAllTeams()
             .then(data => setTeams(data))
             .catch(error => console.log(error.response));
+        coachAPI.findAllCoach()
+            .then(data => setCoachs(data))
+            .catch(error => console.log(error.response))
     },[]);
 
     console.log(teams)
 
-    const TeamComponent = (team) => (
-        <>
-            <td>{team.label}</td>
-            <td>{team.category}</td>
-            <td>
-                <CoachComponent coach={team.coach}/>
-            </td>
-            <td><button onClick={() => teamAPI.changePlayers(team.players)}>voir joueurs</button></td>
-        </>
-    )
 
-    const CoachComponent = (coach) => (
-        <table key={coach.id}>
-            <thead>
-                <tr colSpan={4}>
-                    <td>Coach</td>
-                </tr>
-            </thead>
-            <tbody>
-                <UserComponent user={coach.user} />
-            </tbody>
-        </table>
-    )
+    const handleDelete = id => {
+        //copie du tableau original
+        const originalTeams = [...teams];
 
-    const UserComponent = (user) => (
-        <>
-            <tr><td>{user.firstName}</td></tr>
-            <tr><td>{user.lastName}</td></tr>
-            <tr><td>{user.email}</td></tr>
-            <tr><td>{user.phone}</td></tr>
-        </>
-    )
+        //supression de l'affichage du coach selectionné
+        setTeams(teams.filter((team) => team.id !== id));
 
-    //todo
-    const PlayerComponent = (id, picture, user) => (
-        <div key={id}>
-            <img src={"http://localhost:8000/public/storage/images/"+picture} alt=""/>
-            <UserComponent key={user.id} user={user}/>
-        </div>
-    )
+        teamAPI.deleteTeam(id)
+            .then(response => console.log("supression team ok"))
+            .catch(error => {
+                setTeams(originalTeams);
+            });
+    };
+
+    const handleChange = (event) => {
+        console.log( event.target.value);
+        let [newCoach, team] = event.target.value.split('/');
+        team.coach.id = newCoach.id;
+
+      //  setTeams({ ...teams, [coach]: event.target.value });
+
+        teamAPI.putTeam(team)
+            .then(response => console.log("change success"))
+            .catch(error => console.log(error.response))
+    }
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const response = await teamAPI.postTeam(team)
+    }
+
     return (
         <>
             <h1>Equipes du club</h1>
+            <div id="createTeam">
+                <form onSubmit={handleSubmit} className='formTeam'>
+                    <Field
+                        name="label"
+                        label="Nom d'équipe"
+                        value={this.state.value}
+                        placeholder="Nom d'équipe'..."
+                        error={errors.label}
+                    >
+                    </Field>
+                    <select name="category">
+                        {categories.map(category => (
+                            <option key={categories.index} value={this.state.value}>
+                                {category}
+                            </option>
+                            )
+                        )}
+                    </select>
+                    <select name="coach">
+                        {coachs.map(coach => (
+                                <option key={coach.id} value={coach.id}>
+                                    {coach.user.firstName} {coach.user.lastName}
+                                </option>
+                            )
+                        )}
+                    </select>
+                <div >
+                    <button type="submit" >
+                        Créer
+                    </button>
+                </div>
+            </form>
+            </div>
 
             <div id="teamsBox">
                 <h2>Liste des teams du club</h2>
@@ -80,30 +117,33 @@ const TeamsAdminPage = (props) => {
                             <th>Nom</th>
                             <th>Coach</th>
                             <th>Category</th>
-                            <th>Joueur</th>
                         </tr>
                     </thead>
                     <tbody>
                     {teams.map(team => (
                         <tr key={team.id}>
-                                <td>{team.label}</td>
-                                <td>{team.category}</td>
-                                <td>
-                                    <table key={team.coach.id}>
-                                        <thead>
-                                        <tr colSpan={4}>
-                                            <td>Coach</td>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr><td>{team.coach.user.firstName}</td></tr>
-                                            <tr><td>{team.coach.user.lastName}</td></tr>
-                                            <tr><td>{team.coach.user.email}</td></tr>
-                                            <tr><td>{team.coach.user.phone}</td></tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                                <td><button onClick={() => teamAPI.changePlayers(team.players)}>voir joueurs</button></td>
+                            <td>{team.label}</td>
+                            <td>{team.category}</td>
+                            <td>
+                                <select onChange={handleChange}>
+                                    {coachs.map(coach => (
+                                        <option key={coach.id}
+                                            value={coach +'/'+ team}
+                                            selected={team.coach.id === coach.id ? "selected" : ""}
+                                        >
+                                            {coach.user.firstName} {coach.user.lastName}
+                                        </option>
+                                        )
+                                    )}
+                                </select>
+                            </td>
+                            <td>
+                                <button
+                                    onClick={() => handleDelete(team.id)}
+                                    className="btn btn-sm btn-danger">
+                                    Supprimer
+                                </button>
+                            </td>
                         </tr>
                     ))}
                     </tbody>

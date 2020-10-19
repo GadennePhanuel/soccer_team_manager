@@ -39,7 +39,6 @@ const CoachAdminPage = (props) => {
             .catch(error => console.log(error.response))
     }, [])
 
-
     const handleDelete = (id) => {
         //copie du tableau original
         const originalCoachs = [...coachs];
