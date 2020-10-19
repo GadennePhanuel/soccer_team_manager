@@ -8,6 +8,7 @@ import playerAPI from '../services/playerAPI';
 import teamAPI from '../services/teamAPI';
 import Axios from 'axios';
 import "../../scss/pages/MailPage.scss";
+import adminAPI from '../services/adminAPI';
 
 const MailPage = (props) => {
     authAPI.setup();
@@ -16,6 +17,9 @@ const MailPage = (props) => {
     if (club === "new") {
         props.history.replace("/createClub/new")
     }
+
+    //récupération du role de l'user connecté
+    const role = usersAPI.checkRole();
 
     const [email, setEmail] = useState({
         receivers: '',
@@ -31,6 +35,7 @@ const MailPage = (props) => {
     const [coachs, setCoachs] = useState([]);
     const [players, setPlayers] = useState([]);
     const [teams, setTeams] = useState([]);
+    const [admins, setAdmins] = useState([]);
 
     useEffect(() => {
         coachAPI.findAllCoach()
@@ -43,7 +48,11 @@ const MailPage = (props) => {
 
         teamAPI.findAllTeams()
             .then(data => setTeams(data))
-            .catch(error => console.log(error.response))
+            .catch(error => console.log(error.response));
+
+        adminAPI.findAdmin()
+        .then(data => setAdmins(data))
+        .catch(error => console.log(error.response))    
     }, [])
 
     const handleChange = (event) => {
@@ -172,18 +181,35 @@ const MailPage = (props) => {
     return (
         <div className="MailPage wrapper_container">
             <div>
+                <h1>Messagerie</h1>
                 <div className="SelectList">
+                    {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') && 
+                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                            Admins
+                        </button>              
+                    }
                     <button onClick={handleSelect} className="btn btn-primary btnSelectList">
                         Coachs
-                </button>
+                    </button>
                     <button onClick={handleSelect} className="btn btn-primary btnSelectList">
                         Joueurs
-                </button>
+                    </button>
                     <button onClick={handleSelect} className="btn btn-primary btnSelectList">
                         Equipes
-                </button>
+                    </button>
                 </div>
                 <div>
+                     {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') && 
+                    <div className="btnSelectItem" id="Admins" hidden>
+                        {admins.map((admin) => (
+                            <div key={admin.id}>
+                                <button onClick={() => handleAdd(admin.user.email)} id={admin.user.email}>
+                                    {admin.user.lastName} {admin.user.firstName}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+            }
                     <div className="btnSelectItem" id="Coachs" hidden>
                         {coachs.map((coach) => (
                             <div key={coach.id}>
