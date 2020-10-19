@@ -69,7 +69,7 @@ const TeamsAdminPage = (props) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const response = await teamAPI.postTeam(team)
+       // const response = await teamAPI.postTeam(team)
     }
 
     return (
@@ -80,14 +80,13 @@ const TeamsAdminPage = (props) => {
                     <Field
                         name="label"
                         label="Nom d'équipe"
-                        value={this.state.value}
                         placeholder="Nom d'équipe'..."
                         error={errors.label}
                     >
                     </Field>
                     <select name="category">
                         {categories.map(category => (
-                            <option key={categories.index} value={this.state.value}>
+                            <option key={categories.index} value={category}>
                                 {category}
                             </option>
                             )
