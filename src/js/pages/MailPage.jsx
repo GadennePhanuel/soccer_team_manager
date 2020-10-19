@@ -51,8 +51,8 @@ const MailPage = (props) => {
             .catch(error => console.log(error.response));
 
         adminAPI.findAdmin()
-        .then(data => setAdmins(data))
-        .catch(error => console.log(error.response))    
+            .then(data => setAdmins(data))
+            .catch(error => console.log(error.response))
     }, [])
 
     const handleChange = (event) => {
@@ -183,10 +183,10 @@ const MailPage = (props) => {
             <div>
                 <h1>Messagerie</h1>
                 <div className="SelectList">
-                    {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') && 
+                    {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
                         <button onClick={handleSelect} className="btn btn-primary btnSelectList">
                             Admins
-                        </button>              
+                        </button>
                     }
                     <button onClick={handleSelect} className="btn btn-primary btnSelectList">
                         Coachs
@@ -199,17 +199,17 @@ const MailPage = (props) => {
                     </button>
                 </div>
                 <div>
-                     {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') && 
-                    <div className="btnSelectItem" id="Admins" hidden>
-                        {admins.map((admin) => (
-                            <div key={admin.id}>
-                                <button onClick={() => handleAdd(admin.user.email)} id={admin.user.email}>
-                                    {admin.user.lastName} {admin.user.firstName}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-            }
+                    {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
+                        <div className="btnSelectItem" id="Admins" hidden>
+                            {admins.map((admin) => (
+                                <div key={admin.id}>
+                                    <button onClick={() => handleAdd(admin.user.email)} id={admin.user.email}>
+                                        {admin.user.lastName} {admin.user.firstName}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    }
                     <div className="btnSelectItem" id="Coachs" hidden>
                         {coachs.map((coach) => (
                             <div key={coach.id}>
