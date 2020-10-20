@@ -1,27 +1,33 @@
 import React from 'react'
-import CategoryBox from "../components/CategoryBox";
 
 const CategorySlider = ({teams, category}) => {
 
-    {/*
-    let friends = this.props.list.filter( function (user) {
-      return user.friend === true
-    });
-
-    let nonFriends = this.props.list.filter( function (user) {
-      return user.friend !== true
-    });
-    var young = people.filter(function(person) {
-  return person.age < 35;
-});
-    let young = people.filter(person => person.age < 35);
-    */}
-    //todo filtrer la table fct category
-    const filteredTeams = teams.filter(team => team.category === category)
-
     return (
         <>
-          <CategoryBox category={category} teams={filteredTeams(teams, category)} />
+            <div className="catBox">
+                <h2>{category}</h2>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Coach</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {teams.map(team =>
+                        <tr key={team.id}>
+                            <td>{team.label}</td>
+                            {team.coach ?
+                                <td>{team.coach.user.firstName} {team.coach.user.lastName}</td> : <td>N/A</td>
+                            }
+                            <td>
+                            </td>
+                        </tr>
+                    )}
+                    </tbody>
+                </table>
+            </div>
         </>
     )
 

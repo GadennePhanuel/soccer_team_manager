@@ -5,6 +5,7 @@ import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
 import CategorySlider from "../components/CategorySlider";
+import TeamForm from "../components/TeamForm";
 import Select from "../components/forms/Select";
 import clubAPI from "../services/clubAPI";
 import UserAPI from "../services/usersAPI";
@@ -39,6 +40,12 @@ const TeamsAdminPage = (props) => {
         club: "/api/clubs/" + usersAPI.checkClub()
     });
 
+    const [teamToForm, setTeamToForm] = useState({
+        label: "",
+        category: "",
+        coach: null
+    })
+
     useEffect(() => {
         setCategories(["Cadet", "Junior", "Senior"]);
         teamAPI.findAllTeams()
@@ -49,7 +56,7 @@ const TeamsAdminPage = (props) => {
             .catch(error => console.log(error.response))
     },[]);
 
-    //console.log(teams)
+    console.log(teams)
 
 
     const handleDelete = id => {
@@ -71,20 +78,6 @@ const TeamsAdminPage = (props) => {
         setTeam({ ...team, [name]: value });
     };
 
-    {/*
-    const handleChange = (event) => {
-        console.log( event.target.value);
-        let [newCoach, team] = event.target.value.split('/');
-        team.coach.id = newCoach.id;
-
-      //  setTeams({ ...teams, [coach]: event.target.value });
-
-        teamAPI.putTeam(team)
-            .then(response => console.log("change success"))
-            .catch(error => console.log(error.response))
-    }
-    */}
-
     const handleSubmit = async (event) => {
         event.preventDefault();
         if(team.coach !== null){
@@ -93,9 +86,22 @@ const TeamsAdminPage = (props) => {
         console.log(team);
         teamAPI.postTeam(team)
             .then(response => console.log("create success"))
-           //.then(setTeams(team))
+            .then(setTeams(team))
             .catch(error => console.log(error.response))
        // const response = await teamAPI.postTeam(team)
+    }
+
+    {
+        /* todo recup id newTeam et getNew Team pour refresh usStae Teams
+         .then(response => setArticleId(response.data.id))
+         //puis select les lignes de categorySliders pour remplir formulaire de modife ( que le nom et le coach)
+         pas de raison de changer une team nde categorie
+         puis suppr et enfin delete
+        */
+    }
+
+    const teamsByCat = cat => {
+        return teams.filter(team => team.category === cat)
     }
 
     return (
@@ -111,8 +117,7 @@ const TeamsAdminPage = (props) => {
                         value={team.label}
                         error={errors.label}
                         required
-                    >
-                    </Field>
+                    />
                     <label htmlFor="categorySelect"> Categorie: </label>
                     <select id="categoryselect" name="category" onChange={handleChange} placeholder="choix categorie" required>
                         {categories.map((category, index)=> (
@@ -143,60 +148,48 @@ const TeamsAdminPage = (props) => {
             <div id="teamsBox">
                 <h2>Liste des teams du club</h2>
 
-                //todo
-                {categories.map((category, index) => (
+                {categories.map((cat, index) => (
                     <div key={index}>
-                        <CategorySlider teams={teams} category={category}/>
+                       <CategorySlider teams={teamsByCat(cat)} category={cat}/>
                     </div>
                     )
                 )}
+            </div>
+
+            <div>
+                {/* <TeamForm team={teamToForm}/> */}
                 <table>
                     <thead>
-                        <tr>
-                            <th>Nom</th>
-                            <th>Coach</th>
-                            <th>Category</th>
-                        </tr>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Coach</th>
+                        <th>Category</th>
+                    </tr>
                     </thead>
                     <tbody>
-                    {teams.map(team => (
-                            <tr key={team.id}>
-                                <td>{team.label}</td>
-                                <td>{team.category}</td>
-
-                                    {/*
-                                    <select
-                                        defaultValue={{ label: team.coach.user.firstName +' '+team.coach.user.lastName, value: team.coach.id }}
-                                           // onChange={handleChange}
-                                    >
-                                        {coachs.map(coach => (
-                                            <option key={coach.id}
-                                                value={coach +'/'+ team}
-                                                selected={team.coach.id === coach.id ? "selected" : ""}
-                                            >
-                                                {coach.user.firstName} {coach.user.lastName}
-                                            </option>
-                                            )
-                                        )}
-                                    </select>
-                                    */}
-                                <td>
-                                    <button
-                                        onClick={() => handleDelete(team.id)}
-                                        className="btn btn-sm btn-danger">
-                                        Supprimer
-                                    </button>
-                                </td>
-                            </tr>
-
-                    ))}
+                    <tr>
+                        <td>{team.label}</td>
+                        <td>{team.coach}</td>
+                        <td>{team.category}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <button
+                            onClick={() => handleDelete(team.id)}
+                            className="btn btn-sm btn-danger">
+                            X
+                            </button>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
-            </div>
-            <div id="playersBox">
             </div>
         </>
     );
 }
 
 export default TeamsAdminPage;
+
+
