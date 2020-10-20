@@ -5,8 +5,7 @@ import usersAPI from '../services/usersAPI';
 import dateFormat from 'dateformat';
 import authAPI from '../services/authAPI';
 import '../../scss/pages/ProfilForm.scss';
-import { useRef } from 'react';
-import { createRef } from 'react';
+
 
 const ProfilForm = (props) => {
     authAPI.setup();
@@ -182,7 +181,7 @@ const ProfilForm = (props) => {
                 })
                 .then(function (response) {
                     //handle success
-                    console.log(response);
+                    console.log(response.data);
                 })
                 .catch(function (response) {
                     //handle error
@@ -202,6 +201,7 @@ const ProfilForm = (props) => {
 
         console.log(player)
     }
+
 
     return (
         <div className="ProfilForm wrapper_container">
@@ -282,12 +282,14 @@ const ProfilForm = (props) => {
 
                     <div className="formPlayer">
                         <form className="formPicture" onSubmit={handleSubmitPicture}>
+
                             {player.picture && (
                                 <img src={player.picture} alt=""></img>
                             )}
                             {!player.picture && (
                                 <div className="user-picture"></div>
                             )}
+
                             <div className="input-picture">
 
                                 <label htmlFor="picture">Changer la photo de profil</label>

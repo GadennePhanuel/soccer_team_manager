@@ -30,13 +30,13 @@
   }
 
   .user-picture {
-    width: calc(50% - 40px);
     height: 200px;
     border-radius: 50%;
     background: url("../img/user.png") center center no-repeat;
-    background-size: 100%;
+    background-size: contain;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: 10px;
   }
 
   img {
@@ -44,13 +44,16 @@
     margin: 10px auto;
     width: 200px;
     height: 200px;
-    background-color: red;
     border-radius: 50%;
   }
 
   .input-picture {
     text-align: center;
     margin-bottom: 10px;
+    label{
+      color: $fourth-color;
+      text-decoration: underline;
+    }
   }
 
   .formPicture {
