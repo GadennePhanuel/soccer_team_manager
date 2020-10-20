@@ -1,11 +1,12 @@
 import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Field from '../components/forms/Field';
-import Select from '../components/forms/Select';
 import usersAPI from '../services/usersAPI';
 import dateFormat from 'dateformat';
 import authAPI from '../services/authAPI';
 import '../../scss/pages/ProfilForm.scss';
+import { useRef } from 'react';
+import { createRef } from 'react';
 
 const ProfilForm = (props) => {
     authAPI.setup();
@@ -43,14 +44,14 @@ const ProfilForm = (props) => {
         picture: "",
         height: "",
         weight: "",
-        injured: false
+        injured: Boolean
     })
 
     const [errorsPlayer, setErrorsPlayer] = useState({
         picture: "",
         height: "",
         weight: "",
-        injured: false
+        injured: Boolean
     })
 
     const fetchUser = async id => {
@@ -61,8 +62,10 @@ const ProfilForm = (props) => {
             const firstName = response.data.firstName;
             const birthday = dateFormat(response.data.birthday, "yyyy-mm-dd");
             const phone = response.data.phone;
+            const password = "";
+            const passwordConfirm = "";
 
-            setUser({ email, lastName, firstName, birthday, phone })
+            setUser({ email, lastName, firstName, birthday, phone, password, passwordConfirm })
         } catch (error) {
             console.log(error.response)
         }
@@ -110,6 +113,19 @@ const ProfilForm = (props) => {
         setPlayer({ ...player, [name]: value });
     }
 
+    const handleChangePlayerInjured = (event) => {
+        let value = event.currentTarget.value 
+        if (value && typeof value === "string") {
+            if (value === "true"){
+                value = true
+            } 
+            if (value === "false"){
+                value = false
+            }
+        }
+        setPlayer({...player, "injured": value})
+    }
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -118,7 +134,7 @@ const ProfilForm = (props) => {
         if (user.password !== user.passwordConfirm) {
             apiErrors.passwordConfirm =
                 "Votre confimation de mot de passe n'est pas conforme";
-            setErrors(apiErrors);
+            setErrorsPlayer(apiErrors);
             return;
         }
 
@@ -141,6 +157,44 @@ const ProfilForm = (props) => {
                 setErrors(apiErrors);
             }
         }
+    }
+
+    const [binaryPicture, setBinaryPicture] = useState({})
+
+    const onChange = (event) => {
+        console.log(event.target.files)
+        setBinaryPicture(event.target.files[0])
+    }
+
+
+    var bodyFormData = new FormData();
+    bodyFormData.append('image', binaryPicture)
+
+    const handleSubmitPicture = (event) => {
+        event.preventDefault();
+        setErrorsPlayer("");
+
+        Axios({
+                method: 'post',
+                url: 'http://localhost:8000/api/upload/test',
+                data: bodyFormData,
+                headers: {'Content-Type': 'multipart/form-data' }
+                })
+                .then(function (response) {
+                    //handle success
+                    console.log(response);
+                })
+                .catch(function (response) {
+                    //handle error
+                    console.log(response);
+            });
+        
+
+       //}else{
+       //    const apiErrors = {};   
+       //    apiErrors.picture = "Vous n'avez pas selectionné d'image";
+       //        setErrorsPlayer(apiErrors);            
+       //}
     }
 
     const handleSubmitPlayer = (event) => {
@@ -225,60 +279,78 @@ const ProfilForm = (props) => {
                     <div className="logo"></div>
                 )}
                 {(role === 'ROLE_PLAYER') && (
-                    <form onSubmit={handleSubmitPlayer}>
-                        {player.picture.length > 0 && (
-                            <img src={player.picture} alt=""></img>
-                        )}
-                        {player.picture.length === 0 && (
-                            <div className="user-picture"></div>
-                        )}
-                        <div className="input-picture">
-                            <label htmlFor="picture">Changer la photo de profil</label>
 
-                            <input type="file"
-                                id="picture" name="picture"
-                                accept="image/png, image/jpeg" onChange={handleChangePlayer} />
-                        </div>
-                        <Field
-                            name="height"
-                            label="Taille"
-                            placeholder="...cm"
-                            value={player.height}
-                            onChange={handleChangePlayer}
-                            error={errorsPlayer.height}
-                        ></Field>
-                        <Field
-                            name="weight"
-                            label="Poids"
-                            placeholder="...Kg"
-                            value={player.weight}
-                            onChange={handleChangePlayer}
-                            error={errorsPlayer.weight}
-                        ></Field>
-                        {player.injured === false && (
-                            <p className="injured-info">Vous n'êtes pas blessé actuellement</p>
-                        )}
-                        {player.injured === true && (
-                            <p className="injured-info">Vous êtes actuellement blessé</p>
-                        )}
-                        <div className="select-div">
-                            <Select
-                                name="injured"
-                                label="Changer votre statut"
+                    <div className="formPlayer">
+                        <form className="formPicture" onSubmit={handleSubmitPicture}>
+                            {player.picture && (
+                                <img src={player.picture} alt=""></img>
+                            )}
+                            {!player.picture && (
+                                <div className="user-picture"></div>
+                            )}
+                            <div className="input-picture">
+
+                                <label htmlFor="picture">Changer la photo de profil</label>
+                                <input type="file" onChange={onChange}
+                                    id="picture" name="picture"
+                                    accept="image/png, image/jpeg"
+                                    style={{visibility:"hidden"}}/>
+
+                            </div>
+                            <div className="form-group submit-btn">
+                                <button className="btn btn-success">
+                                    Enregistrer
+                                </button>
+                            </div>
+                            {errorsPlayer.picture && <p className="invalid-feedback-custom">{errorsPlayer.picture}</p>}
+                        </form>
+
+
+                        <form onSubmit={handleSubmitPlayer}>
+                            <Field
+                                name="height"
+                                label="Taille:"
+                                placeholder="...cm"
+                                value={player.height}
                                 onChange={handleChangePlayer}
-                                error={errorsPlayer.injured}
-                            >
-                                <option>Selecteur...</option>
-                                <option value="false" >Non</option>
-                                <option value="true" >Oui</option>
-                            </Select>
-                        </div>
-                        <div className="form-group submit-btn">
-                            <button className="btn btn-success">
-                                Enregistrer
-                            </button>
-                        </div>
-                    </form>
+                                error={errorsPlayer.height}
+                            ></Field>
+                            <Field
+                                name="weight"
+                                label="Poids:"
+                                placeholder="...Kg"
+                                value={player.weight}
+                                onChange={handleChangePlayer}
+                                error={errorsPlayer.weight}
+                            ></Field>
+                            {player.injured === false && (
+                                <p className="injured-info">Vous n'êtes pas blessé actuellement</p>
+                            )}
+                            {player.injured === true && (
+                                <p className="injured-info">Vous êtes actuellement blessé</p>
+                            )}
+                            <div className="select-div">
+                                <p>Changer votre statut :</p>
+                                <div>
+                                    <div>
+                                        <input type="radio" name="injured" id="Oui" onChange={handleChangePlayerInjured} value={true} checked={player.injured === true}/>
+                                        <label htmlFor="Oui">Oui</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" name="injured" id="Non" onChange={handleChangePlayerInjured} value={false} checked={player.injured === false}/>
+                                        <label htmlFor="Non">Non</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="form-group submit-btn">
+                                <button className="btn btn-success">
+                                    Enregistrer
+                                </button>
+                            </div>
+                        </form>
+
+
+                    </div>
                 )}
             </div>
         </div>

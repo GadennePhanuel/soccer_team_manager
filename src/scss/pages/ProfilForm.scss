@@ -2,54 +2,95 @@
 @import "../utilities//mixins.scss";
 
 .ProfilForm {
-    @include component-size(flex, column, stretch, flex-start);
+  @include component-size(flex, column, stretch, flex-start);
 
-    h1{
-        text-align: center;
-    }
-    
-    .form-section{
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-    }
+  h1 {
+    text-align: center;
+  }
 
-    form{
-        width: calc(50% - 10px);
-    }
+  .form-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-    .submit-btn{
-        margin-top: 40px;
-        text-align: center;
-    }
+  form {
+    width: calc(50% - 10px);
+  }
 
-    .logo{
-        width: calc(50% - 40px);
-        height: 50vh;
-        background: url("../img/stadium.png") center center no-repeat;
-        background-size: 70%;
-    }
+  .submit-btn {
+    text-align: center;
+  }
 
-    .user-picture{
-        width: calc(50% - 40px);
-        height: 200px;
-        border-radius: 50%;
-        background: url("../img/user.png") center center no-repeat;
-        background-size: 100%;
-        margin-left: auto;
-        margin-right: auto;
-    }
+  .logo {
+    width: calc(50% - 40px);
+    height: 50vh;
+    background: url("../img/stadium.png") center center no-repeat;
+    background-size: 70%;
+  }
 
-    .input-picture{
-        text-align: center;
-        margin-bottom: 20px;
-    }
+  .user-picture {
+    width: calc(50% - 40px);
+    height: 200px;
+    border-radius: 50%;
+    background: url("../img/user.png") center center no-repeat;
+    background-size: 100%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-    .injured-info{
-        text-align: center;
-    }
+  img {
+    display: block;
+    margin: 10px auto;
+    width: 200px;
+    height: 200px;
+    background-color: red;
+    border-radius: 50%;
+  }
 
-    .select-div{
-        text-align: center;
+  .input-picture {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .formPicture {
+    .submit-btn {
+      margin-top: -35px;
     }
+    .invalid-feedback-custom {
+      width: 100%;
+      text-align: center;
+      font-size: 80%;
+      color: #e74c3c;
+      margin-top: -10px;
+    }
+  }
+
+  .injured-info {
+    text-align: center;
+  }
+
+  .select-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    p {
+      margin-right: 10px;
+    }
+    label {
+      margin-left: 5px;
+    }
+  }
+
+  .formPlayer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-group {
+    label {
+      margin-bottom: 0px;
+    }
+  }
 }
