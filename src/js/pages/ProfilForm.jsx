@@ -77,8 +77,11 @@ const ProfilForm = (props) => {
             fetchPlayer(userId);
 
         }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userId, role])
+
+    const [blobPicture, setBlobPicture] = useState("");
 
     const fetchPlayer = async id => {
         await Axios.get("http://localhost:8000/api/players")
@@ -86,7 +89,6 @@ const ProfilForm = (props) => {
                 const players = response.data["hydra:member"]
                 players.forEach((playerItem) => {
                     if (playerItem.user.id === id) {
-
                         setPlayer({
                             ...player,
                             "height": playerItem.height,
@@ -94,11 +96,28 @@ const ProfilForm = (props) => {
                             "picture": playerItem.picture,
                             "injured": playerItem.injured
                         })
+                        /**
+                         * FAIRE REQUETE HTTP POUR RECUPERER LA PHOTO DE PROFIL EN BINAIRE ET L AFFICHER 
+                         * 
+                         */
 
+                        Axios.get("http://localhost:8000/api/image/" + playerItem.picture)
+                            .then(response => {
+                                console.log(response)
+                                setBinaryPicture(response.data)
+
+                            })
+                            .catch(error => console.log(error.response))
                     }
                 })
+
+            })
+            .catch(error => {
+                console.log(error.response)
             })
     }
+
+
 
 
     //gestion des changements des inputs dans le formulaire
@@ -284,7 +303,7 @@ const ProfilForm = (props) => {
                         <form className="formPicture" onSubmit={handleSubmitPicture}>
 
                             {player.picture && (
-                                <img src={player.picture} alt=""></img>
+                                <img src={`data:image/jpeg;base64,${blobPicture}`} alt=""></img>
                             )}
                             {!player.picture && (
                                 <div className="user-picture"></div>
