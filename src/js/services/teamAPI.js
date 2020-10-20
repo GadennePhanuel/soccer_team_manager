@@ -1,4 +1,5 @@
 import Axios from "axios"
+import usersAPI from "./usersAPI";
 
 function findAllTeams(){
     return Axios
@@ -6,8 +7,12 @@ function findAllTeams(){
         .then(response => response.data['hydra:member'])
 }
 
+function findTeam(id){
+    return Axios
+        .get("http://localhost:8000/api/teams/" + id)
+}
+
 function postTeam(team) {
-    team.club_id = "/api/clubs/" + team.club_id;
     return Axios.post("http://localhost:8000/api/teams", team)
 }
 
@@ -39,6 +44,7 @@ export default {
     deleteCoachOnTeam,
     postTeam,
     findAllTeams,
+    findTeam,
     deleteTeam,
     putTeam
 }

@@ -4,6 +4,7 @@ import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
+import CategorySlider from "../components/CategorySlider";
 import Select from "../components/forms/Select";
 import clubAPI from "../services/clubAPI";
 import UserAPI from "../services/usersAPI";
@@ -24,12 +25,18 @@ const TeamsAdminPage = (props) => {
     }
 
     const [teams, setTeams] = useState([])
+    console.log(teams)
     const [categories, setCategories] = useState([])
+
     const [coachs, setCoachs] = useState([])
     const [errors, setErrors] = useState({
         label: ""
     });
     const [team, setTeam] = useState ({
+        label: "",
+        category : "",
+        coach: null,
+        club: "/api/clubs/" + usersAPI.checkClub()
     });
 
     useEffect(() => {
@@ -42,7 +49,7 @@ const TeamsAdminPage = (props) => {
             .catch(error => console.log(error.response))
     },[]);
 
-    console.log(teams)
+    //console.log(teams)
 
 
     const handleDelete = id => {
@@ -78,13 +85,15 @@ const TeamsAdminPage = (props) => {
     }
     */}
 
-    //todo je ne parvient pas à passer le club... youpi
     const handleSubmit = async (event) => {
         event.preventDefault();
-        team.club_id = usersAPI.checkClub();
+        if(team.coach !== null){
+            team.coach = "/api/coaches/"+team.coach
+        }
         console.log(team);
         teamAPI.postTeam(team)
             .then(response => console.log("create success"))
+           //.then(setTeams(team))
             .catch(error => console.log(error.response))
        // const response = await teamAPI.postTeam(team)
     }
@@ -101,19 +110,23 @@ const TeamsAdminPage = (props) => {
                         onChange={handleChange}
                         value={team.label}
                         error={errors.label}
+                        required
                     >
                     </Field>
-                    <select name="category" onChange={handleChange}>
-                        {categories.map(category => (
-                            <option key={categories.index} value={category}>
+                    <label htmlFor="categorySelect"> Categorie: </label>
+                    <select id="categoryselect" name="category" onChange={handleChange} placeholder="choix categorie" required>
+                        {categories.map((category, index)=> (
+                            <option key={index} value={category}>
                                 {category}
                             </option>
                             )
                         )}
                     </select>
-                    <select name="coach" onChange={handleChange}>
+                    <label htmlFor="coachSelect"> Option: </label>
+                    <select id="coachSelect" name="coach" onChange={handleChange}>
+                        <option> choix du coach </option>
                         {coachs.map(coach => (
-                                <option key={coach.id} value={coach}>
+                                <option key={coach.id} value={coach.id}>
                                     {coach.user.firstName} {coach.user.lastName}
                                 </option>
                             )
@@ -129,6 +142,14 @@ const TeamsAdminPage = (props) => {
 
             <div id="teamsBox">
                 <h2>Liste des teams du club</h2>
+
+                //todo
+                {categories.map((category, index) => (
+                    <div key={index}>
+                        <CategorySlider teams={teams} category={category}/>
+                    </div>
+                    )
+                )}
                 <table>
                     <thead>
                         <tr>
@@ -139,32 +160,35 @@ const TeamsAdminPage = (props) => {
                     </thead>
                     <tbody>
                     {teams.map(team => (
-                        <tr key={team.id}>
-                            <td>{team.label}</td>
-                            <td>{team.category}</td>
-                            <td>
-                                <select defaultValue={{ label: team.coach.user.firstName +' '+team.coach.user.lastName, value: team.coach.id }}
-                                       // onChange={handleChange}
-                                >
-                                    {coachs.map(coach => (
-                                        <option key={coach.id}
-                                            value={coach +'/'+ team}
-                                            selected={team.coach.id === coach.id ? "selected" : ""}
-                                        >
-                                            {coach.user.firstName} {coach.user.lastName}
-                                        </option>
-                                        )
-                                    )}
-                                </select>
-                            </td>
-                            <td>
-                                <button
-                                    onClick={() => handleDelete(team.id)}
-                                    className="btn btn-sm btn-danger">
-                                    Supprimer
-                                </button>
-                            </td>
-                        </tr>
+                            <tr key={team.id}>
+                                <td>{team.label}</td>
+                                <td>{team.category}</td>
+
+                                    {/*
+                                    <select
+                                        defaultValue={{ label: team.coach.user.firstName +' '+team.coach.user.lastName, value: team.coach.id }}
+                                           // onChange={handleChange}
+                                    >
+                                        {coachs.map(coach => (
+                                            <option key={coach.id}
+                                                value={coach +'/'+ team}
+                                                selected={team.coach.id === coach.id ? "selected" : ""}
+                                            >
+                                                {coach.user.firstName} {coach.user.lastName}
+                                            </option>
+                                            )
+                                        )}
+                                    </select>
+                                    */}
+                                <td>
+                                    <button
+                                        onClick={() => handleDelete(team.id)}
+                                        className="btn btn-sm btn-danger">
+                                        Supprimer
+                                    </button>
+                                </td>
+                            </tr>
+
                     ))}
                     </tbody>
                 </table>
