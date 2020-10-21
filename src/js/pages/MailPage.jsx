@@ -171,7 +171,26 @@ const MailPage = (props) => {
         //envoie des données saisies vers le BACK pour traitement et envoie du mail
         Axios.post("http://localhost:8000/api/sendEmail", {
             email
-        })
+            })
+            .then(response => {
+                console.log(response)
+            })
+            .catch(error => {
+                console.log(error.response.data.violations)
+                if(error.response.data.violations){
+                    if(error.response.data.violations.receivers){
+                        apiErrors.receivers ="Veuillez sélectionner au moins un destinataire";
+                        setErrors(apiErrors);
+                    }else if(error.response.data.violations.msg){
+                        apiErrors.message ="Veuillez écrire un message";
+                        setErrors(apiErrors);
+                    }else if(error.response.data.violations.subject){
+                        apiErrors.subject ="Veuillez préciser le sujet de votre email";
+                        setErrors(apiErrors);
+                    }
+                }
+            })
+
         //TODO : flash success
         //on vide le formulaire
 
