@@ -53,6 +53,10 @@ const ProfilForm = (props) => {
         injured: Boolean
     })
 
+
+    /**
+     *  REQUETE HTPP AU DEMARAGE POUR CHARGER L OBJET USER COMPLET DE LA PERSONNE CONNECTEE 
+     */
     const fetchUser = async id => {
         try {
             const response = await Axios.get("http://localhost:8000/api/users/" + id)
@@ -70,19 +74,9 @@ const ProfilForm = (props) => {
         }
     }
 
-    // au chargement de la page, récupérer les infos de l'user connecté via requete HTTP
-    useEffect(() => {
-        fetchUser(userId);
-        if (role === 'ROLE_PLAYER') {
-            fetchPlayer(userId);
-
-        }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userId, role])
-
-    const [blobPicture, setBlobPicture] = useState("");
-
+    /**
+     *  REQUETE HTPP AU DEMARAGE POUR CHARGER LE PLAYER ET SA PHOTO DE PROFIL
+     */
     const fetchPlayer = async id => {
         await Axios.get("http://localhost:8000/api/players")
             .then(response => {
@@ -104,7 +98,7 @@ const ProfilForm = (props) => {
                         Axios.get("http://localhost:8000/api/image/" + playerItem.picture)
                             .then(response => {
                                 console.log(response)
-                                setBinaryPicture(response.data)
+                                setBlobPicture(response.data)
 
                             })
                             .catch(error => console.log(error.response))
@@ -116,6 +110,24 @@ const ProfilForm = (props) => {
                 console.log(error.response)
             })
     }
+
+    /**
+     * EXECUTION DES REQUETE DE BASE AU CHARGEMENT DU COMPOSANT
+     *  
+     * */ 
+    useEffect(() => {
+        fetchUser(userId);
+        if (role === 'ROLE_PLAYER') {
+            fetchPlayer(userId);
+
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userId, role])
+
+    const [blobPicture, setBlobPicture] = useState("");
+
+
 
 
 
@@ -144,7 +156,9 @@ const ProfilForm = (props) => {
         setPlayer({...player, "injured": value})
     }
 
-
+    /**
+     * MODIFICATION DE L USER --> FORMULAIRE NUMERO 1
+     */
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -177,6 +191,10 @@ const ProfilForm = (props) => {
         }
     }
 
+
+    /**
+     * ENVOIE D UNE NOUVELLE PHOTO DE PROFIL  -> FORMULAIRE 2
+     */
     const [binaryPicture, setBinaryPicture] = useState({})
 
     const onChange = (event) => {
@@ -206,15 +224,14 @@ const ProfilForm = (props) => {
                     //handle error
                     console.log(response);
             });
-        
-
-       //}else{
-       //    const apiErrors = {};   
-       //    apiErrors.picture = "Vous n'avez pas selectionné d'image";
-       //        setErrorsPlayer(apiErrors);            
-       //}
     }
 
+
+
+    /**
+     * 
+     * MODIFICATION PLAYER - FORMULAIRE 3
+     */
     const handleSubmitPlayer = (event) => {
         event.preventDefault();
 
