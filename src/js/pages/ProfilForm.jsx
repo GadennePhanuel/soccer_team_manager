@@ -40,6 +40,7 @@ const ProfilForm = (props) => {
     });
 
     const [player, setPlayer] = useState({
+        id: "",
         picture: "",
         height: "",
         weight: "",
@@ -47,6 +48,7 @@ const ProfilForm = (props) => {
     })
 
     const [errorsPlayer, setErrorsPlayer] = useState({
+        id: "",
         picture: "",
         height: "",
         weight: "",
@@ -85,6 +87,7 @@ const ProfilForm = (props) => {
                     if (playerItem.user.id === id) {
                         setPlayer({
                             ...player,
+                            "id": playerItem.id,
                             "height": playerItem.height,
                             "weight": playerItem.weight,
                             "picture": playerItem.picture,
@@ -94,14 +97,18 @@ const ProfilForm = (props) => {
                          * FAIRE REQUETE HTTP POUR RECUPERER LA PHOTO DE PROFIL EN BINAIRE ET L AFFICHER 
                          * 
                          */
-
-                        Axios.get("http://localhost:8000/api/image/" + playerItem.picture)
-                            .then(response => {
-                                console.log(response)
-                                setBlobPicture(response.data)
-
-                            })
-                            .catch(error => console.log(error.response))
+                        if(playerItem.picture !== null){
+                            Axios.get("http://localhost:8000/api/image/" + playerItem.picture)
+                                .then(response => {
+                                                          
+                                    setBlobPicture(response.data.data)
+                                    
+                                })
+                                .catch(error => {
+                                    console.log(error.response)  
+                                })
+                        }
+                        return
                     }
                 })
 
@@ -110,6 +117,8 @@ const ProfilForm = (props) => {
                 console.log(error.response)
             })
     }
+
+
 
     /**
      * EXECUTION DES REQUETE DE BASE AU CHARGEMENT DU COMPOSANT
@@ -198,7 +207,6 @@ const ProfilForm = (props) => {
     const [binaryPicture, setBinaryPicture] = useState({})
 
     const onChange = (event) => {
-        console.log(event.target.files)
         setBinaryPicture(event.target.files[0])
     }
 
@@ -212,17 +220,25 @@ const ProfilForm = (props) => {
 
         Axios({
                 method: 'post',
-                url: 'http://localhost:8000/api/upload/test',
+                url: 'http://localhost:8000/api/upload',
                 data: bodyFormData,
                 headers: {'Content-Type': 'multipart/form-data' }
                 })
-                .then(function (response) {
+                .then(response => {
                     //handle success
-                    console.log(response.data);
+                    fetchPlayer(userId);
+                    setErrorsPlayer('')
                 })
-                .catch(function (response) {
+                .catch(error => {
                     //handle error
-                    console.log(response);
+                    console.log(error.response.data.violations);
+                    //errorsPlayer.picture
+                    const violations = error.response.data.violations;
+                    if (violations) {
+                        setErrorsPlayer({...errorsPlayer, 
+                                        "picture": violations
+                                    });
+                    }
             });
     }
 
@@ -235,7 +251,28 @@ const ProfilForm = (props) => {
     const handleSubmitPlayer = (event) => {
         event.preventDefault();
 
-        console.log(player)
+        Axios.put('http://localhost:8000/api/players/' + player.id, {
+                height: parseInt(player.height),
+                weight: parseInt(player.weight),
+                injured: player.injured
+            })
+            .then(response => {
+                console.log(response.data)
+                //TODO flash success
+                setErrorsPlayer('')
+            })
+            .catch(error => {
+                console.log(error.response.data.violations)
+                const violations = error.response.data.violations;
+                const apiErrors = {};
+                if (violations) {
+                    violations.forEach((violation) => {
+                    apiErrors[violation.propertyPath] = violation.message;
+                    });
+                }
+                setErrorsPlayer(apiErrors);
+                console.log(player);
+            })
     }
 
 
@@ -349,6 +386,7 @@ const ProfilForm = (props) => {
                                 name="height"
                                 label="Taille:"
                                 placeholder="...cm"
+                                type="number"
                                 value={player.height}
                                 onChange={handleChangePlayer}
                                 error={errorsPlayer.height}
@@ -357,6 +395,7 @@ const ProfilForm = (props) => {
                                 name="weight"
                                 label="Poids:"
                                 placeholder="...Kg"
+                                type="number"
                                 value={player.weight}
                                 onChange={handleChangePlayer}
                                 error={errorsPlayer.weight}
