@@ -1,4 +1,3 @@
-import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Field from '../components/forms/Field';
 import usersAPI from '../services/usersAPI';
@@ -98,7 +97,7 @@ const ProfilForm = (props) => {
                          * FAIRE REQUETE HTTP POUR RECUPERER LA PHOTO DE PROFIL EN BINAIRE ET L AFFICHER 
                          * 
                          */
-                        if(playerItem.picture !== null){
+                        if(playerItem.picture !== null && playerItem.picture !== ""){
                             playerAPI.fetchProfilePicture(playerItem.picture)
                                 .then(response => {
                                                           

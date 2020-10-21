@@ -4,7 +4,6 @@ import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
-import Axios from "axios";
 
 
 const PlayersAdminPage = (props) => {
@@ -114,16 +113,16 @@ const PlayersAdminPage = (props) => {
         let teamId = select.options[select.selectedIndex].value;
 
         playerAPI.setTeamToPlayer(player, teamId)
-                .then(response => {
-                    console.log(response.data)
-                    playerAPI.findAllPlayers()
-                            .then(data => setPlayers(data))
-                            .catch(error => console.log(error.response));
-                    //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
-                    //setPlayers(...players.push(player) )
+            .then(response => {
+                console.log(response.data)
+                playerAPI.findAllPlayers()
+                    .then(data => setPlayers(data))
+                    .catch(error => console.log(error.response));
+                //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
+                //setPlayers(...players.push(player) )
 
-                })
-                .catch(error => console.log(error.response))
+            })
+            .catch(error => console.log(error.response))
 
 
     }
@@ -205,9 +204,9 @@ const PlayersAdminPage = (props) => {
                                 }
                                 {role === 'ROLE_COACH' &&
                                     <td>
-                                         {!player.team && 
-                                        <button onClick={() => handleChoice(player)} >
-                                            Selectionner
+                                        {!player.team &&
+                                            <button onClick={() => handleChoice(player)} >
+                                                Selectionner
                                         </button>
                                         }
                                     </td>
