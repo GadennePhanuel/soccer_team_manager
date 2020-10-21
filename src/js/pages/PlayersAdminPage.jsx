@@ -113,20 +113,17 @@ const PlayersAdminPage = (props) => {
         let select = document.getElementById('team');
         let teamId = select.options[select.selectedIndex].value;
 
-        Axios.put("http://localhost:8000/api/players/" + player.id, {
-            "user": "/api/users/" + player.user.id,
-            "team": "/api/teams/" + teamId
-            })
-            .then(response => {
-                console.log(response.data)
-                 playerAPI.findAllPlayers()
-                        .then(data => setPlayers(data))
-                        .catch(error => console.log(error.response));
-                //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
-                //setPlayers(...players.push(player) )
+        playerAPI.setTeamToPlayer(player, teamId)
+                .then(response => {
+                    console.log(response.data)
+                    playerAPI.findAllPlayers()
+                            .then(data => setPlayers(data))
+                            .catch(error => console.log(error.response));
+                    //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
+                    //setPlayers(...players.push(player) )
 
-            })
-            .catch(error => console.log(error.response))
+                })
+                .catch(error => console.log(error.response))
 
 
     }
@@ -134,7 +131,7 @@ const PlayersAdminPage = (props) => {
 
 
     return (
-        <>
+        <div className="wrapper_container">
             <h1>Page des joueurs</h1>
 
             <div>
@@ -224,7 +221,7 @@ const PlayersAdminPage = (props) => {
                     <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredPlayers.length} onPageChanged={handlePageChange} />
                 }
             </div>
-        </>
+        </div>
     );
 }
 

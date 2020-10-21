@@ -41,6 +41,11 @@ function putUserProfil(userId, user) {
   return Axios.put("http://localhost:8000/api/users/" + userId, user)
 }
 
+function getUserbyId(id){
+  return Axios.get("http://localhost:8000/api/users/" + id)
+}
+
+
 function checkRole() {
   const token = window.localStorage.getItem("authToken");
   const jwtData = JwtDecode(token)
@@ -90,5 +95,6 @@ export default {
   findUserId,
   putUserClub,
   putUserProfil,
-  registerPlayer
+  registerPlayer,
+  getUserbyId
 };

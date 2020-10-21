@@ -6,9 +6,9 @@ import usersAPI from '../services/usersAPI';
 import coachAPI from '../services/coachAPI';
 import playerAPI from '../services/playerAPI';
 import teamAPI from '../services/teamAPI';
-import Axios from 'axios';
 import "../../scss/pages/MailPage.scss";
 import adminAPI from '../services/adminAPI';
+import mailAPI from '../services/mailAPI';
 
 const MailPage = (props) => {
     authAPI.setup();
@@ -168,9 +168,7 @@ const MailPage = (props) => {
         setErrors('')
 
         //envoie des données saisies vers le BACK pour traitement et envoie du mail
-        Axios.post("http://localhost:8000/api/sendEmail", {
-            email
-            })
+        mailAPI.sendMail(email)
             .then(response => {
                 console.log(response)
             })
