@@ -65,28 +65,27 @@ const MailPage = (props) => {
         event.preventDefault()
         //je récupére la value du button (->correspond au tableau à l'id du même nom )
         const value = event.currentTarget.innerText;
-        //je hide and show le tableau au clique et je passe les autre buttons en disabled
-        if (document.getElementById(value).hidden === true) {
-            document.getElementById(value).hidden = false
-            //je selectionne tous les buttons de la class btnSelectList
-            let btnList = document.querySelectorAll(".btnSelectList")
-            //je parcours le tableau des buttons et je disabled tout ceux qui ne correspondent pas à celui cliqué 
-            btnList.forEach(btn => {
+        
+        //j'ajoute la classe .desactive à tous les autres buttons et je l'enléve du button actuel
+        let btnList = document.querySelectorAll(".btnSelectList")
+        btnList.forEach(btn => {
                 if (btn.innerText !== value) {
-                    btn.disabled = true
+                    btn.classList.add("desactive")
+                }else if (btn.innerText === value){
+                   if(btn.classList.contains("desactive")){
+                       btn.classList.remove("desactive")
+                   }
                 }
             })
-        } else {
-            document.getElementById(value).hidden = true
-            //je selectionne tous les buttons de la class btnSelectList
-            let btnList = document.querySelectorAll(".btnSelectList")
-            //je parcours le tableau des buttons et je disabled tout ceux qui ne correspondent pas à celui cliqué 
-            btnList.forEach(btn => {
-                if (btn.innerText !== value) {
-                    btn.disabled = false
-                }
-            })
-        }
+        //je show la table correspondante et hide les  autres
+        let tableList = document.querySelectorAll(".btnSelectItem")
+        tableList.forEach(tableItem => {
+            if(tableItem.id !== value){
+                tableItem.hidden = true
+            }else if(tableItem.id === value){
+                tableItem.hidden = false
+            }
+        })
     }
 
     const handleAdd = (emailTo) => {
