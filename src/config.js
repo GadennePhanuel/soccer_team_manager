@@ -1,6 +1,6 @@
-export const LOCAL_URL = "http://localhost:3000/#/";
+export const LOCAL_URL = process.env.REACT_APP_URL_LOCAL;
 
-export const API_URL = "http://localhost:8000/api/";
+export const API_URL = process.env.REACT_APP_URL_EXTERNAL;
 
 export const USERS_API = API_URL + "users";
 export const ADMINS_API = API_URL + "admins";

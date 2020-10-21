@@ -72,6 +72,7 @@ const CoachAdminPage = (props) => {
     const handleInvit = () => {
         document.getElementById('btn-invit').hidden = true
         document.getElementById('form-invit').hidden = false
+        console.log(process.env)
     }
 
     const handleCancelInvit = () => {
