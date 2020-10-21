@@ -1,18 +1,19 @@
 import Axios from "axios";
 import JwtDecode from "jwt-decode";
+import { API_URL, USERS_API, COACHS_API, PLAYERS_API, ADMINS_API } from "../../config";
 
 function registerUser(users) {
-  return Axios.post("http://localhost:8000/api/users", users);
+  return Axios.post(USERS_API, users);
 }
 
 function registerAdmin(response) {
-  return Axios.post("http://localhost:8000/api/admins", {
+  return Axios.post(ADMINS_API, {
     user: "/api/users/" + response.data.id,
   });
 }
 
 function registerCoach(response, token) {
-  return Axios.post("http://localhost:8000/api/coaches", {
+  return Axios.post(COACHS_API, {
     user: "/api/users/" + response.data.id,
   }, {
     headers: {
@@ -23,7 +24,7 @@ function registerCoach(response, token) {
 
 function registerPlayer(response, token) {
   console.log(response.data.id)
-  return Axios.post("http://localhost:8000/api/players", {
+  return Axios.post(PLAYERS_API, {
     user: "/api/users/" + response.data.id,
     injured: false
   }, {
@@ -34,15 +35,15 @@ function registerPlayer(response, token) {
 }
 
 function putUserClub(userId, clubId) {
-  return Axios.put("http://localhost:8000/api/user/" + userId + "/club/" + clubId)
+  return Axios.put(API_URL + 'user/' + userId + "/club/" + clubId)
 }
 
 function putUserProfil(userId, user) {
-  return Axios.put("http://localhost:8000/api/users/" + userId, user)
+  return Axios.put(USERS_API + "/" + userId, user)
 }
 
 function getUserbyId(id){
-  return Axios.get("http://localhost:8000/api/users/" + id)
+  return Axios.get(USERS_API + "/" + id)
 }
 
 

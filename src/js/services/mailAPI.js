@@ -1,10 +1,11 @@
 import Axios from "axios"
+import { API_URL } from "../../config";
 
 
 
 function sendMail(email){
     return Axios
-            .post("http://localhost:8000/api/sendEmail", {
+            .post(API_URL + "sendEmail", {
             email
             })
 }

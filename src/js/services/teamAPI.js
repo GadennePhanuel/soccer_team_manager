@@ -1,13 +1,14 @@
 import Axios from "axios"
+import { TEAMS_API } from "../../config";
 
 function findAllTeams() {
     return Axios
-        .get('http://localhost:8000/api/teams')
+        .get(TEAMS_API)
         .then(response => response.data['hydra:member'])
 }
 
 function deleteCoachOnTeam(id) {
-    return Axios.put("http://localhost:8000/api/teams/" + id,
+    return Axios.put(TEAMS_API + "/" + id,
         { coach: null }
     )
 }

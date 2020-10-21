@@ -1,22 +1,23 @@
 import Axios from "axios"
+import { API_URL, COACHS_API, LOCAL_URL } from "../../config";
 
 
 function findAllCoach(){
     return Axios
-            .get('http://localhost:8000/api/coaches')
+            .get(COACHS_API)
             .then(response => response.data['hydra:member'])
 }
 
 function deleteCoach(id){
     return Axios
-            .delete("http://localhost:8000/api/coaches/" + id)
+            .delete(COACHS_API + "/" + id)
 }
 
 function sendMailToCoach(email, club){
     return Axios
-            .post("http://localhost:8000/api/emailCoach",
+            .post(API_URL + "emailCoach",
                 {
-                    url: 'http://localhost:3000/#/registerUser/',
+                    url: LOCAL_URL + 'registerUser/',
                     email,
                     club
                 }
