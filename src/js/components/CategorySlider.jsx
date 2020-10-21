@@ -1,36 +1,46 @@
-import React from 'react'
+import React, {useState} from "react";
 
-const CategorySlider = ({teams, category}) => {
+const CategorySlider = (props) => {
+
+    //console.log(props.teams)
+    const toForm = (team) => {
+        //setTeamToForm(team)
+    }
 
     return (
-        <>
-            <div className="catBox">
-                <h2>{category}</h2>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Coach</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {teams.map(team =>
-                        <tr key={team.id}>
-                            <td>{team.label}</td>
-                            {team.coach ?
-                                <td>{team.coach.user.firstName} {team.coach.user.lastName}</td> : <td>N/A</td>
-                            }
-                            <td>
-                            </td>
-                        </tr>
-                    )}
-                    </tbody>
-                </table>
-            </div>
-        </>
+        <div className="catBox">
+            <h2>{props.cat}</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Equipe</th>
+                    <th>Coach</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    {props.teams.length !== 0 ?
+                            props.teams.map(tm =>
+                                <tr key={tm.id} className="btn" onClick={toForm(tm)}>
+                                    <td>{tm.label}</td>
+                                    {tm.coach ?
+                                        <td>{tm.coach.user.firstName} {tm.coach.user.lastName}</td> : <td>N/A</td>
+                                    }
+                                    <td>
+                                    </td>
+                                </tr>
+                            )
+                        :
+                            <tr>
+                                <td>
+                                    Il n'y a aucune équipe dans cette catégorie
+                                </td>
+                            </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     )
-
 }
 
 export default CategorySlider;

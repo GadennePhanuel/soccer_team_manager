@@ -5,10 +5,6 @@ import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
 import CategorySlider from "../components/CategorySlider";
-import TeamForm from "../components/TeamForm";
-import Select from "../components/forms/Select";
-import clubAPI from "../services/clubAPI";
-import UserAPI from "../services/usersAPI";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -20,16 +16,17 @@ const TeamsAdminPage = (props) => {
         props.history.replace("/dashboardPlayer")
     }
     //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
-    const club = usersAPI.checkClub();
-    if (club === "new") {
+    const clubId = usersAPI.checkClub();
+    if (clubId === "new") {
         props.history.replace("/createClub/new")
     }
 
     const [teams, setTeams] = useState([])
-    console.log(teams)
-    const [categories, setCategories] = useState([])
+    //console.log(teams)
+    //const [categories, setCategories] = useState([])
 
     const [coachs, setCoachs] = useState([])
+
     const [errors, setErrors] = useState({
         label: ""
     });
@@ -37,7 +34,7 @@ const TeamsAdminPage = (props) => {
         label: "",
         category : "",
         coach: null,
-        club: "/api/clubs/" + usersAPI.checkClub()
+        club: "/api/clubs/" + clubId
     });
 
     const [teamToForm, setTeamToForm] = useState({
@@ -46,32 +43,19 @@ const TeamsAdminPage = (props) => {
         coach: null
     })
 
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const categories =  ["Cadet", "Junior", "Senior"]
+
     useEffect(() => {
-        setCategories(["Cadet", "Junior", "Senior"]);
+      //  setCategories(["Cadet", "Junior", "Senior"]);
         teamAPI.findAllTeams()
             .then(data => setTeams(data))
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error.response))
         coachAPI.findAllCoach()
             .then(data => setCoachs(data))
             .catch(error => console.log(error.response))
-    },[]);
-
-    console.log(teams)
-
-
-    const handleDelete = id => {
-        //copie du tableau original
-        const originalTeams = [...teams];
-
-        //supression de l'affichage du coach selectionné
-        setTeams(teams.filter((team) => team.id !== id));
-
-        teamAPI.deleteTeam(id)
-            .then(response => console.log("supression team ok"))
-            .catch(error => {
-                setTeams(originalTeams);
-            });
-    };
+    },[refreshKey]);
 
     const handleChange = (event) => {
         const { name, value } = event.currentTarget;
@@ -83,25 +67,38 @@ const TeamsAdminPage = (props) => {
         if(team.coach !== null){
             team.coach = "/api/coaches/"+team.coach
         }
-        console.log(team);
+       // console.log(team);
         teamAPI.postTeam(team)
+            .then(setRefreshKey(oldKey => oldKey +1))
             .then(response => console.log("create success"))
-            .then(setTeams(team))
             .catch(error => console.log(error.response))
        // const response = await teamAPI.postTeam(team)
     }
 
+    const handleDelete = id => {
+        //copie du tableau original
+        const originalTeams = [...teams];
+
+        //supression de l'affichage du coach selectionné
+        setTeams(teams.filter((team) => team.id !== id));
+
+        teamAPI.deleteTeam(id)
+            .then(response => console.log("delete team success"))
+            .catch(error => {
+                setTeams(originalTeams);
+            });
+    };
+
+    const toForm = (team) => {
+       // setTeamToForm(team)
+    }
+
     {
-        /* todo recup id newTeam et getNew Team pour refresh usStae Teams
-         .then(response => setArticleId(response.data.id))
+        /*
          //puis select les lignes de categorySliders pour remplir formulaire de modife ( que le nom et le coach)
          pas de raison de changer une team nde categorie
          puis suppr et enfin delete
         */
-    }
-
-    const teamsByCat = cat => {
-        return teams.filter(team => team.category === cat)
     }
 
     return (
@@ -120,6 +117,7 @@ const TeamsAdminPage = (props) => {
                     />
                     <label htmlFor="categorySelect"> Categorie: </label>
                     <select id="categoryselect" name="category" onChange={handleChange} placeholder="choix categorie" required>
+                        <option> choix de la categorie </option>
                         {categories.map((category, index)=> (
                             <option key={index} value={category}>
                                 {category}
@@ -147,17 +145,54 @@ const TeamsAdminPage = (props) => {
 
             <div id="teamsBox">
                 <h2>Liste des teams du club</h2>
-
                 {categories.map((cat, index) => (
-                    <div key={index}>
-                       <CategorySlider teams={teamsByCat(cat)} category={cat}/>
+                    <div key={index} className="catBox">
+                        <h2>{props.cat}</h2>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Equipe</th>
+                                <th>Coach</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {teams.filter(team => team.category === cat).length !== 0 ?
+                                teams.filter(team => team.category === cat).map(tm =>
+                                    <tr key={tm.id} className="btn" onClick={toForm(tm)}>
+                                        <td>{tm.label}</td>
+                                        {tm.coach ?
+                                            <td>{tm.coach.user.firstName} {tm.coach.user.lastName}</td> : <td>N/A</td>
+                                        }
+                                        <td>
+                                            <button
+                                                onClick={() => handleDelete(teamToForm.id)}
+                                                className="btn btn-sm btn-danger">
+                                                X
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button
+                                                className="btn btn-sm btn-danger">
+                                                edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
+                                :
+                                <tr>
+                                    <td>
+                                        Il n'y a aucune équipe dans cette catégorie
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
                     </div>
                     )
                 )}
             </div>
-
             <div>
-                {/* <TeamForm team={teamToForm}/> */}
                 <table>
                     <thead>
                     <tr>
@@ -168,18 +203,18 @@ const TeamsAdminPage = (props) => {
                     </thead>
                     <tbody>
                     <tr>
-                        <td>{team.label}</td>
-                        <td>{team.coach}</td>
-                        <td>{team.category}</td>
+                        <td>{teamToForm.label}</td>
+                        <td>{teamToForm.coach}</td>
+                        <td>{teamToForm.category}</td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
                         <td>
                             <button
-                            onClick={() => handleDelete(team.id)}
-                            className="btn btn-sm btn-danger">
-                            X
+                                onClick={() => handleDelete(teamToForm.id)}
+                                className="btn btn-sm btn-danger">
+                                X
                             </button>
                         </td>
                     </tr>
@@ -187,9 +222,15 @@ const TeamsAdminPage = (props) => {
                 </table>
             </div>
         </>
-    );
+    )
 }
 
 export default TeamsAdminPage;
 
-
+{/*
+                        <CategorySlider
+                            key={index}
+                            teams={teams.filter(team => team.category === cat)}
+                            cat={cat}
+                        />
+                 */}

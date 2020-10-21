@@ -1,5 +1,4 @@
 import Axios from "axios"
-import usersAPI from "./usersAPI";
 
 function findAllTeams(){
     return Axios
