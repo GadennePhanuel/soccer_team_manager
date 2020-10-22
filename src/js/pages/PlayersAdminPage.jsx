@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Pagination from "../components/Pagination";
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
 import Axios from "axios";
+import "../../scss/pages/PlayersAdminPage.scss";
 
 
 const PlayersAdminPage = (props) => {
@@ -22,7 +22,6 @@ const PlayersAdminPage = (props) => {
     }
     //déclare une variable d'état "players", son état initial est un tableau vide
     const [players, setPlayers] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
 
     const [email, setEmail] = useState('')
@@ -55,23 +54,19 @@ const PlayersAdminPage = (props) => {
                 setPlayers(originalPlayers);
             });
     };
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    }
 
     const handleSearch = event => {
         const value = event.currentTarget.value;
         setSearch(value);
-        setCurrentPage(1);
     }
 
-    const itemsPerPage = 15;
+
     const filteredPlayers = players.filter(p =>
         p.user.firstName.toLowerCase().includes(search.toLowerCase()) ||
         p.user.lastName.toLowerCase().includes(search.toLowerCase()) ||
         (p.team && p.team.label.toLowerCase().includes(search.toLowerCase())))
 
-    const paginatedPlayers = Pagination.getData(filteredPlayers, currentPage, itemsPerPage);
+
 
 
     const handleInvit = () => {
@@ -116,12 +111,12 @@ const PlayersAdminPage = (props) => {
         Axios.put("http://localhost:8000/api/players/" + player.id, {
             "user": "/api/users/" + player.user.id,
             "team": "/api/teams/" + teamId
-            })
+        })
             .then(response => {
                 console.log(response.data)
-                 playerAPI.findAllPlayers()
-                        .then(data => setPlayers(data))
-                        .catch(error => console.log(error.response));
+                playerAPI.findAllPlayers()
+                    .then(data => setPlayers(data))
+                    .catch(error => console.log(error.response));
                 //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
                 //setPlayers(...players.push(player) )
 
@@ -134,7 +129,7 @@ const PlayersAdminPage = (props) => {
 
 
     return (
-        <>
+        <div className="wrapper_container PlayersAdminPage">
             <h1>Page des joueurs</h1>
 
             <div>
@@ -188,7 +183,7 @@ const PlayersAdminPage = (props) => {
                         {
                             // repetition pour chaque player
                         }
-                        {paginatedPlayers.map(player => (
+                        {players.map(player => (
                             <tr key={player.id}>
                                 <td>{player.user.firstName} {player.user.lastName}</td>
                                 <td>{player.user.email}</td>
@@ -208,9 +203,9 @@ const PlayersAdminPage = (props) => {
                                 }
                                 {role === 'ROLE_COACH' &&
                                     <td>
-                                         {!player.team && 
-                                        <button onClick={() => handleChoice(player)} >
-                                            Selectionner
+                                        {!player.team &&
+                                            <button onClick={() => handleChoice(player)} >
+                                                Selectionner
                                         </button>
                                         }
                                     </td>
@@ -220,11 +215,9 @@ const PlayersAdminPage = (props) => {
                     </tbody>
                 </table>
 
-                {itemsPerPage < filteredPlayers.length &&
-                    <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filteredPlayers.length} onPageChanged={handlePageChange} />
-                }
             </div>
-        </>
+
+        </div>
     );
 }
 
