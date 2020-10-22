@@ -1,10 +1,10 @@
 @import "./utilities/variables.scss";
 
-body{
-    background-color:$base-color;
+body {
+    background-color: $base-color;
 }
 
-.wrapper_container{
+.wrapper_container {
     margin-left: 85px;
     padding: 5px;
 }
@@ -15,4 +15,9 @@ body{
 
 .btn-primary {
     background-color: $second-color;
+}
+
+.thead-color {
+    background-color: $fifth-color;
+    color: $base-color;
 }

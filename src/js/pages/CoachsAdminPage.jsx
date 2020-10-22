@@ -72,6 +72,7 @@ const CoachAdminPage = (props) => {
     const handleInvit = () => {
         document.getElementById('btn-invit').hidden = true
         document.getElementById('form-invit').hidden = false
+        console.log(process.env)
     }
 
     const handleCancelInvit = () => {
@@ -139,9 +140,9 @@ const CoachAdminPage = (props) => {
             </div>
 
             <div>
-                <table className="table table-striped">
+                <table className="table table-hover">
                     <thead>
-                        <tr>
+                        <tr className="thead-color">
                             <th>Nom</th>
                             <th>Email</th>
                             <th>Téléphone</th>
@@ -170,7 +171,7 @@ const CoachAdminPage = (props) => {
                                     </table>
                                 </td>
                                 <td>
-                                    <button onClick={() => handleDelete(coach.id)} className="btn btn-warning">
+                                    <button onClick={() => handleDelete(coach.id)} className="btn btn-sm btn-danger">
                                         Supprimer
                                 </button>
                                 </td>

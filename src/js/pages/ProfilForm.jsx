@@ -1,10 +1,10 @@
-import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Field from '../components/forms/Field';
 import usersAPI from '../services/usersAPI';
 import dateFormat from 'dateformat';
 import authAPI from '../services/authAPI';
 import '../../scss/pages/ProfilForm.scss';
+import playerAPI from '../services/playerAPI';
 
 
 const ProfilForm = (props) => {
@@ -61,7 +61,7 @@ const ProfilForm = (props) => {
      */
     const fetchUser = async id => {
         try {
-            const response = await Axios.get("http://localhost:8000/api/users/" + id)
+            const response = await usersAPI.getUserbyId(id)
             const email = response.data.email;
             const lastName = response.data.lastName;
             const firstName = response.data.firstName;
@@ -80,7 +80,7 @@ const ProfilForm = (props) => {
      *  REQUETE HTPP AU DEMARAGE POUR CHARGER LE PLAYER ET SA PHOTO DE PROFIL
      */
     const fetchPlayer = async id => {
-        await Axios.get("http://localhost:8000/api/players")
+        await playerAPI.fetchPlayerWithoutId()
             .then(response => {
                 const players = response.data["hydra:member"]
                 players.forEach((playerItem) => {
@@ -97,8 +97,8 @@ const ProfilForm = (props) => {
                          * FAIRE REQUETE HTTP POUR RECUPERER LA PHOTO DE PROFIL EN BINAIRE ET L AFFICHER 
                          * 
                          */
-                        if(playerItem.picture !== null){
-                            Axios.get("http://localhost:8000/api/image/" + playerItem.picture)
+                        if(playerItem.picture !== null && playerItem.picture !== ""){
+                            playerAPI.fetchProfilePicture(playerItem.picture)
                                 .then(response => {
                                                           
                                     setBlobPicture(response.data.data)
@@ -218,12 +218,7 @@ const ProfilForm = (props) => {
         event.preventDefault();
         setErrorsPlayer("");
 
-        Axios({
-                method: 'post',
-                url: 'http://localhost:8000/api/upload',
-                data: bodyFormData,
-                headers: {'Content-Type': 'multipart/form-data' }
-                })
+        playerAPI.uploadNewPicture(bodyFormData)
                 .then(response => {
                     //handle success
                     fetchPlayer(userId);
@@ -251,11 +246,7 @@ const ProfilForm = (props) => {
     const handleSubmitPlayer = (event) => {
         event.preventDefault();
 
-        Axios.put('http://localhost:8000/api/players/' + player.id, {
-                height: parseInt(player.height),
-                weight: parseInt(player.weight),
-                injured: player.injured
-            })
+        playerAPI.setPlayer(player)
             .then(response => {
                 console.log(response.data)
                 //TODO flash success

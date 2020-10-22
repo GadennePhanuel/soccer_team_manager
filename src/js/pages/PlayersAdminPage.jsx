@@ -108,10 +108,7 @@ const PlayersAdminPage = (props) => {
         let select = document.getElementById('team');
         let teamId = select.options[select.selectedIndex].value;
 
-        Axios.put("http://localhost:8000/api/players/" + player.id, {
-            "user": "/api/users/" + player.user.id,
-            "team": "/api/teams/" + teamId
-        })
+        playerAPI.setTeamToPlayer(player, teamId)
             .then(response => {
                 console.log(response.data)
                 playerAPI.findAllPlayers()
@@ -130,12 +127,13 @@ const PlayersAdminPage = (props) => {
 
     return (
         <div className="wrapper_container PlayersAdminPage">
+
             <h1>Page des joueurs</h1>
 
-            <div>
+            <div className="div-invit">
                 {role === 'ROLE_ADMIN' &&
-                    <div id="btn-invit">
-                        <button onClick={() => handleInvit()}>
+                    <div>
+                        <button className="btn btn-invit" onClick={() => handleInvit()}>
                             Inviter un nouveau joueur
                     </button>
                     </div>
@@ -162,18 +160,20 @@ const PlayersAdminPage = (props) => {
                         </div>
                     </form>
                 </div>
+
             </div>
-            <div className="form-group">
-                <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
-            </div>
+
             <div>
+                <div id="div-search" className="form-group">
+                    <input id="search" type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
+                </div>
                 <table className="table table-hover">
                     <thead>
-                        <tr>
-                            <th>Joueur</th>
-                            <th>Email</th>
-                            <th>Telephone</th>
-                            <th>Equipe</th>
+                        <tr className="thead-color">
+                            <th scope="col">Joueur</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Telephone</th>
+                            <th scope="col">Equipe</th>
                             {role === 'ROLE_ADMIN' &&
                                 <th />
                             }
@@ -183,8 +183,8 @@ const PlayersAdminPage = (props) => {
                         {
                             // repetition pour chaque player
                         }
-                        {players.map(player => (
-                            <tr key={player.id}>
+                        {filteredPlayers.map(player => (
+                            <tr scope="row" className="table-light" key={player.id}>
                                 <td>{player.user.firstName} {player.user.lastName}</td>
                                 <td>{player.user.email}</td>
                                 <td>{player.user.phone}</td>
@@ -216,7 +216,6 @@ const PlayersAdminPage = (props) => {
                 </table>
 
             </div>
-
         </div>
     );
 }

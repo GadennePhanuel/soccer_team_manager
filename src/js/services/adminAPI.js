@@ -1,9 +1,10 @@
 import Axios from "axios";
+import { ADMINS_API } from "../../config";
 
 
 function findAdmin(){
     return Axios
-            .get('http://localhost:8000/api/admins')
+            .get(ADMINS_API)
             .then(response => response.data['hydra:member'])
 }
 

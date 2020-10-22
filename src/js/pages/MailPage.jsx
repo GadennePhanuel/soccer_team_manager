@@ -6,9 +6,9 @@ import usersAPI from '../services/usersAPI';
 import coachAPI from '../services/coachAPI';
 import playerAPI from '../services/playerAPI';
 import teamAPI from '../services/teamAPI';
-import Axios from 'axios';
 import "../../scss/pages/MailPage.scss";
 import adminAPI from '../services/adminAPI';
+import mailAPI from '../services/mailAPI';
 
 const MailPage = (props) => {
     authAPI.setup();
@@ -50,10 +50,12 @@ const MailPage = (props) => {
             .then(data => setTeams(data))
             .catch(error => console.log(error.response));
 
-        adminAPI.findAdmin()
-            .then(data => setAdmins(data))
-            .catch(error => console.log(error.response))
-    }, [])
+        if (role !== 'ROLE_ADMIN') {
+            adminAPI.findAdmin()
+                .then(data => setAdmins(data))
+                .catch(error => console.log(error.response))
+        }
+    }, [role])
 
     const handleChange = (event) => {
         const value = event.currentTarget.value;
@@ -65,24 +67,24 @@ const MailPage = (props) => {
         event.preventDefault()
         //je récupére la value du button (->correspond au tableau à l'id du même nom )
         const value = event.currentTarget.innerText;
-        
+
         //j'ajoute la classe .desactive à tous les autres buttons et je l'enléve du button actuel
         let btnList = document.querySelectorAll(".btnSelectList")
         btnList.forEach(btn => {
-                if (btn.innerText !== value) {
-                    btn.classList.add("desactive")
-                }else if (btn.innerText === value){
-                   if(btn.classList.contains("desactive")){
-                       btn.classList.remove("desactive")
-                   }
+            if (btn.innerText !== value) {
+                btn.classList.add("desactive")
+            } else if (btn.innerText === value) {
+                if (btn.classList.contains("desactive")) {
+                    btn.classList.remove("desactive")
                 }
-            })
+            }
+        })
         //je show la table correspondante et hide les  autres
         let tableList = document.querySelectorAll(".btnSelectItem")
         tableList.forEach(tableItem => {
-            if(tableItem.id !== value){
+            if (tableItem.id !== value) {
                 tableItem.hidden = true
-            }else if(tableItem.id === value){
+            } else if (tableItem.id === value) {
                 tableItem.hidden = false
             }
         })
@@ -168,23 +170,21 @@ const MailPage = (props) => {
         setErrors('')
 
         //envoie des données saisies vers le BACK pour traitement et envoie du mail
-        Axios.post("http://localhost:8000/api/sendEmail", {
-            email
-            })
+        mailAPI.sendMail(email)
             .then(response => {
                 console.log(response)
             })
             .catch(error => {
                 console.log(error.response.data.violations)
-                if(error.response.data.violations){
-                    if(error.response.data.violations.receivers){
-                        apiErrors.receivers ="Veuillez sélectionner au moins un destinataire";
+                if (error.response.data.violations) {
+                    if (error.response.data.violations.receivers) {
+                        apiErrors.receivers = "Veuillez sélectionner au moins un destinataire";
                         setErrors(apiErrors);
-                    }else if(error.response.data.violations.msg){
-                        apiErrors.message ="Veuillez écrire un message";
+                    } else if (error.response.data.violations.msg) {
+                        apiErrors.message = "Veuillez écrire un message";
                         setErrors(apiErrors);
-                    }else if(error.response.data.violations.subject){
-                        apiErrors.subject ="Veuillez préciser le sujet de votre email";
+                    } else if (error.response.data.violations.subject) {
+                        apiErrors.subject = "Veuillez préciser le sujet de votre email";
                         setErrors(apiErrors);
                     }
                 }

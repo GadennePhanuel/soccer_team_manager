@@ -1,21 +1,21 @@
 @import "../utilities/variables.scss";
 
-.SideNav{
+.SideNav {
   position: absolute;
   width: 100px;
   min-height: 100vh;
-  background-color: $second-color;
+  background-color: $fifth-color;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-  .SideNav-items{
+  .SideNav-items {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
 
-  .logout{
+  .logout {
     width: 100px;
     height: 100px;
     background: url("../img/logout-white.png") center center no-repeat;
@@ -62,10 +62,11 @@
     background: url("../img/profile.png") center center no-repeat;
     background-size: 40%;
   }
-  
 
-  .active{
-      background-color: rgba(0,0,0,0.4);
-    }
+
+  .active {
+    //background-color: rgba(0, 0, 0, 0.4);
+    background-color: $second-color;
+  }
 
 }

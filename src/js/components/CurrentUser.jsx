@@ -28,10 +28,14 @@ const CurrentUser = (props) => {
                 'role': usersAPI.checkRole()
             });
 
-            teamAPI.findAllTeams()
-                .then(data => setTeams(data))
-                .catch(error => console.log(error.response))
+            if (usersAPI.checkRole() === "ROLE_COACH") {
+                teamAPI.findAllTeams()
+                    .then(data => setTeams(data))
+                    .catch(error => console.log(error.response))
+            }
+
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token])
 
 
@@ -48,22 +52,24 @@ const CurrentUser = (props) => {
 
 
     return (
-        <div className="CurrentUser">
+        <>
             {(isAuthenticated === true && user.role === 'ROLE_COACH') && (
-                <div className="currentUser">
-                    <Link to="/profil">{user.firstName} {user.lastName}</Link>
-                    <Select
-                        label="Equipe"
-                        name="team"
-                        onChange={handleChange}
-                    >
-                        {teams.map((team) => (
-                            <option key={team.id} value={team.id}>{team.label} {team.category}</option>
-                        ))}
-                    </Select>
+                <div className="CurrentUser">
+                    <div className="currentUser">
+                        <Link to="/profil">{user.firstName} {user.lastName}</Link>
+                        <Select
+                            label="Equipe"
+                            name="team"
+                            onChange={handleChange}
+                        >
+                            {teams.map((team) => (
+                                <option key={team.id} value={team.id}>{team.label} {team.category}</option>
+                            ))}
+                        </Select>
+                    </div>
                 </div>
             )}
-        </div>
+        </>
     );
 }
 
