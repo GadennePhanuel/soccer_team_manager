@@ -102,7 +102,7 @@ const TeamsAdminPage = (props) => {
     }
 
     return (
-        <>
+        <div className="TeamsAdminPage wrapper_container">
             <h1>Equipes du club</h1>
             <div id="createTeam">
                 <form onSubmit={handleSubmit} className='formTeam'>
@@ -159,7 +159,7 @@ const TeamsAdminPage = (props) => {
                             <tbody>
                             {teams.filter(team => team.category === cat).length !== 0 ?
                                 teams.filter(team => team.category === cat).map(tm =>
-                                    <tr key={tm.id} className="btn" onClick={toForm(tm)}>
+                                    <tr key={tm.id} onClick={toForm(tm)}>
                                         <td>{tm.label}</td>
                                         {tm.coach ?
                                             <td>{tm.coach.user.firstName} {tm.coach.user.lastName}</td> : <td>N/A</td>
@@ -221,7 +221,7 @@ const TeamsAdminPage = (props) => {
                     </tbody>
                 </table>
             </div>
-        </>
+        </div>
     )
 }
 
