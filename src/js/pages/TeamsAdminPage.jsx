@@ -89,6 +89,11 @@ const TeamsAdminPage = (props) => {
             });
     };
 
+    const handleEdit = () => {
+        document.getElementById('btn-invit').hidden = true
+        document.getElementById('form-invit').hidden = false
+    }
+
     const toForm = (team) => {
        // setTeamToForm(team)
     }
@@ -167,13 +172,14 @@ const TeamsAdminPage = (props) => {
                                         <td>
                                             <button
                                                 onClick={() => handleDelete(teamToForm.id)}
+                                                id="deletBtn"
                                                 className="btn btn-sm btn-danger">
                                                 X
                                             </button>
                                         </td>
                                         <td>
                                             <button
-                                                className="btn btn-sm btn-danger">
+                                                className="btn btn-sm">
                                                 edit
                                             </button>
                                         </td>
