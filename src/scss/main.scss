@@ -1,0 +1,18 @@
+@import "./utilities/variables.scss";
+
+body{
+    background-color:$base-color;
+}
+
+.wrapper_container{
+    margin-left: 85px;
+    padding: 5px;
+}
+
+.container-fluid {
+    padding-right: 0;
+}
+
+.btn-primary {
+    background-color: $second-color;
+}

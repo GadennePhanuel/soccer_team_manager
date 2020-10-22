@@ -1,6 +1,6 @@
 import Axios from "axios"
 
-function findAllTeams(){
+function findAllTeams() {
     return Axios
         .get('http://localhost:8000/api/teams')
         .then(response => response.data['hydra:member'])
@@ -20,10 +20,10 @@ function deleteTeam(id){
         .delete("http://localhost:8000/api/teams/" + id)
 }
 
-function deleteCoachOnTeam(id){
+function deleteCoachOnTeam(id) {
     return Axios.put("http://localhost:8000/api/teams/" + id,
-            { coach: null }
-            )
+        { coach: null }
+    )
 }
 
 function putTeam(team){

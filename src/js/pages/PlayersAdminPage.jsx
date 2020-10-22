@@ -4,17 +4,17 @@ import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
+import Axios from "axios";
 
 
 const PlayersAdminPage = (props) => {
     authAPI.setup();
     // si role != ROLE_ADMIN -> redirection vers le dashboard qui lui correspond
     const role = usersAPI.checkRole();
-    if (role === 'ROLE_COACH') {
-        props.history.replace("/dashboardCoach")
-    } else if (role === 'ROLE_PLAYER') {
+    if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
     }
+
     //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
     const club = usersAPI.checkClub();
     if (club === "new") {
@@ -69,7 +69,7 @@ const PlayersAdminPage = (props) => {
     const filteredPlayers = players.filter(p =>
         p.user.firstName.toLowerCase().includes(search.toLowerCase()) ||
         p.user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-        p.team.label && p.team.label.toLowerCase().includes(search.toLowerCase()))
+        (p.team && p.team.label.toLowerCase().includes(search.toLowerCase())))
 
     const paginatedPlayers = Pagination.getData(filteredPlayers, currentPage, itemsPerPage);
 
@@ -86,7 +86,6 @@ const PlayersAdminPage = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-
         //call ajax vers controller particulier
         //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du coach) vers le back qui se chargera d'envoyer un mail au coach qui se fait inviter
         playerAPI.sendMailToPlayer(email, club)
@@ -108,16 +107,44 @@ const PlayersAdminPage = (props) => {
 
     }
 
+    const handleChoice = (player) => {
+        console.log(player)
+        //je récupére l'id de la team courante
+        let select = document.getElementById('team');
+        let teamId = select.options[select.selectedIndex].value;
+
+        Axios.put("http://localhost:8000/api/players/" + player.id, {
+            "user": "/api/users/" + player.user.id,
+            "team": "/api/teams/" + teamId
+            })
+            .then(response => {
+                console.log(response.data)
+                 playerAPI.findAllPlayers()
+                        .then(data => setPlayers(data))
+                        .catch(error => console.log(error.response));
+                //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
+                //setPlayers(...players.push(player) )
+
+            })
+            .catch(error => console.log(error.response))
+
+
+    }
+
+
+
     return (
         <>
-            <h1>Page des joueurs pour l'admin</h1>
+            <h1>Page des joueurs</h1>
 
             <div>
-                <div id="btn-invit">
-                    <button onClick={() => handleInvit()}>
-                        Inviter un nouveau joueur
+                {role === 'ROLE_ADMIN' &&
+                    <div id="btn-invit">
+                        <button onClick={() => handleInvit()}>
+                            Inviter un nouveau joueur
                     </button>
-                </div>
+                    </div>
+                }
                 <div id="form-invit" hidden>
                     <form onSubmit={handleSubmit}>
                         <Field
@@ -152,7 +179,9 @@ const PlayersAdminPage = (props) => {
                             <th>Email</th>
                             <th>Telephone</th>
                             <th>Equipe</th>
-                            <th />
+                            {role === 'ROLE_ADMIN' &&
+                                <th />
+                            }
                         </tr>
                     </thead>
                     <tbody>
@@ -168,13 +197,24 @@ const PlayersAdminPage = (props) => {
                                     player.team ? player.team.label : 'non attribué'
                                 }
                                 </td>
-                                <td>
-                                    <button
-                                        onClick={() => handleDelete(player.id)}
-                                        className="btn btn-sm btn-danger">
-                                        Supprimer
-                                    </button>
-                                </td>
+                                {role === 'ROLE_ADMIN' &&
+                                    <td>
+                                        <button
+                                            onClick={() => handleDelete(player.id)}
+                                            className="btn btn-sm btn-danger">
+                                            Supprimer
+                                        </button>
+                                    </td>
+                                }
+                                {role === 'ROLE_COACH' &&
+                                    <td>
+                                         {!player.team && 
+                                        <button onClick={() => handleChoice(player)} >
+                                            Selectionner
+                                        </button>
+                                        }
+                                    </td>
+                                }
                             </tr>
                         ))}
                     </tbody>

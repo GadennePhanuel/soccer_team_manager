@@ -7,6 +7,7 @@ import authAPI from '../services/authAPI';
 import AuthAPI from '../services/authAPI';
 import clubAPI from '../services/clubAPI';
 import usersAPI from '../services/usersAPI';
+import '../../scss/pages/ClubFormPage.scss';
 
 const ClubFormPage = (props) => {
     authAPI.setup();
@@ -94,12 +95,12 @@ const ClubFormPage = (props) => {
     }
 
     return (
-        <>
+        <div className="ClubFormPage wrapper_container">
             {(!editing && <h1>Création de votre club</h1>) || <h1>Modification du club</h1>}
             <form onSubmit={handleSubmit} className='formClub'>
                 <Field
                     name="label"
-                    label="Nom de votre club"
+                    label="Nom du club"
                     value={club.label}
                     placeholder="Nom du club..."
                     error={errors.label}
@@ -107,12 +108,12 @@ const ClubFormPage = (props) => {
                 >
                 </Field>
                 <div >
-                    <button type="submit" >
+                    <button type="submit" className="btn btn-primary">
                         Enregistrer
                     </button>
                 </div>
             </form>
-        </>
+        </div>
     );
 }
 

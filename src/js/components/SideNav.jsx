@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
 import usersAPI from "../services/usersAPI";
+import "../../scss/layout/SideNav.scss";
 
 const SideNav = (props) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -24,110 +25,79 @@ const SideNav = (props) => {
   return (
     <>
       {isAuthenticated && (
-        <nav className="sideNav">
-          <ul className="sideNav-menu">
-            <li className="nav-item">
-              <button onClick={handleLogout} className="logout">
-                Deconnection
-              </button>
-            </li>
+        <nav className="SideNav">
 
+          <div className="SideNav-items">
             {roles === "ROLE_ADMIN" && (
               <>
-                <li className="nav-item">
-                  <NavLink to="/dashboardAdmin" className="home">
-                    home
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink to={'/createClub/' + club} className="home">
-                    Club
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/coachs" >
-                    Coachs
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/players" >
-                    Joueurs
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/teams" >
-                    Equipes
-                  </NavLink>
-                </li>
+                <NavLink to="/dashboardAdmin" className="home">
+                </NavLink>
+
+                <NavLink to={'/createClub/' + club} className="club">
+                </NavLink>
+
+                <NavLink to="/coachs" className="coachs">
+                </NavLink>
+
+                <NavLink to="/players" className="players">
+                </NavLink>
+
+                <NavLink to="/teams" className="teams">
+                </NavLink>
               </>
             )}
             {roles === "ROLE_COACH" && (
               <>
-                <li className="nav-item">
-                  <NavLink to="/dashboardCoach" className="home">
-                    home
-              </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboardCoach" >
-                    Tous les Joueurs
+                <NavLink to="/dashboardCoach" className="home">
+                </NavLink>
+
+                <NavLink to="/players" className="players">
+                </NavLink>
+
+                <NavLink to="#" className="my-players">
+                  Mes joueurs
+                </NavLink>
+
+                <NavLink to="#" >
+                  Formation
                   </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboardCoach" >
-                    Mes Joueurs
+
+                <NavLink to="#" >
+                  Entrainement
                   </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboardCoach" >
-                    Formation
+
+                <NavLink to="#" >
+                  Match
                   </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboardCoach" >
-                    Entrainement
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboardCoach" >
-                    Match
-                  </NavLink>
-                </li>
               </>
             )}
             {roles === "ROLE_PLAYER" && (
               <>
-                <li className="nav-item">
-                  <NavLink to="/dashboardPlayer" className="home">
-                    home
-              </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboardPlayer" >
-                    Entrainement
+                <NavLink to="/dashboardPlayer" className="home">
+                </NavLink>
+
+                <NavLink to="/dashboardPlayer" >
+                  Entrainement
                   </NavLink>
-                </li>
-                <li>
-                  <NavLink to="/dashboardPlayer" >
-                    Match
+
+                <NavLink to="/dashboardPlayer" >
+                  Match
                   </NavLink>
-                </li>
               </>
             )}
-            <li>
-              <NavLink to="/mail" >
-                Messagerie
-                  </NavLink>
-            </li>
-            <li>
-              <NavLink to="/profil" >
-                Profil
-                  </NavLink>
-            </li>
-          </ul>
+            <NavLink to="/mail" className="mail">
+            </NavLink>
+
+            <NavLink to="/profil" className="profil">
+            </NavLink>
+          </div>
+          <div>
+            <button onClick={handleLogout} className="logout">
+
+            </button>
+          </div>
         </nav>
       )}
-
     </>
   );
 };

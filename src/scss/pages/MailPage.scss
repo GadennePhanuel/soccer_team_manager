@@ -1,0 +1,77 @@
+@import "../utilities/variables.scss";
+@import "../utilities//mixins.scss";
+
+.MailPage {
+  @include component-size(flex, column, center, space-between);
+
+  h1 {
+    text-align: center;
+    margin: 5px 5px 20px 5px;
+  }
+
+  .SelectList {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+
+    button {
+      margin: 0 25px;
+    }
+
+    .desactive {
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .btnSelectItem {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    button {
+      margin: 2.5px;
+      padding: 5px 10px;
+      line-height: 1em;
+      color: $base-color;
+      background-color: $fourth-color;
+      border-style: none;
+      border-radius: 15px;
+      &:focus {
+        outline: none;
+      }
+    }
+    .choose {
+      background-color: rgba($color: $fourth-color, $alpha: 0.5);
+    }
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+
+    .form-group {
+      margin-bottom: 5px;
+      display: flex;
+      flex-direction: column;
+      p {
+        margin-bottom: 0;
+      }
+    }
+
+    div {
+      display: flex;
+      align-items: flex-end;
+
+      button {
+        margin: 5px auto;
+        width: 50px;
+        height: 50px;
+        border-style: none;
+        background: url("../img/send-mail.png") center center no-repeat;
+        background-size: contain;
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+@import "../utilities/variables.scss";
+@import "../utilities//mixins.scss";
+
+.CoachsAdminPage{
+    @include component-size(flex, column, center, flex-start);
+
+    h1 {
+    margin: 5px 5px 20px 5px;
+    }
+
+    #btn-invit{
+        margin-bottom: 40px;
+    }
+    #form-invit{
+        margin-top: -23px;
+        margin-bottom: 40px;
+        form{
+            display: flex;
+            align-items: center;
+        }
+        p{
+            position: absolute;
+        }
+    }
+    .cancelBtn{
+        margin-top: 6px;
+        margin-right: 5px;
+        width: 25px;
+        height: 25px;
+        background: url('../img/close.png') center center no-repeat;
+        background-size: 100%;
+        border-style: none;
+
+
+        &:focus {
+        outline: none;
+      }
+    }
+    .sendBtn{
+        margin-top: 6px;
+        margin-left: 5px;
+        width: 25px;
+        height: 25px;
+        background: url('../img/send-mail.png') center center no-repeat;
+        background-size: 100%;
+        border-style: none;
+
+        &:focus {
+        outline: none;
+      }
+    }
+
+    table{
+        td{
+            vertical-align: middle;
+        }
+    }
+}

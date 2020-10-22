@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
+import "../../scss/pages/Login.scss";
 
 const LoginPage = ({ history }) => {
   const { setIsAuthenticated } = useContext(AuthContext);
@@ -54,8 +55,8 @@ const LoginPage = ({ history }) => {
   };
 
   return (
-    <>
-      <h1>Connection à l'application</h1>
+    <div className="LoginPage">
+      <h1>SoccerTeamManager</h1>
       <form onSubmit={handleSubmit}>
         <Field
           label="Email"
@@ -76,7 +77,7 @@ const LoginPage = ({ history }) => {
           error={error}
         />
 
-        <div className="form-group">
+        <div className="inline-btn">
           <button type="submit" className="btn btn-success">
             Je me connecter
           </button>
@@ -85,7 +86,7 @@ const LoginPage = ({ history }) => {
           </Link>
         </div>
       </form>
-    </>
+    </div>
   );
 };
 

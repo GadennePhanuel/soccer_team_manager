@@ -6,7 +6,6 @@ import LoginPage from "./js/pages/LoginPage";
 import RegisterAdminPage from "./js/pages/RegisterAdminPage";
 import SideNav from "./js/components/SideNav";
 import PrivateRoute from "./js/components/PrivateRoute";
-import "./css/index.css";
 import DashboardAdminPage from "./js/pages/DashboardAdminPage";
 import DashboardCoachPage from "./js/pages/DashboardCoachPage";
 import DashboardPlayerPage from "./js/pages/DashboardPlayerPage";
@@ -17,6 +16,7 @@ import MailPage from "./js/pages/MailPage";
 import ClubFormPage from "./js/pages/ClubFormPage";
 import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
+import CurrentUser from "./js/components/CurrentUser";
 
 function App() {
   AuthAPI.setup();
@@ -36,7 +36,8 @@ function App() {
     >
       <HashRouter>
         <SideNavWithRouter />
-        <main className="container">
+        <CurrentUser />
+        <main className="container-fluid">
           <Switch>
             <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
             <Route path="/RegisterAdmin" component={RegisterAdminPage} />

@@ -1,0 +1,22 @@
+.LoginPage {
+    height: calc(100vh - 20px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    h1{
+        margin: 0.5em 0;
+    }
+
+    form{
+        min-width: 400px;
+        display: flex;
+        flex-direction: column;
+        
+        .inline-btn{
+            display: flex;
+            justify-content: space-between;
+        }
+    }
+}
