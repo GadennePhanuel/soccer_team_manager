@@ -4,7 +4,6 @@ import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
-import CategorySlider from "../components/CategorySlider";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -89,21 +88,43 @@ const TeamsAdminPage = (props) => {
             });
     };
 
-    const handleEdit = () => {
-        document.getElementById('btn-invit').hidden = true
-        document.getElementById('form-invit').hidden = false
+    const [selectedTeam, setSelectedTeam] = useState("")
+
+    const handleEdit = (teamId) => {
+
+        selectedTeam !== "" &&
+            closeSelected(selectedTeam)
+
+        changeHidden('btn-delete-', teamId)
+        changeHidden('btn-put-',teamId)
+        changeHidden('coachSelect-',teamId)
+        changeHidden('labelCoach-',teamId)
+        changeHidden('labelTeam-',teamId)
+        changeHidden('input-labelTeam-',teamId)
+        changeHidden('btn-edit-',teamId)
+        setSelectedTeam(teamId)
     }
 
-    const toForm = (team) => {
-       // setTeamToForm(team)
+    const closeSelected = (teamId) => {
+        changeHidden('btn-delete-',teamId)
+        changeHidden('btn-put-',teamId)
+        changeHidden('coachSelect-',teamId)
+        changeHidden('labelCoach-',teamId)
+        changeHidden('labelTeam-',teamId)
+        changeHidden('input-labelTeam-',teamId)
+        changeHidden('btn-edit-',teamId)
     }
 
-    {
-        /*
-         //puis select les lignes de categorySliders pour remplir formulaire de modife ( que le nom et le coach)
-         pas de raison de changer une team nde categorie
-         puis suppr et enfin delete
-        */
+    const changeHidden = (element, Id) => {
+        console.log(element + Id)
+        return document.getElementById(element + Id).hidden === true ?
+            document.getElementById(element + Id).hidden = false
+        :
+            document.getElementById(element + Id).hidden = true
+    }
+
+    const handlePutChange = () => {
+
     }
 
     return (
@@ -147,12 +168,10 @@ const TeamsAdminPage = (props) => {
                 </div>
             </form>
             </div>
-
             <div id="teamsBox">
-                <h2>Liste des teams du club</h2>
                 {categories.map((cat, index) => (
                     <div key={index} className="catBox">
-                        <h2>{props.cat}</h2>
+                        <h3>{cat}</h3>
                         <table>
                             <thead>
                             <tr>
@@ -164,23 +183,78 @@ const TeamsAdminPage = (props) => {
                             <tbody>
                             {teams.filter(team => team.category === cat).length !== 0 ?
                                 teams.filter(team => team.category === cat).map(tm =>
-                                    <tr key={tm.id} onClick={toForm(tm)}>
-                                        <td>{tm.label}</td>
-                                        {tm.coach ?
-                                            <td>{tm.coach.user.firstName} {tm.coach.user.lastName}</td> : <td>N/A</td>
-                                        }
+                                    <tr key={tm.id}>
+                                        <td>
+                                            <p
+                                                id={"labelTeam-" + tm.id}
+                                            >
+                                                {tm.label}
+                                            </p>
+                                            { // todo j'ai utilisé input plutot que le composant Field, parce que le Hidden ne fonctionnait pas avec.
+                                            }
+                                            <input
+                                                hidden
+                                                id={"input-labelTeam-"+tm.id}
+                                                type="text"
+                                                name="label"
+                                                label="Nom d'équipe"
+                                                onChange={handlePutChange}
+                                                value={tm.label}
+                                                error={errors.label}
+                                            />
+
+                                        </td>
+                                        <td>
+                                            <select
+                                                hidden
+                                                id={"coachSelect-" + tm.id}
+                                                name="coach"
+                                                onChange={handlePutChange}
+                                                value = {tm.coach ? tm.coach.id :""}
+                                            >
+                                            <option> choix du coach </option>
+                                            {coachs.map(coach => (
+                                                    <option key={coach.id} value={coach.id}>
+                                                        {coach.user.firstName} {coach.user.lastName}
+                                                    </option>
+                                                )
+                                            )}
+                                            </select>
+                                                {
+                                                    // <td>{tm.coach.user.firstName} {tm.coach.user.lastName}</td> : <td>N/A</td>
+                                                }
+                                            <p
+                                                id ={"labelCoach-"+tm.id}
+                                            >
+                                                {tm.coach ?
+                                                    tm.coach.user.firstName + " " + tm.coach.user.lastName
+                                                    :
+                                                    "N/A"
+                                                }
+                                            </p>
+                                        </td>
                                         <td>
                                             <button
-                                                onClick={() => handleDelete(teamToForm.id)}
-                                                id="deletBtn"
+                                                onClick={() => handleEdit(tm.id)}
+                                                id={"btn-edit-"+tm.id}
                                                 className="btn btn-sm btn-danger">
-                                                X
+                                                edit
+                                            </button>
+                                            <button
+                                                hidden
+                                                //onClick={() => handleEdit(tm.id)}
+                                                id={"btn-put-"+tm.id}
+                                                className="btn btn-sm btn-danger">
+                                                valider
                                             </button>
                                         </td>
                                         <td>
                                             <button
-                                                className="btn btn-sm">
-                                                edit
+                                                hidden
+                                                onClick={() => handleDelete(tm.id)}
+                                                id={"btn-delete-"+tm.id}
+                                                className="btn btn-sm btn-danger">
+                                                X
                                             </button>
                                         </td>
                                     </tr>
@@ -197,35 +271,6 @@ const TeamsAdminPage = (props) => {
                     </div>
                     )
                 )}
-            </div>
-            <div>
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Coach</th>
-                        <th>Category</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{teamToForm.label}</td>
-                        <td>{teamToForm.coach}</td>
-                        <td>{teamToForm.category}</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <button
-                                onClick={() => handleDelete(teamToForm.id)}
-                                className="btn btn-sm btn-danger">
-                                X
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     )
