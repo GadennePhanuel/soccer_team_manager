@@ -66,7 +66,6 @@ const TeamsAdminPage = (props) => {
         if(team.coach !== null){
             team.coach = "/api/coaches/"+team.coach
         }
-       // console.log(team);
         teamAPI.postTeam(team)
             .then(setRefreshKey(oldKey => oldKey +1))
             .then(response => console.log("create success"))
@@ -142,7 +141,13 @@ const TeamsAdminPage = (props) => {
                         required
                     />
                     <label htmlFor="categorySelect"> Categorie: </label>
-                    <select id="categoryselect" name="category" onChange={handleChange} placeholder="choix categorie" required>
+                    <select
+                        id="categoryselect"
+                        name="category"
+                        onChange={handleChange}
+                        placeholder="choix categorie"
+                        required
+                    >
                         <option> choix de la categorie </option>
                         {categories.map((category, index)=> (
                             <option key={index} value={category}>
@@ -199,7 +204,8 @@ const TeamsAdminPage = (props) => {
                                                 name="label"
                                                 label="Nom d'équipe"
                                                 onChange={handlePutChange}
-                                                value={tm.label}
+                                                defaultValue={tm.label}
+                                             //   value={tm.label}
                                                 error={errors.label}
                                             />
 
@@ -209,10 +215,10 @@ const TeamsAdminPage = (props) => {
                                                 hidden
                                                 id={"coachSelect-" + tm.id}
                                                 name="coach"
-                                                onChange={handlePutChange}
-                                                value = {tm.coach ? tm.coach.id :""}
+                                                onChange={handleChange}
+                                                defaultValue={tm.coach ? tm.coach.id :""}
                                             >
-                                            <option> choix du coach </option>
+                                            <option value=""> choix du coach </option>
                                             {coachs.map(coach => (
                                                     <option key={coach.id} value={coach.id}>
                                                         {coach.user.firstName} {coach.user.lastName}
@@ -237,14 +243,14 @@ const TeamsAdminPage = (props) => {
                                             <button
                                                 onClick={() => handleEdit(tm.id)}
                                                 id={"btn-edit-"+tm.id}
-                                                className="btn btn-sm btn-danger">
+                                                className="btn btn-sm btn-success">
                                                 edit
                                             </button>
                                             <button
                                                 hidden
-                                                //onClick={() => handleEdit(tm.id)}
+                                                onClick={() => handleEdit(tm.id)}
                                                 id={"btn-put-"+tm.id}
-                                                className="btn btn-sm btn-danger">
+                                                className="btn btn-sm btn-success">
                                                 valider
                                             </button>
                                         </td>
@@ -254,7 +260,7 @@ const TeamsAdminPage = (props) => {
                                                 onClick={() => handleDelete(tm.id)}
                                                 id={"btn-delete-"+tm.id}
                                                 className="btn btn-sm btn-danger">
-                                                X
+                                                supprimer
                                             </button>
                                         </td>
                                     </tr>
