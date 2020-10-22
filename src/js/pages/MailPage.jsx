@@ -286,10 +286,9 @@ const MailPage = (props) => {
                             rows="10"
                             cols="100"
                         ></Textarea>
-                        <button>
-
-                        </button>
                     </div>
+                    <button id="sendMail">
+                    </button>
                 </form>
             </div>
         </div>

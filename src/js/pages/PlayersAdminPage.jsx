@@ -184,7 +184,7 @@ const PlayersAdminPage = (props) => {
                             // repetition pour chaque player
                         }
                         {filteredPlayers.map(player => (
-                            <tr scope="row" className="table-light" key={player.id}>
+                            <tr scope="row" key={player.id}>
                                 <td>{player.user.firstName} {player.user.lastName}</td>
                                 <td>{player.user.email}</td>
                                 <td>{player.user.phone}</td>
