@@ -3,7 +3,6 @@ import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
-import Axios from "axios";
 import "../../scss/pages/PlayersAdminPage.scss";
 
 
@@ -132,16 +131,18 @@ const PlayersAdminPage = (props) => {
 
             <div className="div-invit">
                 {role === 'ROLE_ADMIN' &&
-                    <div>
-                        <button className="btn btn-invit" onClick={() => handleInvit()}>
+                    <div id="btn-invit">
+                        <button className="btn btn-primary" onClick={() => handleInvit()}>
                             Inviter un nouveau joueur
                     </button>
                     </div>
                 }
                 <div id="form-invit" hidden>
                     <form onSubmit={handleSubmit}>
+                        <button type="button" onClick={() => handleCancelInvit()} className="cancelBtn">
+
+                        </button>
                         <Field
-                            label="Email"
                             type="email"
                             name="email"
                             value={email}
@@ -150,14 +151,10 @@ const PlayersAdminPage = (props) => {
                             error={error}
                         >
                         </Field>
-                        <div>
-                            <button type="button" onClick={() => handleCancelInvit()}>
-                                Annuler
-                            </button>
-                            <button type="submit">
-                                Envoyer
-                            </button>
-                        </div>
+                        <button type="submit" className="sendBtn">
+
+                        </button>
+
                     </form>
                 </div>
 
@@ -184,7 +181,7 @@ const PlayersAdminPage = (props) => {
                             // repetition pour chaque player
                         }
                         {filteredPlayers.map(player => (
-                            <tr scope="row" key={player.id}>
+                            <tr key={player.id}>
                                 <td>{player.user.firstName} {player.user.lastName}</td>
                                 <td>{player.user.email}</td>
                                 <td>{player.user.phone}</td>
