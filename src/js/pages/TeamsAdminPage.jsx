@@ -4,6 +4,7 @@ import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
+import "../../scss/pages/TeamsAdminPage.scss";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -153,46 +154,53 @@ const TeamsAdminPage = (props) => {
                         error={errors.label}
                         required
                     />
-                    <label htmlFor="categorySelect"> Categorie: </label>
-                    <select
-                        id="categoryselect"
-                        name="category"
-                        onChange={handleChange}
-                        placeholder="choix categorie"
-                        required
-                    >
-                        <option> choix de la categorie </option>
-                        {categories.map((category, index)=> (
-                            <option key={index} value={category}>
-                                {category}
-                            </option>
-                            )
-                        )}
-                    </select>
-                    <label htmlFor="coachSelect"> Option: </label>
-                    <select id="coachSelect" name="coach" onChange={handleChange}>
-                        <option value=""> choix du coach </option>
-                        {coachs.map(coach => (
-                                <option key={coach.id} value={coach.id}>
-                                    {coach.user.firstName} {coach.user.lastName}
-                                </option>
-                            )
-                        )}
-                    </select>
-                <div >
-                    <button type="submit" >
-                        Créer
-                    </button>
-                </div>
-            </form>
+                    <div id="select-container">
+                        <div className="select-box" id="select-box-1">
+                            <label htmlFor="categorySelect"> Categorie: </label>
+                            <select
+                                id="categoryselect"
+                                className="form-control"
+                                name="category"
+                                onChange={handleChange}
+                                placeholder="choix categorie"
+                                required
+                            >
+                                <option> choix de la categorie </option>
+                                {categories.map((category, index)=> (
+                                    <option key={index} value={category}>
+                                        {category}
+                                    </option>
+                                    )
+                                )}
+                            </select>
+                        </div>
+                        <div className="select-box">
+                            <label htmlFor="coachSelect"> Coach: </label>
+                            <select id="coachSelect" className="form-control" name="coach" onChange={handleChange}>
+                                <option value=""> choix du coach </option>
+                                {coachs.map(coach => (
+                                        <option key={coach.id} value={coach.id}>
+                                            {coach.user.firstName} {coach.user.lastName}
+                                        </option>
+                                    )
+                                )}
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <button className="btn btn-create" type="submit" >
+                            Créer
+                        </button>
+                    </div>
+                </form>
             </div>
             <div id="teamsBox">
                 {categories.map((cat, index) => (
                     <div key={index} className="catBox">
                         <h3>{cat}</h3>
-                        <table>
+                        <table className="table table-hover">
                             <thead>
-                            <tr>
+                            <tr className="thead-color">
                                 <th>Equipe</th>
                                 <th>Coach</th>
                                 <th></th>

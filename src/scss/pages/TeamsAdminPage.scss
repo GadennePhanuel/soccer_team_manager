@@ -8,7 +8,33 @@
     margin: 5px 5px 20px 5px;
   }
 
+  #createTeam {
+    width : 70%;
+    #select-container{
+      display:flex;
+      flex-direction: row;
+
+      .select-box{
+        width : 50%;
+        
+      }
+    }
+  }
+ 
+  #select-box-1{
+    margin-right: 50px;
+  }
+
+  .btn-create{
+    margin-top: 30px;
+    margin-bottom: 35px;
+    background-color: $second-color;
+    border-color: #2c3e50;
+    color: $base-color;
+  }
+
   #teamsBox {
+    display:flex;
     flex-direction: row;
   }
 
