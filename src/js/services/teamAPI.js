@@ -14,7 +14,7 @@ function findTeam(id){
 
 function postTeam(team) {
     return Axios.post("http://localhost:8000/api/teams", team)
-        .then(response => response.data['hydra:member'])
+       // .then(response => response.data['hydra:member'])
 }
 
 function deleteTeam(id){
@@ -37,7 +37,7 @@ function putTeam(teamId, teamLabel, teamCoach){
                 label: teamLabel,
             }
         )
-        .then(response => response.data['hydra:member'])
+        //.then(response => response.data['hydra:member'])
 }
 
 export default {
