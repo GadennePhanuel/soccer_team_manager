@@ -13,6 +13,7 @@ function findTeam(id){
 
 function postTeam(team) {
     return Axios.post("http://localhost:8000/api/teams", team)
+        .then(response => response.data['hydra:member'])
 }
 
 function deleteTeam(id){
@@ -26,17 +27,16 @@ function deleteCoachOnTeam(id) {
     )
 }
 
-function putTeam(team){
+function putTeam(teamId, teamLabel, teamCoach){
     console.log("test-Axios");
     return Axios
-        .put("http://localhost:8000/api/teams/" + team.id,
+        .put("http://localhost:8000/api/teams/" + teamId,
             {
-                club: team.club.id,
-                coach: team.coach.id,
-                label: team.label,
-                category: team.category
+                coach: teamCoach,
+                label: teamLabel,
             }
         )
+        .then(response => response.data['hydra:member'])
 }
 
 export default {
