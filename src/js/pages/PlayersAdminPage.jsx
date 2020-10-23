@@ -40,7 +40,6 @@ const PlayersAdminPage = (props) => {
             .catch(error => console.log(error.response));
 
         let select = document.getElementById('team');
-        console.log(select)
         if (select !== null) {
             if (select.options[select.selectedIndex] !== undefined) {
                 let teamId = select.options[select.selectedIndex].value;
@@ -115,20 +114,13 @@ const PlayersAdminPage = (props) => {
 
 
     const handleChoice = (player) => {
-
         playerAPI.setTeamToPlayer(player, currentTeamId)
             .then(response => {
-                console.log(response.data)
                 playerAPI.findAllPlayers()
                     .then(data => setPlayers(data))
                     .catch(error => console.log(error.response));
-                //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
-                //setPlayers(...players.push(player) )
-
             })
             .catch(error => console.log(error.response))
-
-
     }
 
 
@@ -138,36 +130,36 @@ const PlayersAdminPage = (props) => {
 
             <h1>Page des joueurs</h1>
 
-            <div className="div-invit">
-                {role === 'ROLE_ADMIN' &&
+            {role === 'ROLE_ADMIN' &&
+                <div className="div-invit">
                     <div id="btn-invit">
                         <button className="btn btn-primary" onClick={() => handleInvit()}>
                             Inviter un nouveau joueur
                     </button>
                     </div>
-                }
-                <div id="form-invit" hidden>
-                    <form onSubmit={handleSubmit}>
-                        <button type="button" onClick={() => handleCancelInvit()} className="cancelBtn">
+                    <div id="form-invit" hidden>
+                        <form onSubmit={handleSubmit}>
+                            <button type="button" onClick={() => handleCancelInvit()} className="cancelBtn">
 
-                        </button>
-                        <Field
-                            type="email"
-                            name="email"
-                            value={email}
-                            placeholder="adresse email"
-                            onChange={handleChange}
-                            error={error}
-                        >
-                        </Field>
-                        <button type="submit" className="sendBtn">
+                            </button>
+                            <Field
+                                type="email"
+                                name="email"
+                                value={email}
+                                placeholder="adresse email"
+                                onChange={handleChange}
+                                error={error}
+                            >
+                            </Field>
+                            <button type="submit" className="sendBtn">
 
-                        </button>
+                            </button>
 
-                    </form>
+                        </form>
+                    </div>
+
                 </div>
-
-            </div>
+            }
 
             <div>
                 <div id="div-search" className="form-group">
@@ -180,8 +172,8 @@ const PlayersAdminPage = (props) => {
                             <th scope="col">Email</th>
                             <th scope="col">Telephone</th>
                             <th scope="col">Equipe</th>
-                            {role === 'ROLE_ADMIN' &&
-                                <th />
+                            {(role === 'ROLE_ADMIN' || role === 'ROLE_COACH') &&
+                                <th> </th>
                             }
                         </tr>
                     </thead>
@@ -191,11 +183,11 @@ const PlayersAdminPage = (props) => {
                         }
                         {filteredPlayers.map(player => (
                             <tr key={player.id}>
-                                <td>{player.user.firstName} {player.user.lastName}</td>
+                                <td>{player.user.lastName + ' ' + player.user.firstName}</td>
                                 <td>{player.user.email}</td>
                                 <td>{player.user.phone}</td>
                                 <td>{
-                                    player.team ? player.team.label : 'non attribué'
+                                    player.team ? (player.team.label + ' ' + player.team.category) : 'non attribué'
                                 }
                                 </td>
                                 {role === 'ROLE_ADMIN' &&
@@ -207,12 +199,12 @@ const PlayersAdminPage = (props) => {
                                         </button>
                                     </td>
                                 }
-                                {(role === 'ROLE_COACH' && currentTeamId) &&
+                                {(role === 'ROLE_COACH') &&
                                     <td>
                                         {!player.team &&
-                                            <button onClick={() => handleChoice(player)} >
+                                            <button onClick={() => handleChoice(player)} className="btn btn-success">
                                                 Selectionner
-                                        </button>
+                                            </button>
                                         }
                                     </td>
                                 }
