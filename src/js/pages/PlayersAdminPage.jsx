@@ -32,11 +32,23 @@ const PlayersAdminPage = (props) => {
         setEmail(value);
     };
 
+    const [currentTeamId, setCurrentTeamId] = useState('')
+
     useEffect(() => {
         playerAPI.findAllPlayers()
             .then(data => setPlayers(data))
             .catch(error => console.log(error.response));
-    }, [])
+
+        let select = document.getElementById('team');
+        console.log(select)
+        if (select !== null) {
+            if (select.options[select.selectedIndex] !== undefined) {
+                let teamId = select.options[select.selectedIndex].value;
+                setCurrentTeamId(teamId)
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [document.getElementById('team')])
 
 
     const handleDelete = id => {
@@ -101,13 +113,10 @@ const PlayersAdminPage = (props) => {
 
     }
 
-    const handleChoice = (player) => {
-        console.log(player)
-        //je récupére l'id de la team courante
-        let select = document.getElementById('team');
-        let teamId = select.options[select.selectedIndex].value;
 
-        playerAPI.setTeamToPlayer(player, teamId)
+    const handleChoice = (player) => {
+
+        playerAPI.setTeamToPlayer(player, currentTeamId)
             .then(response => {
                 console.log(response.data)
                 playerAPI.findAllPlayers()
@@ -198,7 +207,7 @@ const PlayersAdminPage = (props) => {
                                         </button>
                                     </td>
                                 }
-                                {role === 'ROLE_COACH' &&
+                                {(role === 'ROLE_COACH' && currentTeamId) &&
                                     <td>
                                         {!player.team &&
                                             <button onClick={() => handleChoice(player)} >
