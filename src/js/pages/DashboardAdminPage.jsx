@@ -23,6 +23,7 @@ const DashboardAdminPage = (props) => {
     return (
         <>
             <h1>Dashboard Admin</h1>
+            <p>page d'accueil, doit recevoir les news du club</p>
         </>
     );
 }

@@ -1,0 +1,15 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+.TeamsAdminPage{
+  @include component-size(flex, column, center, flex-start);
+
+  h1 {
+    margin: 5px 5px 20px 5px;
+  }
+
+  #teamsBox {
+    flex-direction: row;
+  }
+
+}
