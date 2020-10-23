@@ -4,7 +4,6 @@ import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
-import '../../scss/pages/TeamsAdminPage.scss';
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -34,7 +33,7 @@ const TeamsAdminPage = (props) => {
     });
 
     const categories =  ["Cadet", "Junior", "Senior"]
-    const [refreshKey, setRefreshKey] = useState(0);
+
     useEffect(() => {
       //  setCategories(["Cadet", "Junior", "Senior"]);
         teamAPI.findAllTeams()
@@ -43,7 +42,7 @@ const TeamsAdminPage = (props) => {
         coachAPI.findAllCoach()
             .then(data => setCoachs(data))
             .catch(error => console.log(error.response))
-    },[refreshKey]);
+    },[]);
     //todo [teams] effet executé que si teams change! a moi de ne changer teams qu'avec parcimonie et controler les dependences et effets de bords!
 
     const handleChange = (event) => {
@@ -59,7 +58,7 @@ const TeamsAdminPage = (props) => {
         }
         editTeam.club = "/api/clubs/"+clubId
         teamAPI.postTeam(editTeam)
-            .then(setRefreshKey(oldKey => oldKey +1))
+          //  .then(setRefreshKey(oldKey => oldKey +1))
             .then(data => [...teams, data])
             .catch(error => console.log(error.response))
     }
@@ -89,14 +88,13 @@ const TeamsAdminPage = (props) => {
             //setEditTeam({ ...editTeam, coach: "/api/coaches/"+editTeam.coach })
         }
         else{
-            editTeam.coach = null
+            setEditTeam({ ...editTeam, coach: null })
         }
         console.log(editTeam)
 
         teamAPI.putTeam(id, editTeam.label, editTeam.coach)
-            .then(setRefreshKey(oldKey => oldKey +1))
-            //.then(setTeams(teams.filter((tm) => tm.id !== editTeam.id)))
-            //.then(data => console.log(data))
+            .then(setTeams(teams.filter((tm) => tm.id !== editTeam.id)))
+            .then(data => console.log(data))
            // .then(data => [...teams, data])
             .catch(error => console.log(error.response))
     }
