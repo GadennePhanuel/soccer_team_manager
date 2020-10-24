@@ -199,7 +199,7 @@ const PlayersAdminPage = (props) => {
                                         </button>
                                     </td>
                                 }
-                                {(role === 'ROLE_COACH') &&
+                                {(role === 'ROLE_COACH' && currentTeamId !== '') &&
                                     <td>
                                         {!player.team &&
                                             <button onClick={() => handleChoice(player)} className="btn btn-success">
