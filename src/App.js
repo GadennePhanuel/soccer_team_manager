@@ -18,6 +18,7 @@ import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
 import CurrentUser from "./js/components/CurrentUser";
 import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
+import TeamContext from "./js/contexts/TeamContext";
 
 function App() {
   AuthAPI.setup();
@@ -26,36 +27,45 @@ function App() {
     AuthAPI.isAuthenticated()
   );
 
+  const [currentTeamId, setCurrentTeamId] = useState('')
+
   const SideNavWithRouter = withRouter(SideNav);
 
   return (
     <AuthContext.Provider
       value={{
-        isAuthenticated: isAuthenticated,
-        setIsAuthenticated: setIsAuthenticated,
+        isAuthenticated,
+        setIsAuthenticated,
       }}
     >
       <HashRouter>
         <SideNavWithRouter />
-        <CurrentUser />
-        <main className="container-fluid">
-          <Switch>
-            <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
-            <Route path="/RegisterAdmin" component={RegisterAdminPage} />
-            <Route path="/login" component={LoginPage} />
-            <Route path="/registerUser/:token" component={RegisterUserPage} />
-            <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
-            <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
-            <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
-            <PrivateRoute path="/coachs" component={CoachAdminPage} />
-            <PrivateRoute path="/players" component={PlayersAdminPage} />
-            <PrivateRoute path="/teams" component={TeamsAdminPage} />
-            <PrivateRoute path="/mail" component={MailPage} />
-            <PrivateRoute path="/profil" component={ProfilForm} />
-            <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
-            <Route path="/" component={LoginPage} />
-          </Switch>
-        </main>
+        <TeamContext.Provider
+          value={{
+            currentTeamId,
+            setCurrentTeamId
+          }}
+        >
+          <CurrentUser />
+          <main className="container-fluid">
+            <Switch>
+              <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
+              <Route path="/RegisterAdmin" component={RegisterAdminPage} />
+              <Route path="/login" component={LoginPage} />
+              <Route path="/registerUser/:token" component={RegisterUserPage} />
+              <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
+              <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
+              <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
+              <PrivateRoute path="/coachs" component={CoachAdminPage} />
+              <PrivateRoute path="/players" component={PlayersAdminPage} />
+              <PrivateRoute path="/teams" component={TeamsAdminPage} />
+              <PrivateRoute path="/mail" component={MailPage} />
+              <PrivateRoute path="/profil" component={ProfilForm} />
+              <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
+              <Route path="/" component={LoginPage} />
+            </Switch>
+          </main>
+        </TeamContext.Provider>
       </HashRouter>
     </AuthContext.Provider>
   );

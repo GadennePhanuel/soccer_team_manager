@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
 import "../../scss/pages/PlayersAdminPage.scss";
+import TeamContext from "../contexts/TeamContext";
 
 
 const PlayersAdminPage = (props) => {
@@ -32,22 +33,13 @@ const PlayersAdminPage = (props) => {
         setEmail(value);
     };
 
-    const [currentTeamId, setCurrentTeamId] = useState('')
+    const { currentTeamId } = useContext(TeamContext)
 
     useEffect(() => {
         playerAPI.findAllPlayers()
             .then(data => setPlayers(data))
             .catch(error => console.log(error.response));
-
-        let select = document.getElementById('team');
-        if (select !== null) {
-            if (select.options[select.selectedIndex] !== undefined) {
-                let teamId = select.options[select.selectedIndex].value;
-                setCurrentTeamId(teamId)
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [document.getElementById('team')])
+    }, [])
 
 
     const handleDelete = id => {
