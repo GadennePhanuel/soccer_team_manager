@@ -8,4 +8,57 @@
     h1 {
         margin: 5px 5px 20px 5px;
     }
+
+    .cardsDiv{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+    .card{
+        margin: 10px 5px;
+        width: calc(20%);
+        border: solid 2px $fifth-color;
+        border-radius: 0px;
+    }
+
+    
+    .user-picture {
+        height: 140px;
+        background: url("../img/user.png") center center no-repeat;
+        background-size: contain;
+    }
+    
+    img{
+        height: 140px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .picture-profil{
+        display: flex;
+        justify-content: center;
+    }
+
+    .card-body{
+        border-top: 2px solid $fifth-color;
+        padding: 0px;
+
+        h5{
+            text-align: center;
+            padding: 5px;
+        }
+
+        .btns-card{
+        
+            .btn-infos{
+                width: 50%;
+                border-radius: 0 0 0 0px;
+                border-color: $second-color;
+            }
+            .btn-exclude{
+                width: 50%;
+                border-radius: 0 0 0px 0;
+                border-color: $third-color;
+            }
+        }
+    }
 }
