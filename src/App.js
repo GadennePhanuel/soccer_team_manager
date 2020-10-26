@@ -19,6 +19,7 @@ import RegisterUserPage from "./js/pages/RegisterUserPage";
 import CurrentUser from "./js/components/CurrentUser";
 import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
+import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 
 function App() {
   AuthAPI.setup();
@@ -49,10 +50,11 @@ function App() {
           <CurrentUser />
           <main className="container-fluid">
             <Switch>
+              <Route path="/registerUser/:token" component={RegisterUserPage} />
               <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
+              <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
               <Route path="/RegisterAdmin" component={RegisterAdminPage} />
               <Route path="/login" component={LoginPage} />
-              <Route path="/registerUser/:token" component={RegisterUserPage} />
               <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
               <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
               <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />

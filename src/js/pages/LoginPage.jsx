@@ -5,9 +5,21 @@ import Field from "../components/forms/Field";
 import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
 import "../../scss/pages/Login.scss";
+import usersAPI from "../services/usersAPI";
 
 const LoginPage = ({ history }) => {
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+
+  if (isAuthenticated === true) {
+    const role = usersAPI.checkRole()
+    if (role === 'ROLE_ADMIN') {
+      history.replace('/dashboardAdmin')
+    } else if (role === 'ROLE_COACH') {
+      history.replace('/dashboardCoach')
+    } else {
+      history.replace('/dashboardPlayer')
+    }
+  }
 
   const [credentials, setCredential] = useState({
     username: "",
