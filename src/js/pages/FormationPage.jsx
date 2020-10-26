@@ -1,9 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import "../../scss/pages/FormationPage.scss";
 
 import { useDrag } from 'react-dnd'
+import TeamContext from "../contexts/TeamContext";
+import teamAPI from "../services/teamAPI";
 
 const FormationPage = (props) => {
     authAPI.setup();
@@ -14,6 +16,9 @@ const FormationPage = (props) => {
     } else if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
     }
+    const { currentTeamId } = useContext(TeamContext)
+    const [team, setTeam] = useState({})
+    const [players, setPlayers] = useState([])
 
     const [elementDrag, setElementDrag] = useState()
 
@@ -23,6 +28,11 @@ const FormationPage = (props) => {
 
     useEffect(() => {
         initDraggable();
+        teamAPI.findTeam(currentTeamId)
+            .then(response => {
+                setTeam(response.data)
+                setPlayers(response.data.players)
+            })
         // const box = document.querySelectorAll('.case');
     }, [])
 
@@ -67,6 +77,14 @@ const FormationPage = (props) => {
     return (
         <div className="FormationPage wrapper_container">
             <h1>Formation Tactique</h1>
+            <div id="playersList">
+                {players.map(player => (
+                       <div key={player.id} draggable={true}>
+
+                       </div>
+                    )
+                )}
+            </div>
             <div className="box case"
                  onDragOver={dragOver}
                  onDragEnter={dragEnter}
