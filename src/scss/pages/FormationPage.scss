@@ -4,6 +4,36 @@
 .FormationPage {
   @include component-size(flex, column, center, flex-start);
 
+  .flexBox {
+    display:flex;
+    flex-direction: row;
+    justify-content:space-between;
+    align-items: center;
+  }
+
+  #playerList {
+    border: solid 1px black;
+  }
+
+  #soccerField {
+    border: solid 1px black;
+    width:512px;
+    height:512px;
+    background: url("../img/soccer-field.png")center center no-repeat;
+    //background-size: 40%;
+  }
+
+  .fieldPos {
+    position:relative;
+  }
+  .playerCard {
+    border: solid 1px black;
+    position:relative;
+    background-color:teal;
+    top: 5px;
+    left: 5px;
+  }
+
   .base {
     position:relative;
     background-color:teal;
@@ -19,8 +49,6 @@
 
   .case {
     display: inline-block;
-    height: 150px;
-    width: 150px;
     margin: 10px;
     border: solid 1px black;
     background-color:white;

@@ -77,7 +77,7 @@ const SideNav = (props) => {
                 <NavLink to="/myPlayers" className="myPlayers">
                 </NavLink>
 
-                <NavLink to="/formation" className={"formation"} >
+                <NavLink to="/formation" className="formation">
                 </NavLink>
 
                 <NavLink to="#" >

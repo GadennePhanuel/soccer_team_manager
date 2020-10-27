@@ -20,21 +20,28 @@ const FormationPage = (props) => {
     const [team, setTeam] = useState({})
     const [players, setPlayers] = useState([])
 
+    const [tactic, setTactic] = useState();
     const [elementDrag, setElementDrag] = useState()
 
     const initDraggable = () => {
         setElementDrag(document.querySelector('.base'));
     }
 
+    const tacticList = ["5-3-2", "5-4-1", "3-5-2", "4-4-2-losange", "4-4-2-carré", "4-3-3", "4-5-1"]
+
     useEffect(() => {
         initDraggable();
-        teamAPI.findTeam(currentTeamId)
-            .then(response => {
-                setTeam(response.data)
-                setPlayers(response.data.players)
-            })
+        if (currentTeamId !== '') {
+            teamAPI.findTeam(currentTeamId)
+                .then(response => {
+                    setTeam(response.data)
+                    setPlayers(response.data.players)
+                    console.log(team)
+                    console.log(players)
+                })
+        }
         // const box = document.querySelectorAll('.case');
-    }, [])
+    }, [currentTeamId])
 
     const dragStart = (event) => {
        // console.log("start");
@@ -48,7 +55,7 @@ const FormationPage = (props) => {
     const dragEnd = (event) => {
         // console.log("end");
         //let target = event.currentTarget;
-        event.currentTarget.className = 'base';
+        event.currentTarget.className = 'playerCard';
     }
 
     const dragOver = (event) => {
@@ -63,29 +70,76 @@ const FormationPage = (props) => {
     }
 
     const dragLeave = (event) => {
-        event.currentTarget.className = "case"
+        event.currentTarget.className = "playerCard"
         console.log("leave");
     }
 
     const dragDrop = (event) => {
         let target = event.currentTarget;
-        target.className = "case";
+        target.className = "playerCard";
         target.append(elementDrag);
         console.log("drop");
     }
 
+    //todo refaire le dragAndDrop avec react Dnd, pour que ca soit fonctionnel sur tablette
     return (
         <div className="FormationPage wrapper_container">
-            <h1>Formation Tactique</h1>
-            <div id="playersList">
-                {players.map(player => (
-                       <div key={player.id} draggable={true}>
-
-                       </div>
-                    )
-                )}
+            <div className="flexBox">
+                <h1>Formation Tactique</h1>
+                <h2>
+                    {currentTeamId === "" ? "Pas d'équipe à charge" : team.label + ' ' + team.category}
+                </h2>
             </div>
-            <div className="box case"
+            <div className="flexBox">
+                <div id="tacticBox">
+                    <div id="soccerField">
+                        {/*
+                        //todo faire les composant fieldPosition avec un placement relatif dynamique
+                        */}
+                    </div>
+                </div>
+                <div id="playersList">
+                    {(players.length < 11) &&
+                        <p>Une équipe doit possèder 11 joueurs minimum.</p>
+                    }
+                    {players && players.map(player => (
+                        <div className="playerCard" key={player.id} draggable={true} onDragStart={dragStart} onDragEnd={dragEnd}>
+                            <p>{player.user.firstName + " " + player.user.lastName}</p>
+                        </div>
+                    ))
+                    }
+                    {/*{if(currentTeamId !== '') {
+                    if(players !== null && players.length > 0) {
+                        if(players.length < 11) {
+                            <p>Une équipe doit possèder 11 joueurs minimum.</p>
+                        }
+
+                        {players.map(player => (
+                            <div key={player.id} draggable={true}>
+                            <p>{player.user.firstName + " " + player.user.lastName}</p>
+                            </div>
+                            ))
+                        }
+                    }
+                    else {
+                        <p>L'équipe selectionné ne dispose pas de joueurs.</p>
+                    }
+                }
+                else  {
+                    <p>Veuillez selectionner une équipe.</p>
+                }}*/}
+                </div>
+                <div id="tacticMenu">
+                    <select name="tacticChoice" id="">
+                        {tacticList.map((tactic, index) => (
+                                <option key={index} value={tactic}>{tactic}</option>
+                            )
+                        )}
+                    </select>
+                </div>
+            </div>
+
+            {/*<div className="box case"
                  onDragOver={dragOver}
                  onDragEnter={dragEnter}
                  onDragLeave={dragLeave}
@@ -113,7 +167,7 @@ const FormationPage = (props) => {
                  onDragLeave={dragLeave}
                  onDrop={dragDrop}
             >
-            </div>
+            </div>*/}
         </div>
     )
 }
