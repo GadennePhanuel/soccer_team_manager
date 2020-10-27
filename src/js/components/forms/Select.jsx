@@ -9,7 +9,7 @@ const Select = ({ name, label, value, error, onChange, children }) => {
                 name={name}
                 id={name}
                 value={value}
-                className={"form-control" + (error && " is-invalid")}
+                className={"form-control " + (error && " is-invalid")}
             >
                 {children}
             </select>
