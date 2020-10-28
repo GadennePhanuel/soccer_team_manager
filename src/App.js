@@ -16,7 +16,9 @@ import MailPage from "./js/pages/MailPage";
 import ClubFormPage from "./js/pages/ClubFormPage";
 import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
+import EncountersPage from "./js/pages/EncountersPage";
 import CurrentUser from "./js/components/CurrentUser";
+
 
 function App() {
   AuthAPI.setup();
@@ -47,6 +49,7 @@ function App() {
             <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
             <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
             <PrivateRoute path="/coachs" component={CoachAdminPage} />
+            <PrivateRoute path="/encounterManagement" component={EncountersPage} />
             <PrivateRoute path="/players" component={PlayersAdminPage} />
             <PrivateRoute path="/teams" component={TeamsAdminPage} />
             <PrivateRoute path="/mail" component={MailPage} />

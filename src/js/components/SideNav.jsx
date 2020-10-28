@@ -66,7 +66,7 @@ const SideNav = (props) => {
                   Entrainement
                   </NavLink>
 
-                <NavLink to="#" >
+                <NavLink to="/encounterManagement" className="encounter-management">
                   Match
                   </NavLink>
               </>
