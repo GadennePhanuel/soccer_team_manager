@@ -97,7 +97,7 @@ const ProfilForm = (props) => {
                          * FAIRE REQUETE HTTP POUR RECUPERER LA PHOTO DE PROFIL EN BINAIRE ET L AFFICHER 
                          * 
                          */
-                        if(playerItem.picture !== null && playerItem.picture !== ""){
+                        if(playerItem.picture !== null && playerItem.picture !== "" && playerItem.picture){
                             playerAPI.fetchProfilePicture(playerItem.picture)
                                 .then(response => {
                                                           

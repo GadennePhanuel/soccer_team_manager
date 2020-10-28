@@ -173,9 +173,14 @@ const MailPage = (props) => {
         mailAPI.sendMail(email)
             .then(response => {
                 console.log(response)
+                //TODO : FLASH SUCCES  & REDIRECTION ??
             })
             .catch(error => {
-                console.log(error.response.data.violations)
+                console.log(error.response)
+                if (error.response.status === 500) {
+                    console.log("une ou plusieur adresses destinataires fausses ou inactive, impossible d'envoyer le message...")
+                    //TODO: message d'erreur, une ou plusieurs adresses destinataires fausses ou inactive, message non envoyé !
+                }
                 if (error.response.data.violations) {
                     if (error.response.data.violations.receivers) {
                         apiErrors.receivers = "Veuillez sélectionner au moins un destinataire";

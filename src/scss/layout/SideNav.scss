@@ -48,6 +48,11 @@
     background-size: 35%;
   }
 
+  .myPlayers{
+    background: url("../img/person.png") center center no-repeat;
+    background-size: 35%;
+  }
+
   .teams {
     background: url("../img/team.png") center center no-repeat;
     background-size: 40%;
@@ -60,6 +65,16 @@
 
   .profil {
     background: url("../img/profile.png") center center no-repeat;
+    background-size: 40%;
+  }
+
+  .stats{
+    background: url("../img/stats.png") center center no-repeat;
+    background-size: 40%;
+  }
+
+  .formation{
+    background: url("../img/formation.png") center center no-repeat;
     background-size: 40%;
   }
 

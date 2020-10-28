@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
-import Axios from "axios";
 import "../../scss/pages/PlayersAdminPage.scss";
+import TeamContext from "../contexts/TeamContext";
 
 
 const PlayersAdminPage = (props) => {
@@ -32,6 +32,8 @@ const PlayersAdminPage = (props) => {
         const { value } = event.currentTarget;
         setEmail(value);
     };
+
+    const { currentTeamId } = useContext(TeamContext)
 
     useEffect(() => {
         playerAPI.findAllPlayers()
@@ -102,25 +104,15 @@ const PlayersAdminPage = (props) => {
 
     }
 
-    const handleChoice = (player) => {
-        console.log(player)
-        //je récupére l'id de la team courante
-        let select = document.getElementById('team');
-        let teamId = select.options[select.selectedIndex].value;
 
-        playerAPI.setTeamToPlayer(player, teamId)
+    const handleChoice = (player) => {
+        playerAPI.setTeamToPlayer(player, currentTeamId)
             .then(response => {
-                console.log(response.data)
                 playerAPI.findAllPlayers()
                     .then(data => setPlayers(data))
                     .catch(error => console.log(error.response));
-                //setPlayers(players.filter(playerOrigin => playerOrigin.id !== player.id))
-                //setPlayers(...players.push(player) )
-
             })
             .catch(error => console.log(error.response))
-
-
     }
 
 
@@ -128,40 +120,38 @@ const PlayersAdminPage = (props) => {
     return (
         <div className="wrapper_container PlayersAdminPage">
 
-            <h1>Page des joueurs</h1>
+            <h1>Joueurs du club</h1>
 
-            <div className="div-invit">
-                {role === 'ROLE_ADMIN' &&
-                    <div>
-                        <button className="btn btn-invit" onClick={() => handleInvit()}>
+            {role === 'ROLE_ADMIN' &&
+                <div className="div-invit">
+                    <div id="btn-invit">
+                        <button className="btn btn-primary" onClick={() => handleInvit()}>
                             Inviter un nouveau joueur
                     </button>
                     </div>
-                }
-                <div id="form-invit" hidden>
-                    <form onSubmit={handleSubmit}>
-                        <Field
-                            label="Email"
-                            type="email"
-                            name="email"
-                            value={email}
-                            placeholder="adresse email"
-                            onChange={handleChange}
-                            error={error}
-                        >
-                        </Field>
-                        <div>
-                            <button type="button" onClick={() => handleCancelInvit()}>
-                                Annuler
-                            </button>
-                            <button type="submit">
-                                Envoyer
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <div id="form-invit" hidden>
+                        <form onSubmit={handleSubmit}>
+                            <button type="button" onClick={() => handleCancelInvit()} className="cancelBtn">
 
-            </div>
+                            </button>
+                            <Field
+                                type="email"
+                                name="email"
+                                value={email}
+                                placeholder="adresse email"
+                                onChange={handleChange}
+                                error={error}
+                            >
+                            </Field>
+                            <button type="submit" className="sendBtn">
+
+                            </button>
+
+                        </form>
+                    </div>
+
+                </div>
+            }
 
             <div>
                 <div id="div-search" className="form-group">
@@ -174,8 +164,8 @@ const PlayersAdminPage = (props) => {
                             <th scope="col">Email</th>
                             <th scope="col">Telephone</th>
                             <th scope="col">Equipe</th>
-                            {role === 'ROLE_ADMIN' &&
-                                <th />
+                            {(role === 'ROLE_ADMIN' || role === 'ROLE_COACH') &&
+                                <th> </th>
                             }
                         </tr>
                     </thead>
@@ -184,12 +174,12 @@ const PlayersAdminPage = (props) => {
                             // repetition pour chaque player
                         }
                         {filteredPlayers.map(player => (
-                            <tr scope="row" key={player.id}>
-                                <td>{player.user.firstName} {player.user.lastName}</td>
+                            <tr key={player.id}>
+                                <td>{player.user.lastName + ' ' + player.user.firstName}</td>
                                 <td>{player.user.email}</td>
                                 <td>{player.user.phone}</td>
                                 <td>{
-                                    player.team ? player.team.label : 'non attribué'
+                                    player.team ? (player.team.label + ' ' + player.team.category) : 'non attribué'
                                 }
                                 </td>
                                 {role === 'ROLE_ADMIN' &&
@@ -201,12 +191,12 @@ const PlayersAdminPage = (props) => {
                                         </button>
                                     </td>
                                 }
-                                {role === 'ROLE_COACH' &&
+                                {(role === 'ROLE_COACH' && currentTeamId !== '') &&
                                     <td>
                                         {!player.team &&
-                                            <button onClick={() => handleChoice(player)} >
+                                            <button onClick={() => handleChoice(player)} className="btn btn-success">
                                                 Selectionner
-                                        </button>
+                                            </button>
                                         }
                                     </td>
                                 }

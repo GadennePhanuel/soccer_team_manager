@@ -5,6 +5,7 @@ import usersAPI from '../services/usersAPI';
 import Select from '../components/forms/Select';
 import teamAPI from '../services/teamAPI';
 import "../../scss/components/CurrentUser.scss";
+import TeamContext from '../contexts/TeamContext';
 
 const CurrentUser = (props) => {
     const { isAuthenticated } = useContext(AuthContext);
@@ -30,8 +31,19 @@ const CurrentUser = (props) => {
 
             if (usersAPI.checkRole() === "ROLE_COACH") {
                 teamAPI.findAllTeams()
-                    .then(data => setTeams(data))
+                    .then(data => {
+                        setTeams(data)
+                        let select = document.getElementById('team')
+
+                        if (select !== null) {
+                            if (select.options[select.selectedIndex] !== undefined) {
+                                let teamId = select.options[select.selectedIndex].value;
+                                setCurrentTeamId(teamId)
+                            }
+                        }
+                    })
                     .catch(error => console.log(error.response))
+
             }
 
         }
@@ -39,11 +51,16 @@ const CurrentUser = (props) => {
     }, [token])
 
 
+    const { setCurrentTeamId } = useContext(TeamContext)
+
 
     const handleChange = (event) => {
         event.preventDefault()
         let select = document.getElementById('team')
-        console.log(select.options[select.selectedIndex].value)
+
+        let teamId = select.options[select.selectedIndex].value;
+        setCurrentTeamId(teamId)
+
 
     }
 
@@ -58,7 +75,6 @@ const CurrentUser = (props) => {
                     <div className="currentUser">
                         <Link to="/profil">{user.firstName} {user.lastName}</Link>
                         <Select
-                            label="Equipe"
                             name="team"
                             onChange={handleChange}
                         >
