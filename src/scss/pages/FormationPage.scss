@@ -1,0 +1,36 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+.FormationPage {
+  @include component-size(flex, column, center, flex-start);
+
+  .base {
+    position:relative;
+    background-color:teal;
+    width: 140px;
+    height: 140px;
+    top: 5px;
+    left: 5px;
+  }
+
+  .taken {
+    border :solid 5px white;
+  }
+
+  .case {
+    display: inline-block;
+    height: 150px;
+    width: 150px;
+    margin: 10px;
+    border: solid 1px black;
+    background-color:white;
+  }
+
+  .hovered {
+    background: white;
+    height: 150px;
+    width: 150px;
+    margin: 10px;
+    border-style:dashed;
+  }
+}
