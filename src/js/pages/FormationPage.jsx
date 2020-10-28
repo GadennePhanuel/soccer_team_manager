@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import "../../scss/pages/FormationPage.scss";
@@ -28,16 +28,19 @@ const FormationPage = (props) => {
 
     useEffect(() => {
         initDraggable();
-        teamAPI.findTeam(currentTeamId)
-            .then(response => {
-                setTeam(response.data)
-                setPlayers(response.data.players)
-            })
-        // const box = document.querySelectorAll('.case');
+        if (currentTeamId !== '') {
+            teamAPI.findTeam(currentTeamId)
+                .then(response => {
+                    console.log(response.data)
+                    setTeam(response.data)
+                    setPlayers(response.data.players)
+                })
+            // const box = document.querySelectorAll('.case');
+        }
     }, [])
 
     const dragStart = (event) => {
-       // console.log("start");
+        // console.log("start");
         let target = event.currentTarget;
         target.className += ' taken';
         setTimeout(() => {
@@ -79,39 +82,39 @@ const FormationPage = (props) => {
             <h1>Formation Tactique</h1>
             <div id="playersList">
                 {players.map(player => (
-                       <div key={player.id} draggable={true}>
+                    <div key={player.id} draggable={true}>
 
-                       </div>
-                    )
+                    </div>
+                )
                 )}
             </div>
             <div className="box case"
-                 onDragOver={dragOver}
-                 onDragEnter={dragEnter}
-                 onDragLeave={dragLeave}
-                 onDrop={dragDrop}
+                onDragOver={dragOver}
+                onDragEnter={dragEnter}
+                onDragLeave={dragLeave}
+                onDrop={dragDrop}
             >
                 <div className="base" draggable={true} onDragStart={dragStart} onDragEnd={dragEnd}>Btn-Test</div>
             </div>
             <div className="box case"
-                 onDragOver={dragOver}
-                 onDragEnter={dragEnter}
-                 onDragLeave={dragLeave}
-                 onDrop={dragDrop}
+                onDragOver={dragOver}
+                onDragEnter={dragEnter}
+                onDragLeave={dragLeave}
+                onDrop={dragDrop}
             >
             </div>
             <div className="box case"
-                 onDragOver={dragOver}
-                 onDragEnter={dragEnter}
-                 onDragLeave={dragLeave}
-                 onDrop={dragDrop}
+                onDragOver={dragOver}
+                onDragEnter={dragEnter}
+                onDragLeave={dragLeave}
+                onDrop={dragDrop}
             >
             </div>
             <div className="box case"
-                 onDragOver={dragOver}
-                 onDragEnter={dragEnter}
-                 onDragLeave={dragLeave}
-                 onDrop={dragDrop}
+                onDragOver={dragOver}
+                onDragEnter={dragEnter}
+                onDragLeave={dragLeave}
+                onDrop={dragDrop}
             >
             </div>
         </div>
