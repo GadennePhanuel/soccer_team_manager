@@ -1,9 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
+import PlayerCard from "../components/formation/PlayerCard";
+import TacticField from "../components/formation/TacticField";
+import FieldPosition from "../components/formation/FieldPosition";
 import "../../scss/pages/FormationPage.scss";
 
-import { useDrag } from 'react-dnd'
+import { useDrag } from 'react-dnd';
 import TeamContext from "../contexts/TeamContext";
 import teamAPI from "../services/teamAPI";
 
@@ -18,7 +21,9 @@ const FormationPage = (props) => {
     }
     const { currentTeamId } = useContext(TeamContext)
     const [team, setTeam] = useState({})
+    //console.log(team)
     const [players, setPlayers] = useState([])
+    //console.log(players)
 
     const [tactic, setTactic] = useState();
     const [elementDrag, setElementDrag] = useState()
@@ -27,7 +32,25 @@ const FormationPage = (props) => {
         setElementDrag(document.querySelector('.base'));
     }
 
-    const tacticList = ["5-3-2", "5-4-1", "3-5-2", "4-4-2-losange", "4-4-2-carré", "4-3-3", "4-5-1"]
+    const tacticTypeList = ["5-3-2", "5-4-1", "3-5-2", "4-4-2-losange", "4-4-2-carré", "4-3-3", "4-5-1"]
+    const [tacticSelected, setTacticSelected] = useState(
+        {
+            id:'',
+            type:'test',
+            teamId:'',
+            pos1Id:1,
+            pos2Id:2,
+            pos3Id:3,
+            pos4Id:4,
+            pos5Id:5,
+            pos6Id:6,
+            pos7Id:7,
+            pos8Id:8,
+            pos9Id:9,
+            pos10Id:10,
+            pos11Id:11,
+        }
+    )
 
     useEffect(() => {
         initDraggable();
@@ -36,8 +59,6 @@ const FormationPage = (props) => {
                 .then(response => {
                     setTeam(response.data)
                     setPlayers(response.data.players)
-                    console.log(team)
-                    console.log(players)
                 })
         }
         // const box = document.querySelectorAll('.case');
@@ -92,20 +113,29 @@ const FormationPage = (props) => {
             </div>
             <div className="flexBox">
                 <div id="tacticBox">
-                    <div id="soccerField">
-                        {/*
+                    <h3>{tacticSelected.type}</h3>
+                    <select name="tacticChoice" id="">
+                        {tacticTypeList.map((tacticType, index) => (
+                                <option key={index} value={tacticType}>{tacticType}</option>
+                            )
+                        )}
+                    </select>
+                    <TacticField tactic={tacticSelected} />
+                    {/*<div id="soccerField">
+
                         //todo faire les composant fieldPosition avec un placement relatif dynamique
-                        */}
-                    </div>
+
+                    </div>*/}
                 </div>
                 <div id="playersList">
                     {(players.length < 11) &&
                         <p>Une équipe doit possèder 11 joueurs minimum.</p>
                     }
                     {players && players.map(player => (
-                        <div className="playerCard" key={player.id} draggable={true} onDragStart={dragStart} onDragEnd={dragEnd}>
+                        <PlayerCard key={player.id} player={player}/>
+                        /*<div className="playerCard" key={player.id} draggable={true} onDragStart={dragStart} onDragEnd={dragEnd}>
                             <p>{player.user.firstName + " " + player.user.lastName}</p>
-                        </div>
+                        </div>*/
                     ))
                     }
                     {/*{if(currentTeamId !== '') {
@@ -128,14 +158,6 @@ const FormationPage = (props) => {
                 else  {
                     <p>Veuillez selectionner une équipe.</p>
                 }}*/}
-                </div>
-                <div id="tacticMenu">
-                    <select name="tacticChoice" id="">
-                        {tacticList.map((tactic, index) => (
-                                <option key={index} value={tactic}>{tactic}</option>
-                            )
-                        )}
-                    </select>
                 </div>
             </div>
 
