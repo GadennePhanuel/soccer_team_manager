@@ -3,7 +3,7 @@ import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import "../../scss/pages/FormationPage.scss";
 
-import { useDrag } from 'react-dnd'
+//import { useDrag } from 'react-dnd'
 import TeamContext from "../contexts/TeamContext";
 import teamAPI from "../services/teamAPI";
 
