@@ -21,6 +21,9 @@ import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 import FormationPage from "./js/pages/FormationPage";
+import { TouchBackend } from "react-dnd-touch-backend";
+import { DndProvider } from "react-dnd";
+
 
 function App() {
   AuthAPI.setup();
@@ -34,44 +37,46 @@ function App() {
   const SideNavWithRouter = withRouter(SideNav);
 
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        setIsAuthenticated,
-      }}
-    >
-      <HashRouter>
-        <SideNavWithRouter />
-        <TeamContext.Provider
-          value={{
-            currentTeamId,
-            setCurrentTeamId
-          }}
-        >
-          <CurrentUser />
-          <main className="container-fluid">
-            <Switch>
-              <Route path="/registerUser/:token" component={RegisterUserPage} />
-              <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
-              <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
-              <Route path="/RegisterAdmin" component={RegisterAdminPage} />
-              <Route path="/login" component={LoginPage} />
-              <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
-              <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
-              <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
-              <PrivateRoute path="/coachs" component={CoachAdminPage} />
-              <PrivateRoute path="/players" component={PlayersAdminPage} />
-              <PrivateRoute path="/teams" component={TeamsAdminPage} />
-              <PrivateRoute path="/mail" component={MailPage} />
-              <PrivateRoute path="/profil" component={ProfilForm} />
-              <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
-              <PrivateRoute path="/formation" component={FormationPage} />
-              <Route path="/" component={LoginPage} />
-            </Switch>
-          </main>
-        </TeamContext.Provider>
-      </HashRouter>
-    </AuthContext.Provider>
+    <DndProvider backend={ TouchBackend }>
+      <AuthContext.Provider
+        value={{
+          isAuthenticated,
+          setIsAuthenticated,
+        }}
+      >
+        <HashRouter>
+          <SideNavWithRouter />
+          <TeamContext.Provider
+            value={{
+              currentTeamId,
+              setCurrentTeamId
+            }}
+          >
+            <CurrentUser />
+            <main className="container-fluid">
+              <Switch>
+                <Route path="/registerUser/:token" component={RegisterUserPage} />
+                <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
+                <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
+                <Route path="/RegisterAdmin" component={RegisterAdminPage} />
+                <Route path="/login" component={LoginPage} />
+                <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
+                <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
+                <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
+                <PrivateRoute path="/coachs" component={CoachAdminPage} />
+                <PrivateRoute path="/players" component={PlayersAdminPage} />
+                <PrivateRoute path="/teams" component={TeamsAdminPage} />
+                <PrivateRoute path="/mail" component={MailPage} />
+                <PrivateRoute path="/profil" component={ProfilForm} />
+                <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
+                <PrivateRoute path="/formation" component={FormationPage} />
+                <Route path="/" component={LoginPage} />
+              </Switch>
+            </main>
+          </TeamContext.Provider>
+        </HashRouter>
+      </AuthContext.Provider>
+    </DndProvider>
   );
 }
 
