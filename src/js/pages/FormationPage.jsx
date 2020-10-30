@@ -102,6 +102,11 @@ const FormationPage = (props) => {
         console.log("drop");
     }
 
+    const touchStart = (event) => {
+        let target = event.currentTarget;
+        target.className += ' taken';
+    }
+
     //todo refaire le dragAndDrop avec react Dnd, pour que ca soit fonctionnel sur tablette
     return (
         <div className="FormationPage wrapper_container">
@@ -161,13 +166,13 @@ const FormationPage = (props) => {
                 </div>
             </div>
 
-            {/*<div className="box case"
+            <div className="box case"
                  onDragOver={dragOver}
                  onDragEnter={dragEnter}
                  onDragLeave={dragLeave}
                  onDrop={dragDrop}
             >
-                <div className="base" draggable={true} onDragStart={dragStart} onDragEnd={dragEnd}>Btn-Test</div>
+                <div className="base" draggable={true} onDragStart={dragStart} onDragEnd={dragEnd} onTouchStartCapture={touchStart} >Btn-Test</div>
             </div>
             <div className="box case"
                 onDragOver={dragOver}
@@ -189,7 +194,7 @@ const FormationPage = (props) => {
                 onDragLeave={dragLeave}
                 onDrop={dragDrop}
             >
-            </div>*/}
+            </div>
         </div>
     )
 }

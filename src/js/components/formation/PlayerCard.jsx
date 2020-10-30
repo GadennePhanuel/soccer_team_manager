@@ -5,32 +5,29 @@ const type = {PLAYERCARD: 'playerCard'}
 
 export default function PlayerCard(props) {
 
-    const[collectedProps, drag] = useDrag({
-        item: props.player.id, type
-    })
-
-    function beginDrag(props){
-        const item = {id : props.player.id}
-        return item
+    const dragStart = (event) => {
+        // console.log("start");
+        let target = event.currentTarget;
+        target.className += ' taken';
+        setTimeout(() => {
+            target.className = 'invisible'
+        }, 0);
     }
 
-    function endDrag(props, monitor, component){
-        if(!monitor.didDrop()){
-            return
-        }
-        const item = monitor.getItem()
-        const dropResult = monitor.getDropResult()
-        //todo? CardActions?
-
+    const touchStartCapture = (event) => {
     }
 
-    function collect(connect, monitor) {
-        return {
-            //appel cette fonction dans le render pour permettre a react de gérer les event Drag
-            connectDragSource: connect.dragSource(), isDragging:monitor.isDragging()
-        }
+    const dragEnd = (event) => {
+        // console.log("end");
+        //let target = event.currentTarget;
+        event.currentTarget.className = 'playerCard';
     }
-    return <div ref={drag}>
+
+    return <div draggable={true}
+                onDragStart={dragStart}
+                onDragEnd={dragEnd}
+                onTouchStartCapture={touchStartCapture}
+    >
         <p>{props.player.user.firstName} {props.player.user.lastName}</p>
     </div>
 }
