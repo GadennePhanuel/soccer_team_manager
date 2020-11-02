@@ -22,6 +22,7 @@ import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 import FormationPage from "./js/pages/FormationPage";
+import TrainingsPage from "./js/pages/TrainingsPage";
 
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
               <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
               <PrivateRoute path="/formation" component={FormationPage} />
               <PrivateRoute path="/encounterManagement" component={EncountersPage} />
+              <PrivateRoute path="/trainings" component={TrainingsPage} />
               <Route path="/" component={LoginPage} />
             </Switch>
           </main>
