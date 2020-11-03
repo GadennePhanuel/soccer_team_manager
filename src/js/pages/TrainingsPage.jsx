@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useEffect } from "react";
+import Calendar from "../components/Calendar";
 
-const TrainingsPage = (props) => {
+
+const TrainingsPage = () => {
+
+    //au chargement de la page on récupére l'id de la currentTeam selectionné
+    // on charge tous les entrainements la concernant
+    // !!!! -> la tableau trainings doit ressembler à ça:  trainings = [ {training.date, training.id ...}, {training.date, training.id ...}, ....]
+
+
+    const onDateClick = (day) => {
+        console.log(day.toLocaleDateString('fr-FR'))
+    }
+
+
     return (
         <div className="wrapper_container TrainingsPage">
-            <h1>Entrainements</h1>
+            <Calendar
+                parentCallBack={onDateClick}
+            >
+            </Calendar>
         </div>
     );
 }

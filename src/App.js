@@ -16,12 +16,10 @@ import MailPage from "./js/pages/MailPage";
 import ClubFormPage from "./js/pages/ClubFormPage";
 import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
-import EncountersPage from "./js/pages/EncountersPage";
 import CurrentUser from "./js/components/CurrentUser";
 import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
-import FormationPage from "./js/pages/FormationPage";
 import TrainingsPage from "./js/pages/TrainingsPage";
 
 
@@ -68,8 +66,6 @@ function App() {
               <PrivateRoute path="/mail" component={MailPage} />
               <PrivateRoute path="/profil" component={ProfilForm} />
               <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
-              <PrivateRoute path="/formation" component={FormationPage} />
-              <PrivateRoute path="/encounterManagement" component={EncountersPage} />
               <PrivateRoute path="/trainings" component={TrainingsPage} />
               <Route path="/" component={LoginPage} />
             </Switch>
