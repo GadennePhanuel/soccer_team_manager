@@ -184,7 +184,7 @@ const TrainingsPage = () => {
         <div className="wrapper_container TrainingsPage">
             <Calendar
                 parentCallBack={onDateClick}
-                events={trainings}
+                eventsT={trainings}
             >
             </Calendar>
 

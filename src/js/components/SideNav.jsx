@@ -98,7 +98,7 @@ const SideNav = (props) => {
                 <NavLink to={"/player/" + player.id + "/stats"} className="stats">
                 </NavLink>
 
-                <NavLink to="/planningPlayer" className="planningPlayer" >
+                <NavLink to={"/player/" + player.id + "/planning"} className="planningPlayer" >
                 </NavLink>
               </>
             )}

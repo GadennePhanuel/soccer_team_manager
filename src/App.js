@@ -58,6 +58,7 @@ function App() {
               <Route path="/registerUser/:token" component={RegisterUserPage} />
               <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
               <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
+              <PrivateRoute path="/player/:id/planning" component={PlanningPlayer} />
               <Route path="/RegisterAdmin" component={RegisterAdminPage} />
               <Route path="/login" component={LoginPage} />
               <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
@@ -72,7 +73,6 @@ function App() {
               <PrivateRoute path="/encountersCoach" component={EncountersPage} />
               <PrivateRoute path="/encountersAdmin" component={EncountersAdminPage} />
               <PrivateRoute path="/trainings" component={TrainingsPage} />
-              <PrivateRoute path="/planningPlayer" component={PlanningPlayer} />
               <Route path="/" component={LoginPage} />
             </Switch>
           </main>
