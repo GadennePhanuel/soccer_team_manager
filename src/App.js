@@ -68,7 +68,6 @@ function App() {
               <PrivateRoute path="/mail" component={MailPage} />
               <PrivateRoute path="/profil" component={ProfilForm} />
               <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
-              <PrivateRoute path="/formation" component={FormationPage} />
               <PrivateRoute path="/encountersCoach" component={EncountersPage} />
               <PrivateRoute path="/encountersAdmin" component={EncountersAdminPage} />
               <PrivateRoute path="/trainings" component={TrainingsPage} />
