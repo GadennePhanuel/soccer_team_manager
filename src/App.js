@@ -17,6 +17,7 @@ import ClubFormPage from "./js/pages/ClubFormPage";
 import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
 import EncountersPage from "./js/pages/EncountersPage";
+import EncountersAdminPage from "./js/pages/EncountersAdminPage";
 import CurrentUser from "./js/components/CurrentUser";
 import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
@@ -68,7 +69,8 @@ function App() {
               <PrivateRoute path="/profil" component={ProfilForm} />
               <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
               <PrivateRoute path="/formation" component={FormationPage} />
-              <PrivateRoute path="/encounterManagement" component={EncountersPage} />
+              <PrivateRoute path="/encountersCoach" component={EncountersPage} />
+              <PrivateRoute path="/encountersAdmin" component={EncountersAdminPage} />
               <Route path="/" component={LoginPage} />
             </Switch>
           </main>

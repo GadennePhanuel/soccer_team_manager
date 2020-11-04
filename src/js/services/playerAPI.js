@@ -7,6 +7,12 @@ function findAllPlayers(){
             .then(response => response.data['hydra:member'])
 }
 
+function findPlayer(id){
+    return Axios
+        .get("http://localhost:8000/api/players/" + id)
+}
+
+
 function deletePlayer(id){
     return Axios
             .delete(PLAYERS_API + "/" + id)
@@ -58,6 +64,7 @@ function setPlayer(player){
 export default {
     sendMailToPlayer,
     findAllPlayers,
+    findPlayer,
     deletePlayer,
     setTeamToPlayer,
     fetchPlayerWithoutId,
