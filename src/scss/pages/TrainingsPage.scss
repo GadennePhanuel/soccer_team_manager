@@ -1,0 +1,11 @@
+@import "../utilities/variables.scss";
+@import "../utilities//mixins.scss";
+
+.TrainingsPage{
+    @include component-size(flex, column, flex-start, flex-start);
+
+    .submit-btn{
+        display: flex;
+        justify-content: space-around;
+    }
+}

@@ -85,8 +85,13 @@ const Calendar = ({ parentCallBack, events = [] }) => {
                         <span className="bg">{formattedDate}</span>
 
                         {events.length > 0 && (
-                            //parcourir le tableau des events, quand event.date == day, afficher le label de l'event dans la cellule 
-                            <span></span>
+                            <div className='events'>
+                                {events.map((eventI, index) => (
+                                    (new Date(eventI.date).toLocaleDateString('fr-FR')) === (new Date(cloneDay).toLocaleDateString('fr-FR')) && (
+                                        <span className="event-item" key={index}>{eventI.id}</span>
+                                    )
+                                ))}
+                            </div>
                         )}
 
 
