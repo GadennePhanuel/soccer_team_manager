@@ -2,19 +2,19 @@ import Axios from "axios";
 import { ENCOUNTERS_API } from "../../config";
 
 
-function findAllEncounters(){
+function findAllEncounters() {
     return Axios
-            .get(ENCOUNTERS_API)
-            .then(response => response.data['hydra:member'])
+        .get(ENCOUNTERS_API)
+        .then(response => response.data['hydra:member'])
 }
 
-function findEncountersById(teamId){
+function findEncountersById(teamId) {
     return Axios.get('http://localhost:8000/api/teams/' + teamId + '/encounters')
 }
 
-function deleteEncounter(id){
+function deleteEncounter(id) {
     return Axios
-            .delete(ENCOUNTERS_API + "/" + id)
+        .delete(ENCOUNTERS_API + "/" + id)
 }
 
 function postEncounter(encounter) {

@@ -84,9 +84,8 @@ const SideNav = (props) => {
                 <NavLink to="/formation" className="formation">
                 </NavLink>
 
-                <NavLink to="#" >
-                  Entrainement
-                  </NavLink>
+                <NavLink to="/trainings" className="trainings">
+                </NavLink>
 
                 <NavLink to="/encountersCoach" className="encounter-management">
                   Match

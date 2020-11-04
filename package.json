@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.20.0",
     "bootswatch": "^4.5.3",
+    "date-fns": "^2.16.1",
     "dateformat": "^3.0.3",
     "env-cmd": "^10.1.0",
     "jwt-decode": "^3.0.0",
