@@ -23,6 +23,7 @@ import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 import TrainingsPage from "./js/pages/TrainingsPage";
+import PlanningPlayer from "./js/pages/PlanningPlayer";
 
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
               <PrivateRoute path="/encountersCoach" component={EncountersPage} />
               <PrivateRoute path="/encountersAdmin" component={EncountersAdminPage} />
               <PrivateRoute path="/trainings" component={TrainingsPage} />
+              <PrivateRoute path="/planningPlayer" component={PlanningPlayer} />
               <Route path="/" component={LoginPage} />
             </Switch>
           </main>
