@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
-import playerAPI from "../services/playerAPI";
+//import playerAPI from "../services/playerAPI";
 import encounterAPI from "../services/encounterAPI";
 import TeamContext from "../contexts/TeamContext";
 import Field from "../components/forms/Field";
@@ -15,7 +15,6 @@ const EncountersPage = (props) => {
 
     const role = usersAPI.checkRole();
     const club = usersAPI.checkClub();
-    
     if (role === 'ROLE_ADMIN') {
         props.history.replace("/dashboardAdmin")
     } else if (role === 'ROLE_PLAYER') {
@@ -31,7 +30,7 @@ const EncountersPage = (props) => {
 
     const [encounters, setEncounters] = useState([]);
     const [team, setTeam] = useState({});
-    const [playerId, setPlayerId] = useState({player: ""})
+    //const [playerId, setPlayerId] = useState({player: ""})
     const [refreshKey, setRefreshKey] = useState([0])
     
 
@@ -66,12 +65,12 @@ const EncountersPage = (props) => {
     }
 
         useEffect(() => {    
-            if(usersAPI.findPlayerId() != ""){
-                setPlayerId(usersAPI.findPlayerId());
-            }
+            // if(usersAPI.findPlayerId() != ""){
+            //     setPlayerId(usersAPI.findPlayerId());
+            // }
 
 
-            if(currentTeamId != ""){
+            if(currentTeamId !== ""){
                 setPutEncounter({...putEncounter, team: "/api/teams/" + currentTeamId})
 
                 teamAPI.findTeam(currentTeamId)
@@ -89,7 +88,8 @@ const EncountersPage = (props) => {
                     }   
             } 
         }
-        ,[currentTeamId, refreshKey])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        ,[currentTeamId,refreshKey])
     
         const handleSubmit = (event) => {
             event.preventDefault()
@@ -243,9 +243,9 @@ const EncountersPage = (props) => {
                 </thead>
                 <tbody>    
                     {
-                    (currentTeamId != "" && encounters != null && role === 'ROLE_COACH') ?(
+                    (currentTeamId !== "" && encounters !== null && role === 'ROLE_COACH') ?(
                         encounters.map(encounter => (  
-                        <tr scope="row" key={encounter.id}>
+                        <tr key={encounter.id}>
                             <td>{team.label}</td>
                             <td>{team.category}</td>
                             <td>

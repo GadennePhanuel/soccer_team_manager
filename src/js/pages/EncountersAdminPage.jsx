@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import encounterAPI from "../services/encounterAPI";
@@ -24,9 +24,8 @@ const EncountersAdminPage = (props) => {
     }
     
 
-    //const [search, setSearch] = useState("");
+
     const [encounters, setEncounters] = useState([]);
-    const [team, setTeam] = useState({});
     const [refreshKey, setRefreshKey] = useState([0])
     const [search, setSearch] = useState("")
     
@@ -88,32 +87,7 @@ const EncountersAdminPage = (props) => {
         }
         ,[refreshKey])
     
-        // const handleSubmit = (event) => {
-        //     event.preventDefault()
-            
-            
-        //     encounterAPI.postEncounter(putEncounter)
-        //         .then(response => {
-        //             setRefreshKey(oldKey => oldKey + 1)
-        //             setError('')
-        //         })
-            
-                
-        //         .catch(error => {
-        //             console.log(error.response)
-        //             const { violations } = error.response.data;
-
-        //             const apiErrors = [''];
-
-        //             if (violations) {
-        //                 violations.forEach((violation) => {
-        //                 apiErrors[violation.propertyPath] = violation.message;
-        //             });
-        //             setError(apiErrors);
-        //         }
-        //     })
-    
-        // }
+        
         
     const handleChange = (event) => {
         const { name, value } = event.currentTarget;
@@ -205,9 +179,9 @@ const EncountersAdminPage = (props) => {
             <tbody>    
                 <tr><td>{console.log(filteredEncounters)}</td></tr>
                 {
-                    (encounters != null && role === 'ROLE_ADMIN') ?(
+                    (encounters !== null && role === 'ROLE_ADMIN') ?(
                     filteredEncounters.map(encounter => (  
-                        <tr scope="row" key={encounter.id}>
+                        <tr key={encounter.id}>
                             <td>
                                 <p>
                                     {encounter.team.label}

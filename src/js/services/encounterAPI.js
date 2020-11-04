@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { API_URL, ENCOUNTERS_API, LOCAL_URL } from "../../config";
+import { ENCOUNTERS_API } from "../../config";
 
 
 function findAllEncounters(){
