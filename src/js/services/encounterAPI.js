@@ -19,12 +19,26 @@ function deleteEncounter(id) {
 
 function postEncounter(encounter) {
     return Axios.post("http://localhost:8000/api/encounters", encounter)
-    // .then(response => response.data['hydra:member'])
+       
+}
+
+function putEncounter(encounterId,teamLabel,dateEncounter, label,category){
+    return Axios
+        .put("http://localhost:8000/api/encounters/" + encounterId,
+            {
+                team: teamLabel,
+                date: dateEncounter,
+                labelOpposingTeam: label,
+                categoryOpposingTeam: category,
+            }
+        )
+        //.then(response => response.data['hydra:member'])
 }
 
 export default {
     findAllEncounters,
     deleteEncounter,
     postEncounter,
+    putEncounter,
     findEncountersById
 }

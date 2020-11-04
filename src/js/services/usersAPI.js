@@ -85,6 +85,13 @@ function findUserId() {
   return userId;
 }
 
+function findPlayerId(){
+  const token = window.localStorage.getItem("authToken");
+  const jwtData = JwtDecode(token)
+  const playerId = jwtData.player
+  return playerId;
+}
+
 export default {
   registerUser,
   registerAdmin,
@@ -94,6 +101,7 @@ export default {
   checkLastName,
   checkFirstName,
   findUserId,
+  findPlayerId,
   putUserClub,
   putUserProfil,
   registerPlayer,

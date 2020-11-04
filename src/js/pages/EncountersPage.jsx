@@ -1,0 +1,352 @@
+import React, { useEffect, useState, useContext } from "react";
+import authAPI from '../services/authAPI';
+import usersAPI from '../services/usersAPI';
+import teamAPI from "../services/teamAPI";
+import playerAPI from "../services/playerAPI";
+import encounterAPI from "../services/encounterAPI";
+import TeamContext from "../contexts/TeamContext";
+import Field from "../components/forms/Field";
+import dateFormat from 'dateformat';
+import "../../scss/pages/TeamsAdminPage.scss";
+
+
+const EncountersPage = (props) => {
+    authAPI.setup();
+
+    const role = usersAPI.checkRole();
+    const club = usersAPI.checkClub();
+    
+    if (role === 'ROLE_ADMIN') {
+        props.history.replace("/dashboardAdmin")
+    } else if (role === 'ROLE_PLAYER') {
+        props.history.replace("/dashboardPlayer")
+    }
+
+
+    if (club === "new") {
+        props.history.replace("/createClub/new")
+    }
+    
+    const { currentTeamId } = useContext(TeamContext);
+
+    const [encounters, setEncounters] = useState([]);
+    const [team, setTeam] = useState({});
+    const [playerId, setPlayerId] = useState({player: ""})
+    const [refreshKey, setRefreshKey] = useState([0])
+    
+
+    const [error, setError] =useState({
+        team: "",
+        date: "",
+        labelOpposingTeam: "",
+        categoryOpposingTeam: ""
+    });
+
+    const [putEncounter, setPutEncounter] = useState({
+        team: "",
+        date: "",
+        labelOpposingTeam: "",
+        categoryOpposingTeam: ""
+    });
+
+    const changeHidden = (btnName, id) => {
+        return document.getElementById(btnName + id).hidden === true ?
+            document.getElementById(btnName + id).hidden = false
+            :
+            document.getElementById(btnName + id).hidden = true
+    }
+
+    function formattedDate(d) {
+        let month = String(d.getMonth() + 1);
+        let day = String(d.getDate());
+        const year = String(d.getFullYear());
+        if (month.length < 2) month = '0' + month;
+        if (day.length < 2) day = '0' + day;
+        return `${day}/${month}/${year}`;
+    }
+
+        useEffect(() => {    
+            if(usersAPI.findPlayerId() != ""){
+                setPlayerId(usersAPI.findPlayerId());
+            }
+
+
+            if(currentTeamId != ""){
+                setPutEncounter({...putEncounter, team: "/api/teams/" + currentTeamId})
+
+                teamAPI.findTeam(currentTeamId)
+                .then(response => {setTeam(response.data)})
+                .catch(error => console.log(error.response));
+
+                //playerAPI.findPlayer()
+
+                if (role === 'ROLE_COACH'){
+                        encounterAPI.findEncountersById(currentTeamId)
+                        //.then(response => console.log(response.data['hydra:member']))
+                        .then(response => setEncounters(response.data['hydra:member']))
+                        .catch(error => console.log(error.response));
+                        
+                    }   
+            } 
+        }
+        ,[currentTeamId, refreshKey])
+    
+        const handleSubmit = (event) => {
+            event.preventDefault()
+            
+            
+            encounterAPI.postEncounter(putEncounter)
+                .then(response => {
+                    setRefreshKey(oldKey => oldKey + 1)
+                    setError('')
+                })
+            
+                
+                .catch(error => {
+                    console.log(error.response)
+                    const { violations } = error.response.data;
+
+                    const apiErrors = [''];
+
+                    if (violations) {
+                        violations.forEach((violation) => {
+                        apiErrors[violation.propertyPath] = violation.message;
+                    });
+                    setError(apiErrors);
+                }
+            })
+    
+        }
+        
+    const handleChange = (event) => {
+        const { name, value } = event.currentTarget;
+        setPutEncounter({...putEncounter,[name]: value});
+    }
+
+    const handleCanceled = (encounterId) => {
+        changeHidden('btn-delete-', encounterId)
+        changeHidden('btn-edit-', encounterId)
+        changeHidden('labelOpposingTeam-', encounterId)
+        changeHidden('categoryOpposingTeam-', encounterId)
+        changeHidden('date-', encounterId)
+        changeHidden('input-labelOpposingTeam-', encounterId)
+        changeHidden('input-categoryOpposingTeam-', encounterId)
+        changeHidden('input-date-', encounterId) 
+        changeHidden('btn-canceled-', encounterId)
+        changeHidden('btn-put-', encounterId)
+    }
+
+    const handleEdit = (encounterId) => {
+        //change le status de certains elements en hidden et inversement
+        changeHidden('btn-delete-', encounterId)
+        changeHidden('btn-edit-', encounterId)
+        changeHidden('labelOpposingTeam-', encounterId)
+        changeHidden('categoryOpposingTeam-', encounterId)
+        changeHidden('date-', encounterId)
+        changeHidden('input-labelOpposingTeam-', encounterId)
+        changeHidden('input-categoryOpposingTeam-', encounterId)
+        changeHidden('input-date-', encounterId) 
+        changeHidden('btn-canceled-', encounterId)
+        changeHidden('btn-put-', encounterId)
+        // recupération des données du match pour les inputs
+            setPutEncounter({
+                ...putEncounter,
+                team: "/api/teams/" + currentTeamId,
+                date: document.getElementById('input-date-' + encounterId).value,
+                labelOpposingTeam: document.getElementById('input-labelOpposingTeam-' + encounterId).value,
+                categoryOpposingTeam: document.getElementById('input-categoryOpposingTeam-' + encounterId).value
+            })
+        
+    }
+
+    const handlePutEncounter = id => {
+        handleCanceled(id)
+        //console.log(putEncounter)
+        //Modifie les données du match
+        encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date,putEncounter.labelOpposingTeam,putEncounter.categoryOpposingTeam)
+        //met à jour le tableau
+            .then(setRefreshKey(oldKey => oldKey + 1))
+            .catch(error => console.log(error.response))
+    }
+
+    const handleDelete = id => {
+        //copie le tableau encounters
+        const originalEncounters = [...encounters];
+
+        //Delete l'affichage du match avant de le delete en bdd
+        setEncounters(encounters.filter(encounter => encounter.id !== id))
+
+        //si la suppression coté serveur n'a pas fonctionné, je raffiche mon tableau initial 
+        encounterAPI.deleteEncounter(id)
+            .then(response => console.log("ok"))
+            .catch(error => {
+                setEncounters(originalEncounters);
+            });
+    };
+
+
+    return (
+        <div className="wrapper_container">
+               <h1>Matchs</h1>
+            {role === 'ROLE_COACH' &&
+            <div id="createEncounter">
+                <form onSubmit={handleSubmit} id="form-encounter" className='formEncounter'>
+                    <Field
+                        type="date"
+                        name="date"
+                        label="date"
+                        placeholder="date du match"
+                        onChange={handleChange}
+                        value={putEncounter.date}
+                        error={error.date}
+                        required
+                    />
+                    <Field
+                        name="labelOpposingTeam"
+                        label="Nom de l'équipe adverse"
+                        placeholder="Nom d'équipe'..."
+                        onChange={handleChange}
+                        value={putEncounter.labelOpposingTeam}
+                        error={error.labelOpposingTeam}
+                        required
+                    />
+                    <Field
+                        name="categoryOpposingTeam"
+                        label="Catégorie"
+                        placeholder="Catégorie..."
+                        onChange={handleChange}
+                        value={putEncounter.categoryOpposingTeam}
+                        error={error.categoryOpposingTeam}
+                        required
+                    />
+                    <div>
+                        <button id="addEncounter" className="btn btn-primary" type="submit" >
+                            Créer un match
+                        </button>
+                    </div>
+                </form>
+            </div>
+            }
+            <table className="table table-hover">
+                <thead>
+                    <tr className="thead-color">
+                        <th scope="col">Notre Equipe</th>
+                        <th scope="col">Categorie</th>
+                        <th scope="col">Adversaire</th>
+                        <th scope="col">Categorie Adverse</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Tactique</th>
+                        {(role === 'ROLE_ADMIN' || role === "ROLE_COACH") &&
+                            <th />
+                        }
+                    </tr>
+                </thead>
+                <tbody>    
+                    {
+                    (currentTeamId != "" && encounters != null && role === 'ROLE_COACH') ?(
+                        encounters.map(encounter => (  
+                        <tr scope="row" key={encounter.id}>
+                            <td>{team.label}</td>
+                            <td>{team.category}</td>
+                            <td>
+                                <p id={"labelOpposingTeam-" + encounter.id}>
+                                    {encounter.labelOpposingTeam}
+                                </p>
+                                <input
+                                    hidden
+                                    type ="text"
+                                    id={"input-labelOpposingTeam-" + encounter.id}
+                                    name="labelOpposingTeam"
+                                    label="Nom de l'équipe adverse"
+                                    placeholder="Nom d'équipe..."
+                                    onChange={handleChange}
+                                    defaultValue={encounter.labelOpposingTeam}
+                                    error={error.labelOpposingTeam}
+                                />
+                            </td>                            
+                            <td>
+                                <p id={"categoryOpposingTeam-" + encounter.id}>
+                                    {encounter.categoryOpposingTeam}
+                                </p>
+                                <input
+                                    hidden
+                                    type="text"
+                                    id={"input-categoryOpposingTeam-" + encounter.id}
+                                    name="categoryOpposingTeam"
+                                    label="Catégorie"
+                                    placeholder="Catégorie..."
+                                    onChange={handleChange}
+                                    defaultValue={encounter.categoryOpposingTeam}
+                                    error={error.categoryOpposingTeam}
+                                    
+                                />
+                            </td>
+                            <td>
+                                <p id={"date-" + encounter.id}>
+                                    {formattedDate( new Date (encounter.date))}
+                                </p>
+                               <input
+                                    hidden
+                                    type="date"
+                                    id={"input-date-" + encounter.id}
+                                    name="date"
+                                    label="date"
+                                    placeholder="date du match"
+                                    onChange={handleChange}
+                                    defaultValue= {dateFormat(encounter.date, "yyyy-mm-dd")}
+                                    error={error.date}
+                                
+                                />
+                            </td>
+                            <td>
+                                {
+                                    encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
+                                }
+                            </td>
+                                
+                            {(encounters !== null &&  role === "ROLE_COACH") &&
+                                <td>
+                                    <button
+                                        onClick={() => handleEdit(encounter.id)}
+                                        id={"btn-edit-" + encounter.id}
+                                        className="btn btn-sm btn-warning">
+                                        editer
+                                    </button>
+                                    <button
+                                        onClick={() => handleDelete(encounter.id)}
+                                        id={"btn-delete-" + encounter.id}
+                                        className="btn btn-sm btn-danger">
+                                        Supprimer
+                                    </button>
+                                    <button
+                                        hidden
+                                        onClick={() => handlePutEncounter(encounter.id)}
+                                        id={"btn-put-" + encounter.id}
+                                        className="btn btn-sm btn-success">
+                                        valider
+                                    </button>
+                                    <button
+                                        hidden
+                                        onClick={() => handleCanceled(encounter.id)}
+                                        id={"btn-canceled-" + encounter.id}
+                                        className="btn btn-sm btn-danger">
+                                        annuler
+                                    </button>
+                                </td>
+                            } 
+                        </tr>
+                        )
+                    )) :<tr>
+                            <td>Aucun match trouvé pour cette équipe</td>
+                        </tr>
+                    }
+                    
+                </tbody>
+            </table>
+
+        </div>
+    );
+
+}
+
+export default EncountersPage;
