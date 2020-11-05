@@ -3,7 +3,6 @@ import React, { useContext } from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import Calendar from "../components/Calendar";
-import Modal from "../components/Modal";
 import AuthContext from '../contexts/AuthContext';
 import encounterAPI from '../services/encounterAPI';
 import usersAPI from '../services/usersAPI';
