@@ -4,7 +4,7 @@ import { addMonths, subMonths, format, startOfWeek, addDays, startOfMonth, endOf
 import { fr } from "date-fns/esm/locale";
 
 
-const Calendar = ({ parentCallBack, events = [] }) => {
+const Calendar = ({ parentCallBack, eventsT = [], eventsE = [], customId = "" }) => {
 
     const [currentDate, setCurrentDate] = useState(new Date())
     const [selectedDate, setSelectedDate] = useState(new Date())
@@ -84,15 +84,23 @@ const Calendar = ({ parentCallBack, events = [] }) => {
                         <span className="number">{formattedDate}</span>
                         <span className="bg">{formattedDate}</span>
 
-                        {events.length > 0 && (
-                            <div className='events'>
-                                {events.map((eventI, index) => (
-                                    (new Date(eventI.date).toLocaleDateString('fr-FR')) === (new Date(cloneDay).toLocaleDateString('fr-FR')) && (
-                                        <span className="event-item" key={index}>{eventI.id}</span>
+                        <div className='events'>
+                            {eventsT.length > 0 && (
+                                eventsT.map((eventTI, index) => (
+                                    (new Date(eventTI.date).toLocaleDateString('fr-FR')) === (new Date(cloneDay).toLocaleDateString('fr-FR')) && (
+                                        <span className="eventT-item" key={index}></span>
                                     )
-                                ))}
-                            </div>
-                        )}
+                                ))
+                            )}
+                            {eventsE.length > 0 && (
+                                eventsE.map((eventEI, index) => (
+                                    (new Date(eventEI.date).toLocaleDateString('fr-FR')) === (new Date(cloneDay).toLocaleDateString('fr-FR')) && (
+                                        <span className="eventE-item" key={index}></span>
+                                    )
+                                ))
+                            )}
+                        </div>
+
 
 
                     </div>
@@ -113,8 +121,11 @@ const Calendar = ({ parentCallBack, events = [] }) => {
 
 
     return (
-        <div className="calendar_container">
+        <div className="calendar_container" id={customId}>
             <div>{header()}</div>
+
+            <div className="legend_events">Entrainement: <span className="legend_eventT-item"></span> Match: <span className="legend_eventE-item"></span></div>
+
             <div>{daysOfWeek()}</div>
             <div>{cells()}</div>
         </div>

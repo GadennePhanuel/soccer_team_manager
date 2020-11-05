@@ -23,6 +23,7 @@ import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 import TrainingsPage from "./js/pages/TrainingsPage";
+import PlanningPlayer from "./js/pages/PlanningPlayer";
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
               <Route path="/registerUser/:token" component={RegisterUserPage} />
               <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
               <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
+              <PrivateRoute path="/player/:id/planning" component={PlanningPlayer} />
               <Route path="/RegisterAdmin" component={RegisterAdminPage} />
               <Route path="/login" component={LoginPage} />
               <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />

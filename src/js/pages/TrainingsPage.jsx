@@ -1,4 +1,3 @@
-import Axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import TeamContext from '../contexts/TeamContext';
 import Calendar from "../components/Calendar";
@@ -6,23 +5,31 @@ import Modal from "../components/Modal";
 import Field from "../components/forms/Field";
 import Textarea from "../components/forms/Textarea";
 import '../../scss/pages/TrainingsPage.scss';
+import trainingsAPI from '../services/trainingsAPI';
+import playerAPI from "../services/playerAPI";
+import trainingMissedsAPI from "../services/trainingMissedsAPI"
 
 const TrainingsPage = () => {
+    const { currentTeamId } = useContext(TeamContext)
 
     const [trainings, setTrainings] = useState([])
-    //au chargement de la page on récupére l'id de la currentTeam selectionné
-    // on charge tous les entrainements la concernant
-    // !!!! -> la tableau trainings doit ressembler à ça:  trainings = [ {training.date, training.id ...}, {training.date, training.id ...}, ....]
-    const { currentTeamId } = useContext(TeamContext)
+    const [players, setPlayers] = useState([])
+    const [playersMisseds, setPlayersMisseds] = useState([])
+
     useEffect(() => {
+        //au chargement de la page on récupére l'id de la currentTeam selectionné
         if (currentTeamId !== '') {
-            Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/trainings')
+            // on charge tous les entrainements la concernant
+            // !!!! -> la tableau trainings doit ressembler à ça:  trainings = [ {training.date, training.id ...}, {training.date, training.id ...}, ....]
+            trainingsAPI.findTrainingsById(currentTeamId)
                 .then(response => {
                     setTrainings(response.data['hydra:member'])
                 })
                 .catch(error => {
                     console.log(error.response)
                 })
+
+
         }
     }, [currentTeamId])
 
@@ -58,6 +65,9 @@ const TrainingsPage = () => {
     const [currentTrainingId, setCurrentTrainingId] = useState('')
 
     const onDateClick = (day) => {
+        //si la date est inférieur a la date du jour --> on affiche un modal pour lui dire d'aller se faire mettre
+
+
         //parcours trainings, si un item training correspond a la date cliqué  on set training avec celui-ci trouvé & on change title avec "Modifier l'entrainement"
         setTraining({
             ...training,
@@ -80,28 +90,65 @@ const TrainingsPage = () => {
                     description: trainings[i].description,
                 })
                 setCurrentTrainingId(trainings[i].id)
-                setTitleModal('Modifier l\'entrainement du ' + day.toLocaleDateString('fr-FR'))
+                setTitleModal('Entrainement du ' + day.toLocaleDateString('fr-FR'))
                 setNewer(false)
+                let trainId = trainings[i].id
+                //on charge aussi la liste de tous les joureurs de la team courante
+                playerAPI.findPlayersOfTeamId(currentTeamId)
+                    .then(response => {
+                        let playerTmp = response.data['hydra:member']
+
+
+                        //on peux charger la liste des absents de cette entrainement
+                        trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainId)
+                            .then(response => {
+                                setPlayersMisseds(response.data['hydra:member'])
+                                //crée un tableau
+                                let copyPlayers = [...playerTmp]
+                                response.data['hydra:member'].forEach((playersMissedsItem) => {
+                                    //console.log("test 1: " + playersMissedsItem.player.id)
+                                    //parcours ma copie du tableau player
+                                    playerTmp.forEach(player => {
+                                        //et si mon player.id === playersMissedsItem.player.id alors je le dégage du tableau
+                                        if (player.id === playersMissedsItem.player.id) {
+                                            var index = copyPlayers.indexOf(player)
+                                            if (index >= 0) {
+                                                copyPlayers.splice(index, 1)
+                                            }
+                                        }
+                                    })
+                                })
+                                setPlayers(copyPlayers)
+                            })
+                            .catch(error => {
+                                console.log(error.response)
+                            })
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    })
+
+
+
+
                 break;
             }
         }
         showModal()
+        document.getElementById('formTraining').hidden = false
+        if (document.getElementById('abs_pres')) {
+            if (document.getElementById('abs_pres').hidden === false) {
+                document.getElementById('abs_pres').hidden = true
+            }
+        }
     }
 
     const handleSubmit = (event) => {
         event.preventDefault()
         //si newer == true ---> requete en POST pour création d'un nouveau training
         if (newer === true) {
-            Axios.post('http://localhost:8000/api/trainings', training)
+            trainingsAPI.createTrainings(training)
                 .then(response => {
-                    //si réussite ---> refaire la requete http du useEffect pour mettre a jour le tableau trainings
-                    Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/trainings')
-                        .then(response => {
-                            setTrainings(response.data['hydra:member'])
-                        })
-                        .catch(error => {
-                            console.log(error.response)
-                        })
                     //flash success
 
                     //vider les message d'erreur eventuels
@@ -121,10 +168,10 @@ const TrainingsPage = () => {
                     setErrors(apiErrors);
                 })
         } else {    //si newer == false ---->requete en PUT  pour modif training existant au jour selectionné
-            Axios.put('http://localhost:8000/api/trainings/' + currentTrainingId, training)
+            trainingsAPI.putTraining(currentTrainingId, training)
                 .then(response => {
                     //si réussite ---> refaire la requete http du useEffect pour mettre a jour le tableau trainings
-                    Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/trainings')
+                    trainingsAPI.findTrainingsById(currentTeamId)
                         .then(response => {
                             setTrainings(response.data['hydra:member'])
                         })
@@ -161,16 +208,14 @@ const TrainingsPage = () => {
     }
 
     const handleDelete = (trainingId) => {
-        console.log(trainingId)
         //copie du tableau trainings
         const originalTrainings = [...trainings]
         //retirer du tableau trainings le training selectionné
         setTrainings(trainings.filter((trainingItem) => trainingItem.id !== trainingId))
         //requete DEL pour le dégager de la BDD
-        Axios.delete('http://localhost:8000/api/trainings/' + trainingId)
+        trainingsAPI.delTraining(trainingId)
             .then(response => {
                 //si réussite --> falsh success
-                console.log("success")
                 hideModal()
             })
             .catch(error => {
@@ -180,11 +225,87 @@ const TrainingsPage = () => {
             })
     }
 
+
+    const handleAbsence = (playerId, trainingId) => {
+
+        //on veut créer un trainingMisseds
+        trainingMissedsAPI.createTrainingMissed(trainingId, playerId)
+            .then(response => {
+                trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainingId)
+                    .then(response => {
+                        setPlayersMisseds(response.data['hydra:member'])
+
+                        response.data['hydra:member'].forEach((playersMissedsItem) => {
+                            setPlayers(players.filter((playerItem) => playerItem.id !== playersMissedsItem.player.id))
+                        })
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    })
+            })
+            .catch(error => {
+                console.log(error.response)
+            })
+    }
+
+    const handlePresent = (trainingMissedId, trainingId) => {
+        trainingMissedsAPI.delTrainingMissedId(trainingMissedId)
+            .then(response => {
+                playerAPI.findPlayersOfTeamId(currentTeamId)
+                    .then(response => {
+                        let playerTmp = response.data['hydra:member']
+
+
+                        //on peux charger la liste des absents de cette entrainement
+                        trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainingId)
+                            .then(response => {
+                                setPlayersMisseds(response.data['hydra:member'])
+                                //crée un tableau
+                                let copyPlayers = [...playerTmp]
+                                response.data['hydra:member'].forEach((playersMissedsItem) => {
+                                    //console.log("test 1: " + playersMissedsItem.player.id)
+                                    //parcours ma copie du tableau player
+                                    playerTmp.forEach(player => {
+                                        //et si mon player.id === playersMissedsItem.player.id alors je le dégage du tableau
+                                        if (player.id === playersMissedsItem.player.id) {
+                                            var index = copyPlayers.indexOf(player)
+                                            if (index >= 0) {
+                                                copyPlayers.splice(index, 1)
+                                            }
+                                        }
+                                    })
+                                })
+                                setPlayers(copyPlayers)
+                            })
+                            .catch(error => {
+                                console.log(error.response)
+                            })
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    })
+
+            })
+            .catch(error => {
+                console.log(error.response)
+            })
+    }
+
+    const handleManagement = () => {
+        if (document.getElementById('formTraining').hidden === true) {
+            document.getElementById('abs_pres').hidden = true
+            document.getElementById('formTraining').hidden = false
+        } else if (document.getElementById('formTraining').hidden === false) {
+            document.getElementById('abs_pres').hidden = false
+            document.getElementById('formTraining').hidden = true
+        }
+    }
+
     return (
         <div className="wrapper_container TrainingsPage">
             <Calendar
                 parentCallBack={onDateClick}
-                events={trainings}
+                eventsT={trainings}
             >
             </Calendar>
 
@@ -193,7 +314,7 @@ const TrainingsPage = () => {
                 handleClose={hideModal}
                 title={titleModal}
             >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} id="formTraining">
                     <Field
                         name="label"
                         label="Titre"
@@ -215,12 +336,31 @@ const TrainingsPage = () => {
                             {newer ? 'Créer' : 'Modifier'}
                         </button>
                         {!newer && (
-                            <button type="button" className="btn btn-danger" onClick={() => handleDelete(training.id)}>
+                            <button type="button" className="btn btn-danger" onClick={() => handleDelete(currentTrainingId)}>
                                 Supprimer
                             </button>
                         )}
                     </div>
                 </form>
+                {!newer && (
+                    <div className="absence-div">
+                        <button type="button" className="btn btn-secondary btn-absence" onClick={handleManagement}>Gérer les absences</button>
+                        <div className="col_abs_pres" id="abs_pres" hidden>
+                            <div className="present">
+                                <h5>Présent</h5>
+                                {players.map((player, index) => (
+                                    <button key={index} type="button" onClick={() => handleAbsence(player.id, currentTrainingId)}>{player.user.lastName + ' ' + player.user.firstName}</button>
+                                ))}
+                            </div>
+                            <div className="absent">
+                                <h5>Absents</h5>
+                                {playersMisseds.map((playerMissed, index) => (
+                                    <button key={index} type="button" onClick={() => handlePresent(playerMissed.id, currentTrainingId)}> {playerMissed.player.user.lastName + ' ' + playerMissed.player.user.firstName} </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </Modal>
 
 

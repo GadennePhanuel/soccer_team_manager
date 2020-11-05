@@ -64,9 +64,8 @@ const SideNav = (props) => {
 
                 <NavLink to="/teams" className="teams">
                 </NavLink>
-                
+
                 <NavLink to="/encountersAdmin" className="encounter-management" >
-                  Match
                 </NavLink>
               </>
             )}
@@ -88,8 +87,7 @@ const SideNav = (props) => {
                 </NavLink>
 
                 <NavLink to="/encountersCoach" className="encounter-management">
-                  Match
-                  </NavLink>
+                </NavLink>
               </>
             )}
             {roles === "ROLE_PLAYER" && (
@@ -100,13 +98,8 @@ const SideNav = (props) => {
                 <NavLink to={"/player/" + player.id + "/stats"} className="stats">
                 </NavLink>
 
-                <NavLink to="/dashboardPlayer" >
-                  Entrainement
-                  </NavLink>
-
-                <NavLink to="/encounterManagement" className="encounter-management" >
-                  Match
-                  </NavLink>
+                <NavLink to={"/player/" + player.id + "/planning"} className="planningPlayer" >
+                </NavLink>
               </>
             )}
             <NavLink to="/mail" className="mail">
