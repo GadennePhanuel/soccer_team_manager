@@ -6,7 +6,6 @@ import Field from "../components/forms/Field";
 import Textarea from "../components/forms/Textarea";
 import '../../scss/pages/TrainingsPage.scss';
 import trainingsAPI from '../services/trainingsAPI';
-import Axios from "axios";
 import playerAPI from "../services/playerAPI";
 import trainingMissedsAPI from "../services/trainingMissedsAPI"
 
@@ -209,7 +208,6 @@ const TrainingsPage = () => {
     }
 
     const handleDelete = (trainingId) => {
-        console.log(trainingId)
         //copie du tableau trainings
         const originalTrainings = [...trainings]
         //retirer du tableau trainings le training selectionné
@@ -218,7 +216,6 @@ const TrainingsPage = () => {
         trainingsAPI.delTraining(trainingId)
             .then(response => {
                 //si réussite --> falsh success
-                console.log("success")
                 hideModal()
             })
             .catch(error => {
@@ -234,7 +231,6 @@ const TrainingsPage = () => {
         //on veut créer un trainingMisseds
         trainingMissedsAPI.createTrainingMissed(trainingId, playerId)
             .then(response => {
-                console.log(response.data)
                 trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainingId)
                     .then(response => {
                         setPlayersMisseds(response.data['hydra:member'])
@@ -253,10 +249,9 @@ const TrainingsPage = () => {
     }
 
     const handlePresent = (trainingMissedId, trainingId) => {
-        console.log(trainingMissedId)
         trainingMissedsAPI.delTrainingMissedId(trainingMissedId)
             .then(response => {
-                Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/players')
+                playerAPI.findPlayersOfTeamId(currentTeamId)
                     .then(response => {
                         let playerTmp = response.data['hydra:member']
 
