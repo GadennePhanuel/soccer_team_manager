@@ -6,7 +6,7 @@
     @include component-size(flex, column, center, flex-start);
 
     #createEncounter{
-        width : 30%;
+        width : 45%;
         margin-left: auto;
         margin-right:auto;
         .wrapper{
@@ -29,8 +29,12 @@
             #sendDiv {
                 margin-top:30px;
 
-                #addEncounter{
+                #addEncounter, #cancelEncounter{
                     margin-bottom: 8px;
+                }
+
+                #cancelEncounter{
+                    margin-left: 5px;
                 }
             }
         }
