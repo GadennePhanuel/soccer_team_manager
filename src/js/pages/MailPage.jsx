@@ -172,8 +172,8 @@ const MailPage = (props) => {
         //envoie des données saisies vers le BACK pour traitement et envoie du mail
         mailAPI.sendMail(email)
             .then(response => {
-                console.log(response)
                 //TODO : FLASH SUCCES  & REDIRECTION ??
+                props.history.replace('/dashboardCoach')
             })
             .catch(error => {
                 console.log(error.response)
