@@ -275,11 +275,14 @@ const EncountersPage = (props) => {
                             <button id="addEncounter" className="btn btn-primary" type="submit" >
                                 Envoyer 
                             </button>
+                            <button id="cancelEncounter" className="btn btn-danger" type="button" onClick={handleHiddenForm} >
+                                Annuler 
+                            </button>
                         </div>
                     </fieldset>
                 </form>
                 <div className = "wrapper" id="showFormDiv">
-                    <button id="showForm" className="btn btn-primary"  onClick={handleHiddenForm}>
+                    <button id="showForm" className="btn btn-primary"  type="button" onClick={handleHiddenForm}>
                         Créer un match
                     </button>
                 </div>
