@@ -7,19 +7,19 @@ function findAllTeams() {
         .then(response => response.data['hydra:member'])
 }
 
-function findTeam(id){
+function findTeam(id) {
     return Axios
-        .get("http://localhost:8000/api/teams/" + id)
+        .get(TEAMS_API + "/" + id)
 }
 
 function postTeam(team) {
-    return Axios.post("http://localhost:8000/api/teams", team)
-       // .then(response => response.data['hydra:member'])
+    return Axios.post(TEAMS_API, team)
+    // .then(response => response.data['hydra:member'])
 }
 
-function deleteTeam(id){
+function deleteTeam(id) {
     return Axios
-        .delete("http://localhost:8000/api/teams/" + id)
+        .delete(TEAMS_API + "/" + id)
 }
 
 function deleteCoachOnTeam(id) {
@@ -28,16 +28,16 @@ function deleteCoachOnTeam(id) {
     )
 }
 
-function putTeam(teamId, teamLabel, teamCoach){
+function putTeam(teamId, teamLabel, teamCoach) {
     console.log("test-Axios");
     return Axios
-        .put("http://localhost:8000/api/teams/" + teamId,
+        .put(TEAMS_API + "/" + teamId,
             {
                 coach: teamCoach,
                 label: teamLabel,
             }
         )
-        //.then(response => response.data['hydra:member'])
+    //.then(response => response.data['hydra:member'])
 }
 
 export default {
