@@ -7,7 +7,7 @@ import encounterAPI from "../services/encounterAPI";
 import TeamContext from "../contexts/TeamContext";
 import Field from "../components/forms/Field";
 import dateFormat from 'dateformat';
-import "../../scss/pages/TeamsAdminPage.scss";
+import "../../scss/pages/EncountersPage.scss";
 
 
 const EncountersPage = (props) => {
@@ -27,11 +27,12 @@ const EncountersPage = (props) => {
     }
     
     const { currentTeamId } = useContext(TeamContext);
+    const [currentId, setCurrentId] = useState("")
 
     const [encounters, setEncounters] = useState([]);
     const [team, setTeam] = useState({});
     //const [playerId, setPlayerId] = useState({player: ""})
-    const [refreshKey, setRefreshKey] = useState([0])
+    const [refreshKey, setRefreshKey] = useState(0)
     
 
     const [error, setError] =useState({
@@ -41,6 +42,21 @@ const EncountersPage = (props) => {
         categoryOpposingTeam: ""
     });
 
+    const [errorForm, setErrorForm] =useState({
+        team: "",
+        date: "",
+        labelOpposingTeam: "",
+        categoryOpposingTeam: ""
+    });
+
+
+    const [postEncounters, setPostEncounters] = useState({
+        team: "",
+        date: "",
+        labelOpposingTeam: "",
+        categoryOpposingTeam: ""
+    });
+    
     const [putEncounter, setPutEncounter] = useState({
         team: "",
         date: "",
@@ -53,6 +69,13 @@ const EncountersPage = (props) => {
             document.getElementById(btnName + id).hidden = false
             :
             document.getElementById(btnName + id).hidden = true
+    }
+
+    const changeHiddenForm = (btnName) => {
+        return document.getElementById(btnName).hidden === true ?
+            document.getElementById(btnName).hidden = false
+            :
+            document.getElementById(btnName).hidden = true
     }
 
     function formattedDate(d) {
@@ -71,6 +94,7 @@ const EncountersPage = (props) => {
 
 
             if(currentTeamId !== ""){
+                setPostEncounters({...postEncounters, team: "/api/teams/" + currentTeamId})
                 setPutEncounter({...putEncounter, team: "/api/teams/" + currentTeamId})
 
                 teamAPI.findTeam(currentTeamId)
@@ -95,34 +119,44 @@ const EncountersPage = (props) => {
             event.preventDefault()
             
             
-            encounterAPI.postEncounter(putEncounter)
+            encounterAPI.postEncounter(postEncounters)
                 .then(response => {
-                    setRefreshKey(oldKey => oldKey + 1)
-                    setError('')
+                    setRefreshKey(refreshKey + 1)
+                    setErrorForm('')
                 })
             
                 
-                .catch(error => {
-                    console.log(error.response)
-                    const { violations } = error.response.data;
+                .catch(errorForm => {
+                    console.log(errorForm.response)
+                    const { violations } = errorForm.response.data;
 
-                    const apiErrors = [''];
+                    const apiErrorsForm = [''];
 
                     if (violations) {
                         violations.forEach((violation) => {
-                        apiErrors[violation.propertyPath] = violation.message;
+                        apiErrorsForm[violation.propertyPath] = violation.message;
                     });
-                    setError(apiErrors);
+                    setErrorForm(apiErrorsForm);
                 }
             })
     
         }
-        
+    const handleChangeForm = (event) => {
+        const { name, value } = event.currentTarget;
+        setPostEncounters({...postEncounters,[name]: value});
+    }
+
     const handleChange = (event) => {
         const { name, value } = event.currentTarget;
         setPutEncounter({...putEncounter,[name]: value});
+        
     }
 
+    const handleHiddenForm = () => {
+        changeHiddenForm("form-encounter")
+        changeHiddenForm("showForm")
+    }
+    
     const handleCanceled = (encounterId) => {
         changeHidden('btn-delete-', encounterId)
         changeHidden('btn-edit-', encounterId)
@@ -156,17 +190,33 @@ const EncountersPage = (props) => {
                 labelOpposingTeam: document.getElementById('input-labelOpposingTeam-' + encounterId).value,
                 categoryOpposingTeam: document.getElementById('input-categoryOpposingTeam-' + encounterId).value
             })
+            setError("")
         
     }
 
-    const handlePutEncounter = id => {
-        handleCanceled(id)
+    const handlePutEncounter = id => {    
         //console.log(putEncounter)
+        setCurrentId(id)
         //Modifie les données du match
         encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date,putEncounter.labelOpposingTeam,putEncounter.categoryOpposingTeam)
         //met à jour le tableau
-            .then(setRefreshKey(oldKey => oldKey + 1))
-            .catch(error => console.log(error.response))
+            .then(response => {
+                setRefreshKey(refreshKey + 1)
+                handleCanceled(id)
+            })
+            .catch(error => {
+                console.log(error.response)
+                const { violations } = error.response.data;
+
+                const apiErrors = [''];
+
+                if (violations) {
+                    violations.forEach((violation) => {
+                    apiErrors[violation.propertyPath] = violation.message;
+                });
+                setError(apiErrors);
+            }
+        })
     }
 
     const handleDelete = id => {
@@ -186,45 +236,53 @@ const EncountersPage = (props) => {
 
 
     return (
-        <div className="wrapper_container">
+        <div className="wrapper_container EncountersPage">
                <h1>Matchs</h1>
             {role === 'ROLE_COACH' &&
             <div id="createEncounter">
-                <form onSubmit={handleSubmit} id="form-encounter" className='formEncounter'>
-                    <Field
-                        type="date"
-                        name="date"
-                        label="date"
-                        placeholder="date du match"
-                        onChange={handleChange}
-                        value={putEncounter.date}
-                        error={error.date}
-                        required
-                    />
-                    <Field
-                        name="labelOpposingTeam"
-                        label="Nom de l'équipe adverse"
-                        placeholder="Nom d'équipe'..."
-                        onChange={handleChange}
-                        value={putEncounter.labelOpposingTeam}
-                        error={error.labelOpposingTeam}
-                        required
-                    />
-                    <Field
-                        name="categoryOpposingTeam"
-                        label="Catégorie"
-                        placeholder="Catégorie..."
-                        onChange={handleChange}
-                        value={putEncounter.categoryOpposingTeam}
-                        error={error.categoryOpposingTeam}
-                        required
-                    />
-                    <div>
-                        <button id="addEncounter" className="btn btn-primary" type="submit" >
-                            Créer un match
-                        </button>
-                    </div>
+                <form hidden onSubmit={handleSubmit} id="form-encounter" className='formEncounter'>
+                    <fieldset>
+                        <legend>Création de match</legend>
+                        <Field
+                            type="date"
+                            name="date"
+                            label="date"
+                            placeholder="date du match"
+                            onChange={handleChangeForm}
+                            value={postEncounters.date}
+                            error={errorForm.date}
+                            required
+                        />
+                        <Field
+                            name="labelOpposingTeam"
+                            label="Nom de l'équipe adverse"
+                            placeholder="Nom d'équipe'..."
+                            onChange={handleChangeForm}
+                            value={postEncounters.labelOpposingTeam}
+                            error={errorForm.labelOpposingTeam}
+                            required
+                        />
+                        <Field
+                            name="categoryOpposingTeam"
+                            label="Catégorie"
+                            placeholder="Catégorie..."
+                            onChange={handleChangeForm}
+                            value={postEncounters.categoryOpposingTeam}
+                            error={errorForm.categoryOpposingTeam}
+                            required
+                        />
+                        <div className ="wrapper" id="sendDiv">
+                            <button id="addEncounter" className="btn btn-primary" type="submit" >
+                                Envoyer 
+                            </button>
+                        </div>
+                    </fieldset>
                 </form>
+                <div className = "wrapper" id="showFormDiv">
+                    <button id="showForm" className="btn btn-primary"  onClick={handleHiddenForm}>
+                        Créer un match
+                    </button>
+                </div>
             </div>
             }
             <table className="table table-hover">
@@ -263,6 +321,7 @@ const EncountersPage = (props) => {
                                     defaultValue={encounter.labelOpposingTeam}
                                     error={error.labelOpposingTeam}
                                 />
+                                {(error && encounter.id === currentId) && <p>{error.labelOpposingTeam}</p>}
                             </td>                            
                             <td>
                                 <p id={"categoryOpposingTeam-" + encounter.id}>
@@ -280,6 +339,7 @@ const EncountersPage = (props) => {
                                     error={error.categoryOpposingTeam}
                                     
                                 />
+                                {(error && encounter.id === currentId) && <p>{error.categoryOpposingTeam}</p>}
                             </td>
                             <td>
                                 <p id={"date-" + encounter.id}>
@@ -297,6 +357,7 @@ const EncountersPage = (props) => {
                                     error={error.date}
                                 
                                 />
+                                {(error && encounter.id === currentId) && <p>{error.date}</p>}
                             </td>
                             <td>
                                 {
@@ -309,7 +370,7 @@ const EncountersPage = (props) => {
                                     <button
                                         onClick={() => handleEdit(encounter.id)}
                                         id={"btn-edit-" + encounter.id}
-                                        className="btn btn-sm btn-warning">
+                                        className="btn btn-sm btn-warning edit">
                                         editer
                                     </button>
                                     <button
@@ -322,7 +383,7 @@ const EncountersPage = (props) => {
                                         hidden
                                         onClick={() => handlePutEncounter(encounter.id)}
                                         id={"btn-put-" + encounter.id}
-                                        className="btn btn-sm btn-success">
+                                        className="btn btn-sm btn-success confirm">
                                         valider
                                     </button>
                                     <button

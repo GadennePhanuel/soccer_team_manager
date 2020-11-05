@@ -1,0 +1,23 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+.EncountersAdminPage{
+    @include component-size(flex, column, center, flex-start);
+    #div-search {
+        align-items: flex-start;
+        width: 97%;
+
+        #search {
+            width: 30%;
+        }
+    }
+    table{
+        width:97%;
+        .edit, .confirm{
+            margin-right:5px;
+        }
+        .btn-sm {
+            margin-bottom:5px;
+        }
+    }
+}

@@ -3,7 +3,7 @@ import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import encounterAPI from "../services/encounterAPI";
 import dateFormat from 'dateformat';
-import "../../scss/pages/TeamsAdminPage.scss";
+import "../../scss/pages/EncountersAdminPage.scss";
 
 
 const EncountersAdminPage = (props) => {
@@ -24,7 +24,7 @@ const EncountersAdminPage = (props) => {
     }
     
 
-
+    const [currentId, setCurrentId] = useState("");
     const [encounters, setEncounters] = useState([]);
     const [refreshKey, setRefreshKey] = useState([0])
     const [search, setSearch] = useState("")
@@ -130,14 +130,29 @@ const EncountersAdminPage = (props) => {
         }
     }
 
-    const handlePutEncounter = id => {
-        handleCanceled(id)
+    const handlePutEncounter = id => {    
         //console.log(putEncounter)
+        setCurrentId(id)
         //Modifie les données du match
         encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date,putEncounter.labelOpposingTeam,putEncounter.categoryOpposingTeam)
         //met à jour le tableau
-            .then(setRefreshKey(oldKey => oldKey + 1))
-            .catch(error => console.log(error.response))
+            .then(response => {
+                setRefreshKey(refreshKey + 1)
+                handleCanceled(id)
+            })
+            .catch(error => {
+                console.log(error.response)
+                const { violations } = error.response.data;
+
+                const apiErrors = [''];
+
+                if (violations) {
+                    violations.forEach((violation) => {
+                    apiErrors[violation.propertyPath] = violation.message;
+                });
+                setError(apiErrors);
+            }
+        })
     }
 
     const handleDelete = id => {
@@ -156,7 +171,7 @@ const EncountersAdminPage = (props) => {
     };
 
     return(
-        <div className="wrapper_container">
+        <div className="wrapper_container EncountersAdminPage">
             <h1>Matchs</h1>
             <div id="div-search" className="form-group">
                 <input id="search" type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
@@ -209,6 +224,7 @@ const EncountersAdminPage = (props) => {
                                     defaultValue={encounter.labelOpposingTeam}
                                     error={error.labelOpposingTeam}
                                 />
+                                {(error && encounter.id === currentId) && <p>{error.labelOpposingTeam}</p>}
                             </td>                            
                             <td>
                                 <p id={"categoryOpposingTeam-" + encounter.id}>
@@ -226,6 +242,7 @@ const EncountersAdminPage = (props) => {
                                     error={error.categoryOpposingTeam}
                                     
                                 />
+                                {(error && encounter.id === currentId) && <p>{error.categoryOpposingTeam}</p>}
                             </td>
                             <td>
                                 <p id={"date-" + encounter.id}>
@@ -241,8 +258,8 @@ const EncountersAdminPage = (props) => {
                                     onChange={handleChange}
                                     defaultValue= {dateFormat(encounter.date, "yyyy-mm-dd")}
                                     error={error.date}
-                                
                                 />
+                                {(error && encounter.id === currentId) &&  <p>{error.date}</p>}
                             </td>
                             <td>
                                 {
@@ -255,7 +272,7 @@ const EncountersAdminPage = (props) => {
                                     <button
                                         onClick={() => handleEdit(encounter.id)}
                                         id={"btn-edit-" + encounter.id}
-                                        className="btn btn-sm btn-warning">
+                                        className="btn btn-sm btn-warning edit">
                                         editer
                                     </button>
                                     <button
@@ -268,7 +285,7 @@ const EncountersAdminPage = (props) => {
                                         hidden
                                         onClick={() => handlePutEncounter(encounter.id)}
                                         id={"btn-put-" + encounter.id}
-                                        className="btn btn-sm btn-success">
+                                        className="btn btn-sm btn-success confirm">
                                         valider
                                     </button>
                                     <button
