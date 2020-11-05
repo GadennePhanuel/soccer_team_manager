@@ -5,8 +5,6 @@ import Modal from "../components/Modal";
 import Field from "../components/forms/Field";
 import Textarea from "../components/forms/Textarea";
 import '../../scss/pages/TrainingsPage.scss';
-import '../../scss/components/DragNDropAbsence.scss';
-import { useDrag } from "react-dnd";
 import trainingsAPI from '../services/trainingsAPI';
 
 const TrainingsPage = () => {
@@ -186,44 +184,6 @@ const TrainingsPage = () => {
     }
 
 
-    /**
-     * Test DnD start
-     */
-    const ItemTypes = {
-        CARD: 'card',
-    }
-
-    const Card = ({ item }) => {
-
-        const [{ isDragging }, dragRef] = useDrag({
-            item: {
-                type: ItemTypes.CARD
-            },
-            collect: (monitor) => ({
-                isDragging: !!monitor.isDragging()
-            })
-        })
-
-        return (
-            <div
-                ref={dragRef}
-                opacity={isDragging ? '0.5' : '1'}
-                className="dnd-item"
-            >
-                {item}
-            </div>
-        )
-    }
-
-    const data = [
-        { title: 'group 1', items: ['1', '2', '3'] },
-        { title: 'group 2', items: ['4', '5'] }
-    ]
-
-
-    /**
-     * TestDnD end
-     */
 
 
 
@@ -275,20 +235,7 @@ const TrainingsPage = () => {
                     <div className="absence-div">
                         <button type="button" className="btn btn-secondary btn-absence">Gérer les absences</button>
 
-                        <div className="drag-n-drop">
-                            {data.map((grp, grpI) => (
-                                <div key={grp.title} className="dnd-group">
 
-                                    {grp.items.map((item, itemI) => (
-                                        <Card
-                                            key={item}
-                                            item={item}
-                                        ></Card>
-                                    ))}
-
-                                </div>
-                            ))}
-                        </div>
                     </div>
                 )}
             </Modal>
