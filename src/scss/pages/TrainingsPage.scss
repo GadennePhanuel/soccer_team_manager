@@ -12,9 +12,68 @@
     .absence-div{
         display: flex;
         flex-direction: column;
+        width: 100%;
+
+        h5{
+            text-decoration: underline;
+            width: 100%;
+            text-align: center;
+        }
     }
     .btn-absence{
         margin: 15px 15px 10px 15px;
+        &:focus{
+            background-color: $third-color;
+            border-color: $third-color;
+            box-shadow: none;
+        }
     }
 
+    .col_abs_pres{
+        display: flex;
+        justify-content: space-around;
+    }
+    .present{
+        width: 40%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-content: flex-start;
+        align-items: center;
+
+        button{
+            margin: 2.5px;
+            padding: 5px 10px;
+            line-height: 1em;
+            color: $base-color;
+            background-color: $fourth-color;
+            border-style: none;
+            border-radius: 15px;
+            width: 100px;
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+    .absent{
+        width: 40%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-content: flex-start;
+
+        button{
+            margin: 2.5px;
+            padding: 5px 10px;
+            line-height: 1em;
+            color: $base-color;
+            background-color: $sixth-color;
+            border-style: none;
+            border-radius: 15px;
+            width: 100px;
+            &:focus {
+                outline: none;
+            }
+        }
+    }
 }
