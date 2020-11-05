@@ -40,11 +40,17 @@ function putTeam(teamId, teamLabel, teamCoach){
         //.then(response => response.data['hydra:member'])
 }
 
+function findAllTacticsByTeam(id){
+    return Axios.get("http://localhost:8000/api/teams/"+id+"/tactics")
+        .then(response => response.data['hydra:member'])
+}
+
 export default {
     deleteCoachOnTeam,
     postTeam,
     findAllTeams,
     findTeam,
     deleteTeam,
-    putTeam
+    putTeam,
+    findAllTacticsByTeam
 }

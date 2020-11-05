@@ -25,13 +25,22 @@
 
   .fieldPos {
     position:relative;
+    border: solid 1px black;
+    background-color:rgba(0,0,0,0.5);
+    width:50px;
+    height:50px;
+    z-index:1;
   }
   .playerCard {
     border: solid 1px black;
     position:relative;
-    background-color:teal;
-    top: 5px;
-    left: 5px;
+    background-color:grey;
+  }
+
+  .playerCardSloted {
+    font-size:10px;
+    width:50px;
+    height:50px;
   }
 
   .base {
@@ -47,18 +56,19 @@
     border :solid 5px white;
   }
 
-  .case {
+  /*.case {
     display: inline-block;
     margin: 10px;
     border: solid 1px black;
     background-color:white;
-  }
+    width: 150px;
+    min-height: 150px;
+  }*/
 
   .hovered {
-    background: white;
-    height: 150px;
-    width: 150px;
-    margin: 10px;
-    border-style:dashed;
+    width: 50px;
+    min-height: 50px;
+    background-color:rgba(0,0,0,0.5);
+    border: white dashed;
   }
 }

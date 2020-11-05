@@ -5,6 +5,8 @@ const type = {PLAYERCARD: 'playerCard'}
 
 export default function PlayerCard(props) {
 
+    const firstName=props.player.user.firstName
+    const lastName=props.player.user.lastName
     const dragStart = (event) => {
         // console.log("start");
         let target = event.currentTarget;
@@ -23,11 +25,13 @@ export default function PlayerCard(props) {
         event.currentTarget.className = 'playerCard';
     }
 
-    return <div draggable={true}
+    return <div
+                className="playerCard"
+                draggable={true}
                 onDragStart={dragStart}
                 onDragEnd={dragEnd}
                 onTouchStartCapture={touchStartCapture}
     >
-        <p>{props.player.user.firstName} {props.player.user.lastName}</p>
+        <p>{firstName} {lastName}</p>
     </div>
 }
