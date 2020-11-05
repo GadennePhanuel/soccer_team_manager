@@ -1,4 +1,3 @@
-import Axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import TeamContext from '../contexts/TeamContext';
 import Calendar from "../components/Calendar";
@@ -8,6 +7,7 @@ import Textarea from "../components/forms/Textarea";
 import '../../scss/pages/TrainingsPage.scss';
 import '../../scss/components/DragNDropAbsence.scss';
 import { useDrag } from "react-dnd";
+import trainingsAPI from '../services/trainingsAPI';
 
 const TrainingsPage = () => {
 
@@ -18,7 +18,7 @@ const TrainingsPage = () => {
     const { currentTeamId } = useContext(TeamContext)
     useEffect(() => {
         if (currentTeamId !== '') {
-            Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/trainings')
+            trainingsAPI.findTrainingsById(currentTeamId)
                 .then(response => {
                     setTrainings(response.data['hydra:member'])
                 })
@@ -97,10 +97,10 @@ const TrainingsPage = () => {
         event.preventDefault()
         //si newer == true ---> requete en POST pour création d'un nouveau training
         if (newer === true) {
-            Axios.post('http://localhost:8000/api/trainings', training)
+            trainingsAPI.createTrainings(training)
                 .then(response => {
                     //si réussite ---> refaire la requete http du useEffect pour mettre a jour le tableau trainings
-                    Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/trainings')
+                    trainingsAPI.findTrainingsById(currentTeamId)
                         .then(response => {
                             setTrainings(response.data['hydra:member'])
                         })
@@ -126,10 +126,10 @@ const TrainingsPage = () => {
                     setErrors(apiErrors);
                 })
         } else {    //si newer == false ---->requete en PUT  pour modif training existant au jour selectionné
-            Axios.put('http://localhost:8000/api/trainings/' + currentTrainingId, training)
+            trainingsAPI.putTraining(currentTrainingId, training)
                 .then(response => {
                     //si réussite ---> refaire la requete http du useEffect pour mettre a jour le tableau trainings
-                    Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/trainings')
+                    trainingsAPI.findTrainingsById(currentTeamId)
                         .then(response => {
                             setTrainings(response.data['hydra:member'])
                         })
@@ -172,7 +172,7 @@ const TrainingsPage = () => {
         //retirer du tableau trainings le training selectionné
         setTrainings(trainings.filter((trainingItem) => trainingItem.id !== trainingId))
         //requete DEL pour le dégager de la BDD
-        Axios.delete('http://localhost:8000/api/trainings/' + trainingId)
+        trainingsAPI.delTraining(trainingId)
             .then(response => {
                 //si réussite --> falsh success
                 console.log("success")
@@ -265,7 +265,7 @@ const TrainingsPage = () => {
                             {newer ? 'Créer' : 'Modifier'}
                         </button>
                         {!newer && (
-                            <button type="button" className="btn btn-danger" onClick={() => handleDelete(training.id)}>
+                            <button type="button" className="btn btn-danger" onClick={() => handleDelete(currentTrainingId)}>
                                 Supprimer
                             </button>
                         )}

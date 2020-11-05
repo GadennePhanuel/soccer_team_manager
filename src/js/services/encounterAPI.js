@@ -1,5 +1,5 @@
 import Axios from "axios";
-import { ENCOUNTERS_API } from "../../config";
+import { ENCOUNTERS_API, TEAMS_API } from "../../config";
 
 
 function findAllEncounters() {
@@ -9,8 +9,11 @@ function findAllEncounters() {
 }
 
 function findEncountersById(teamId) {
-    return Axios.get('http://localhost:8000/api/teams/' + teamId + '/encounters')
+    return Axios.get(TEAMS_API + '/' + teamId + '/encounters')
 }
+
+
+
 
 function deleteEncounter(id) {
     return Axios
@@ -19,10 +22,10 @@ function deleteEncounter(id) {
 
 function postEncounter(encounter) {
     return Axios.post("http://localhost:8000/api/encounters", encounter)
-       
+
 }
 
-function putEncounter(encounterId,teamLabel,dateEncounter, label,category){
+function putEncounter(encounterId, teamLabel, dateEncounter, label, category) {
     return Axios
         .put("http://localhost:8000/api/encounters/" + encounterId,
             {
@@ -32,7 +35,7 @@ function putEncounter(encounterId,teamLabel,dateEncounter, label,category){
                 categoryOpposingTeam: category,
             }
         )
-        //.then(response => response.data['hydra:member'])
+    //.then(response => response.data['hydra:member'])
 }
 
 export default {
@@ -40,5 +43,5 @@ export default {
     deleteEncounter,
     postEncounter,
     putEncounter,
-    findEncountersById
+    findEncountersById,
 }
