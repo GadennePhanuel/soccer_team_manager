@@ -21,13 +21,13 @@ function deleteEncounter(id) {
 }
 
 function postEncounter(encounter) {
-    return Axios.post("http://localhost:8000/api/encounters", encounter)
+    return Axios.post(ENCOUNTERS_API, encounter)
 
 }
 
 function putEncounter(encounterId, teamLabel, dateEncounter, label, category) {
     return Axios
-        .put("http://localhost:8000/api/encounters/" + encounterId,
+        .put(ENCOUNTERS_API + "/" + encounterId,
             {
                 team: teamLabel,
                 date: dateEncounter,

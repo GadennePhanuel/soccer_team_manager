@@ -7,6 +7,8 @@ import Textarea from "../components/forms/Textarea";
 import '../../scss/pages/TrainingsPage.scss';
 import trainingsAPI from '../services/trainingsAPI';
 import Axios from "axios";
+import playerAPI from "../services/playerAPI";
+import trainingMissedsAPI from "../services/trainingMissedsAPI"
 
 const TrainingsPage = () => {
     const { currentTeamId } = useContext(TeamContext)
@@ -93,13 +95,13 @@ const TrainingsPage = () => {
                 setNewer(false)
                 let trainId = trainings[i].id
                 //on charge aussi la liste de tous les joureurs de la team courante
-                Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/players')
+                playerAPI.findPlayersOfTeamId(currentTeamId)
                     .then(response => {
                         let playerTmp = response.data['hydra:member']
 
 
                         //on peux charger la liste des absents de cette entrainement
-                        Axios.get('http://localhost:8000/api/trainings/' + trainId + '/training_misseds')
+                        trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainId)
                             .then(response => {
                                 setPlayersMisseds(response.data['hydra:member'])
                                 //crée un tableau
@@ -230,13 +232,10 @@ const TrainingsPage = () => {
     const handleAbsence = (playerId, trainingId) => {
 
         //on veut créer un trainingMisseds
-        Axios.post('http://localhost:8000/api/training_misseds', {
-            training: '/api/trainings/' + trainingId,
-            player: '/api/players/' + playerId
-        })
+        trainingMissedsAPI.createTrainingMissed(trainingId, playerId)
             .then(response => {
                 console.log(response.data)
-                Axios.get('http://localhost:8000/api/trainings/' + trainingId + '/training_misseds')
+                trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainingId)
                     .then(response => {
                         setPlayersMisseds(response.data['hydra:member'])
 
@@ -255,7 +254,7 @@ const TrainingsPage = () => {
 
     const handlePresent = (trainingMissedId, trainingId) => {
         console.log(trainingMissedId)
-        Axios.delete('http://localhost:8000/api/training_misseds/' + trainingMissedId)
+        trainingMissedsAPI.delTrainingMissedId(trainingMissedId)
             .then(response => {
                 Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/players')
                     .then(response => {
@@ -263,7 +262,7 @@ const TrainingsPage = () => {
 
 
                         //on peux charger la liste des absents de cette entrainement
-                        Axios.get('http://localhost:8000/api/trainings/' + trainingId + '/training_misseds')
+                        trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainingId)
                             .then(response => {
                                 setPlayersMisseds(response.data['hydra:member'])
                                 //crée un tableau
