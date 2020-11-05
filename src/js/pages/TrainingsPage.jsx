@@ -14,7 +14,6 @@ const TrainingsPage = () => {
     const [trainings, setTrainings] = useState([])
     const [players, setPlayers] = useState([])
     const [playersMisseds, setPlayersMisseds] = useState([])
-    const [refreshKey, setRefreshKey] = useState(0)
 
     useEffect(() => {
         //au chargement de la page on récupére l'id de la currentTeam selectionné
@@ -29,16 +28,9 @@ const TrainingsPage = () => {
                     console.log(error.response)
                 })
 
-            //on charge aussi la liste de tous les joureurs de la team courante
-            Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/players')
-                .then(response => {
-                    setPlayers(response.data['hydra:member'])
-                })
-                .catch(error => {
-                    console.log(error.response)
-                })
+
         }
-    }, [currentTeamId, refreshKey])
+    }, [currentTeamId])
 
 
     const [show, setShow] = useState(false)
@@ -72,7 +64,6 @@ const TrainingsPage = () => {
     const [currentTrainingId, setCurrentTrainingId] = useState('')
 
     const onDateClick = (day) => {
-
         //si la date est inférieur a la date du jour --> on affiche un modal pour lui dire d'aller se faire mettre
 
 
@@ -100,24 +91,55 @@ const TrainingsPage = () => {
                 setCurrentTrainingId(trainings[i].id)
                 setTitleModal('Entrainement du ' + day.toLocaleDateString('fr-FR'))
                 setNewer(false)
-
-                //on peux charger la liste des absents de cette entrainement
-                Axios.get('http://localhost:8000/api/trainings/' + trainings[i].id + '/training_misseds')
+                let trainId = trainings[i].id
+                //on charge aussi la liste de tous les joureurs de la team courante
+                Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/players')
                     .then(response => {
-                        setPlayersMisseds(response.data['hydra:member'])
+                        let playerTmp = response.data['hydra:member']
 
-                        response.data['hydra:member'].forEach((playersMissedsItem) => {
-                            setPlayers(players.filter((playerItem) => playerItem.id !== playersMissedsItem.player.id))
-                        })
+
+                        //on peux charger la liste des absents de cette entrainement
+                        Axios.get('http://localhost:8000/api/trainings/' + trainId + '/training_misseds')
+                            .then(response => {
+                                setPlayersMisseds(response.data['hydra:member'])
+                                //crée un tableau
+                                let copyPlayers = [...playerTmp]
+                                response.data['hydra:member'].forEach((playersMissedsItem) => {
+                                    //console.log("test 1: " + playersMissedsItem.player.id)
+                                    //parcours ma copie du tableau player
+                                    playerTmp.forEach(player => {
+                                        //et si mon player.id === playersMissedsItem.player.id alors je le dégage du tableau
+                                        if (player.id === playersMissedsItem.player.id) {
+                                            var index = copyPlayers.indexOf(player)
+                                            if (index >= 0) {
+                                                copyPlayers.splice(index, 1)
+                                            }
+                                        }
+                                    })
+                                })
+                                setPlayers(copyPlayers)
+                            })
+                            .catch(error => {
+                                console.log(error.response)
+                            })
                     })
                     .catch(error => {
                         console.log(error.response)
                     })
 
+
+
+
                 break;
             }
         }
         showModal()
+        document.getElementById('formTraining').hidden = false
+        if (document.getElementById('abs_pres')) {
+            if (document.getElementById('abs_pres').hidden === false) {
+                document.getElementById('abs_pres').hidden = true
+            }
+        }
     }
 
     const handleSubmit = (event) => {
@@ -126,7 +148,6 @@ const TrainingsPage = () => {
         if (newer === true) {
             trainingsAPI.createTrainings(training)
                 .then(response => {
-                    setRefreshKey(refreshKey + 1)
                     //flash success
 
                     //vider les message d'erreur eventuels
@@ -236,19 +257,40 @@ const TrainingsPage = () => {
         console.log(trainingMissedId)
         Axios.delete('http://localhost:8000/api/training_misseds/' + trainingMissedId)
             .then(response => {
-                console.log(response.data)
-                setRefreshKey(refreshKey + 1)
-                Axios.get('http://localhost:8000/api/trainings/' + trainingId + '/training_misseds')
+                Axios.get('http://localhost:8000/api/teams/' + currentTeamId + '/players')
                     .then(response => {
-                        setPlayersMisseds(response.data['hydra:member'])
+                        let playerTmp = response.data['hydra:member']
 
-                        response.data['hydra:member'].forEach((playersMissedsItem) => {
-                            setPlayers(players.filter((playerItem) => playerItem.id !== playersMissedsItem.player.id))
-                        })
+
+                        //on peux charger la liste des absents de cette entrainement
+                        Axios.get('http://localhost:8000/api/trainings/' + trainingId + '/training_misseds')
+                            .then(response => {
+                                setPlayersMisseds(response.data['hydra:member'])
+                                //crée un tableau
+                                let copyPlayers = [...playerTmp]
+                                response.data['hydra:member'].forEach((playersMissedsItem) => {
+                                    //console.log("test 1: " + playersMissedsItem.player.id)
+                                    //parcours ma copie du tableau player
+                                    playerTmp.forEach(player => {
+                                        //et si mon player.id === playersMissedsItem.player.id alors je le dégage du tableau
+                                        if (player.id === playersMissedsItem.player.id) {
+                                            var index = copyPlayers.indexOf(player)
+                                            if (index >= 0) {
+                                                copyPlayers.splice(index, 1)
+                                            }
+                                        }
+                                    })
+                                })
+                                setPlayers(copyPlayers)
+                            })
+                            .catch(error => {
+                                console.log(error.response)
+                            })
                     })
                     .catch(error => {
                         console.log(error.response)
                     })
+
             })
             .catch(error => {
                 console.log(error.response)
@@ -256,8 +298,6 @@ const TrainingsPage = () => {
     }
 
     const handleManagement = () => {
-        console.log(document.getElementById('formTraining'))
-
         if (document.getElementById('formTraining').hidden === true) {
             document.getElementById('abs_pres').hidden = true
             document.getElementById('formTraining').hidden = false
