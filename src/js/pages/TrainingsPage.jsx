@@ -6,6 +6,8 @@ import Modal from "../components/Modal";
 import Field from "../components/forms/Field";
 import Textarea from "../components/forms/Textarea";
 import '../../scss/pages/TrainingsPage.scss';
+import '../../scss/components/DragNDropAbsence.scss';
+import { useDrag } from "react-dnd";
 
 const TrainingsPage = () => {
 
@@ -58,6 +60,9 @@ const TrainingsPage = () => {
     const [currentTrainingId, setCurrentTrainingId] = useState('')
 
     const onDateClick = (day) => {
+        //si la date est inférieur a la date du jour --> on affiche un modal pour lui dire d'aller se faire mettre
+
+
         //parcours trainings, si un item training correspond a la date cliqué  on set training avec celui-ci trouvé & on change title avec "Modifier l'entrainement"
         setTraining({
             ...training,
@@ -80,7 +85,7 @@ const TrainingsPage = () => {
                     description: trainings[i].description,
                 })
                 setCurrentTrainingId(trainings[i].id)
-                setTitleModal('Modifier l\'entrainement du ' + day.toLocaleDateString('fr-FR'))
+                setTitleModal('Entrainement du ' + day.toLocaleDateString('fr-FR'))
                 setNewer(false)
                 break;
             }
@@ -180,6 +185,51 @@ const TrainingsPage = () => {
             })
     }
 
+
+    /**
+     * Test DnD start
+     */
+    const ItemTypes = {
+        CARD: 'card',
+    }
+
+    const Card = ({ item }) => {
+
+        const [{ isDragging }, dragRef] = useDrag({
+            item: {
+                type: ItemTypes.CARD
+            },
+            collect: (monitor) => ({
+                isDragging: !!monitor.isDragging()
+            })
+        })
+
+        return (
+            <div
+                ref={dragRef}
+                opacity={isDragging ? '0.5' : '1'}
+                className="dnd-item"
+            >
+                {item}
+            </div>
+        )
+    }
+
+    const data = [
+        { title: 'group 1', items: ['1', '2', '3'] },
+        { title: 'group 2', items: ['4', '5'] }
+    ]
+
+
+    /**
+     * TestDnD end
+     */
+
+
+
+
+
+
     return (
         <div className="wrapper_container TrainingsPage">
             <Calendar
@@ -221,6 +271,26 @@ const TrainingsPage = () => {
                         )}
                     </div>
                 </form>
+                {!newer && (
+                    <div className="absence-div">
+                        <button type="button" className="btn btn-secondary btn-absence">Gérer les absences</button>
+
+                        <div className="drag-n-drop">
+                            {data.map((grp, grpI) => (
+                                <div key={grp.title} className="dnd-group">
+
+                                    {grp.items.map((item, itemI) => (
+                                        <Card
+                                            key={item}
+                                            item={item}
+                                        ></Card>
+                                    ))}
+
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </Modal>
 
 

@@ -7,6 +7,10 @@
   background: rgba(0, 0, 0, 0.6);
   padding-left: 100px;
 
+  .modal-content{
+    overflow: auto;
+    max-height: 95vh;
+  }
   h5{
     font-size: 1.5em;
     font-weight: 700;
