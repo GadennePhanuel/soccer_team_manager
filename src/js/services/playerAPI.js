@@ -65,6 +65,12 @@ function findPlayersOfTeamId(teamId) {
     return Axios.get(TEAMS_API + '/' + teamId + '/players')
 }
 
+function excludePlayerOfTeam(id) {
+    return Axios.put(PLAYERS_API + '/' + id, {
+        team: null
+    })
+}
+
 export default {
     sendMailToPlayer,
     findAllPlayers,
@@ -75,5 +81,6 @@ export default {
     fetchProfilePicture,
     uploadNewPicture,
     setPlayer,
-    findPlayersOfTeamId
+    findPlayersOfTeamId,
+    excludePlayerOfTeam
 }
