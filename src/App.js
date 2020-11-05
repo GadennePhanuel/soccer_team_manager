@@ -21,8 +21,6 @@ import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 import FormationPage from "./js/pages/FormationPage";
-import { TouchBackend } from "react-dnd-touch-backend";
-import { DndProvider } from "react-dnd";
 
 
 function App() {
@@ -37,7 +35,6 @@ function App() {
   const SideNavWithRouter = withRouter(SideNav);
 
   return (
-    <DndProvider backend={ TouchBackend }>
       <AuthContext.Provider
         value={{
           isAuthenticated,
@@ -76,7 +73,6 @@ function App() {
           </TeamContext.Provider>
         </HashRouter>
       </AuthContext.Provider>
-    </DndProvider>
   );
 }
 
