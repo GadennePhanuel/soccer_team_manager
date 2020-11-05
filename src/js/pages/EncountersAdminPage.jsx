@@ -4,6 +4,7 @@ import usersAPI from '../services/usersAPI';
 import encounterAPI from "../services/encounterAPI";
 import dateFormat from 'dateformat';
 import "../../scss/pages/EncountersAdminPage.scss";
+import { PLAYERS_API } from "../../config";
 
 
 const EncountersAdminPage = (props) => {
@@ -26,7 +27,7 @@ const EncountersAdminPage = (props) => {
 
     const [currentId, setCurrentId] = useState("");
     const [encounters, setEncounters] = useState([]);
-    const [refreshKey, setRefreshKey] = useState([0])
+    const [refreshKey, setRefreshKey] = useState(0)
     const [search, setSearch] = useState("")
     
 
@@ -77,7 +78,6 @@ const EncountersAdminPage = (props) => {
 
         useEffect(() => {    
             encounterAPI.findAllEncounters()
-                //.then(data => console.log(data))
                 .then(response => {
                     setEncounters(response)
                     console.log(response)
@@ -105,6 +105,7 @@ const EncountersAdminPage = (props) => {
         changeHidden('input-date-', encounterId) 
         changeHidden('btn-canceled-', encounterId)
         changeHidden('btn-put-', encounterId)
+        setError("")
     }
 
     const handleEdit = (encounterId) => {
@@ -131,7 +132,6 @@ const EncountersAdminPage = (props) => {
     }
 
     const handlePutEncounter = id => {    
-        //console.log(putEncounter)
         setCurrentId(id)
         //Modifie les données du match
         encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date,putEncounter.labelOpposingTeam,putEncounter.categoryOpposingTeam)
@@ -155,7 +155,9 @@ const EncountersAdminPage = (props) => {
         })
     }
 
+
     const handleDelete = id => {
+
         //copie le tableau encounters
         const originalEncounters = [...encounters];
 
@@ -224,7 +226,7 @@ const EncountersAdminPage = (props) => {
                                     defaultValue={encounter.labelOpposingTeam}
                                     error={error.labelOpposingTeam}
                                 />
-                                {(error && encounter.id === currentId) && <p>{error.labelOpposingTeam}</p>}
+                                {(error && encounter.id === currentId) && <p className= "error">{error.labelOpposingTeam}</p>}
                             </td>                            
                             <td>
                                 <p id={"categoryOpposingTeam-" + encounter.id}>
@@ -242,7 +244,7 @@ const EncountersAdminPage = (props) => {
                                     error={error.categoryOpposingTeam}
                                     
                                 />
-                                {(error && encounter.id === currentId) && <p>{error.categoryOpposingTeam}</p>}
+                                {(error && encounter.id === currentId) && <p className= "error">{error.categoryOpposingTeam}</p>}
                             </td>
                             <td>
                                 <p id={"date-" + encounter.id}>
@@ -259,7 +261,7 @@ const EncountersAdminPage = (props) => {
                                     defaultValue= {dateFormat(encounter.date, "yyyy-mm-dd")}
                                     error={error.date}
                                 />
-                                {(error && encounter.id === currentId) &&  <p>{error.date}</p>}
+                                {(error && encounter.id === currentId) &&  <p className= "error">{error.date}</p>}
                             </td>
                             <td>
                                 {

@@ -2,7 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
-//import playerAPI from "../services/playerAPI";
 import encounterAPI from "../services/encounterAPI";
 import TeamContext from "../contexts/TeamContext";
 import Field from "../components/forms/Field";
@@ -31,7 +30,6 @@ const EncountersPage = (props) => {
 
     const [encounters, setEncounters] = useState([]);
     const [team, setTeam] = useState({});
-    //const [playerId, setPlayerId] = useState({player: ""})
     const [refreshKey, setRefreshKey] = useState(0)
     
 
@@ -88,9 +86,6 @@ const EncountersPage = (props) => {
     }
 
         useEffect(() => {    
-            // if(usersAPI.findPlayerId() != ""){
-            //     setPlayerId(usersAPI.findPlayerId());
-            // }
 
 
             if(currentTeamId !== ""){
@@ -105,7 +100,6 @@ const EncountersPage = (props) => {
 
                 if (role === 'ROLE_COACH'){
                         encounterAPI.findEncountersById(currentTeamId)
-                        //.then(response => console.log(response.data['hydra:member']))
                         .then(response => setEncounters(response.data['hydra:member']))
                         .catch(error => console.log(error.response));
                         
@@ -174,6 +168,7 @@ const EncountersPage = (props) => {
         changeHidden('input-date-', encounterId) 
         changeHidden('btn-canceled-', encounterId)
         changeHidden('btn-put-', encounterId)
+        setError('');
     }
 
     const handleEdit = (encounterId) => {
@@ -201,7 +196,6 @@ const EncountersPage = (props) => {
     }
 
     const handlePutEncounter = id => {    
-        //console.log(putEncounter)
         setCurrentId(id)
         //Modifie les données du match
         encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date,putEncounter.labelOpposingTeam,putEncounter.categoryOpposingTeam)
@@ -327,7 +321,7 @@ const EncountersPage = (props) => {
                                     defaultValue={encounter.labelOpposingTeam}
                                     error={error.labelOpposingTeam}
                                 />
-                                {(error && encounter.id === currentId) && <p>{error.labelOpposingTeam}</p>}
+                                {(error && encounter.id === currentId) && <p className= "error">{error.labelOpposingTeam}</p>}
                             </td>                            
                             <td>
                                 <p id={"categoryOpposingTeam-" + encounter.id}>
@@ -345,7 +339,7 @@ const EncountersPage = (props) => {
                                     error={error.categoryOpposingTeam}
                                     
                                 />
-                                {(error && encounter.id === currentId) && <p>{error.categoryOpposingTeam}</p>}
+                                {(error && encounter.id === currentId) && <p className= "error">{error.categoryOpposingTeam}</p>}
                             </td>
                             <td>
                                 <p id={"date-" + encounter.id}>
@@ -363,7 +357,7 @@ const EncountersPage = (props) => {
                                     error={error.date}
                                 
                                 />
-                                {(error && encounter.id === currentId) && <p>{error.date}</p>}
+                                {(error && encounter.id === currentId) && <p className= "error">{error.date}</p>}
                             </td>
                             <td>
                                 {
