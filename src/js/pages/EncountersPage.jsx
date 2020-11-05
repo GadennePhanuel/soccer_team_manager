@@ -120,7 +120,13 @@ const EncountersPage = (props) => {
             
             
             encounterAPI.postEncounter(postEncounters)
-                .then(response => {
+                .then(response => {    
+                    setPostEncounters({
+                        team: currentTeamId,
+                        date: "",
+                        labelOpposingTeam: "",
+                        categoryOpposingTeam: ""
+                    })
                     setRefreshKey(refreshKey + 1)
                     setErrorForm('')
                 })
