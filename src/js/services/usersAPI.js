@@ -42,7 +42,7 @@ function putUserProfil(userId, user) {
   return Axios.put(USERS_API + "/" + userId, user)
 }
 
-function getUserbyId(id){
+function getUserbyId(id) {
   return Axios.get(USERS_API + "/" + id)
 }
 
@@ -85,6 +85,20 @@ function findUserId() {
   return userId;
 }
 
+function findPlayerId() {
+  const token = window.localStorage.getItem("authToken");
+  const jwtData = JwtDecode(token)
+  const playerId = jwtData.player
+  return playerId;
+}
+
+function findPlayerIdTeamId() {
+  const token = window.localStorage.getItem("authToken");
+  const jwtData = JwtDecode(token)
+  const teamId = jwtData.team
+  return teamId;
+}
+
 export default {
   registerUser,
   registerAdmin,
@@ -94,8 +108,10 @@ export default {
   checkLastName,
   checkFirstName,
   findUserId,
+  findPlayerId,
   putUserClub,
   putUserProfil,
   registerPlayer,
-  getUserbyId
+  getUserbyId,
+  findPlayerIdTeamId
 };

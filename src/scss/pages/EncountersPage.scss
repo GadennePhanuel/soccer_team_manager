@@ -1,0 +1,61 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+
+.EncountersPage{
+    @include component-size(flex, column, center, flex-start);
+
+    #createEncounter{
+        width : 45%;
+        margin-left: auto;
+        margin-right:auto;
+        .wrapper{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #form-encounter{
+
+            fieldset{
+                border:2px solid $fifth-color;
+                padding-left: 10px;
+                padding-right: 20px;
+                legend {
+                    width:30%;
+                    margin-left: 5px;
+                    text-align: center;
+                }
+            }
+            #sendDiv {
+                margin-top:30px;
+
+                #addEncounter, #cancelEncounter{
+                    margin-bottom: 8px;
+                }
+
+                #cancelEncounter{
+                    margin-left: 5px;
+                }
+            }
+        }
+        #showFormDiv {
+            margin-top : 25px;
+            margin-bottom: 40px;
+        }
+    }
+    table {
+        width : 97%;
+        .edit, .confirm{
+            margin-right:5px;
+        }
+        .btn-sm {
+            margin-bottom:5px;
+        }
+        .error {
+            width: 100%;
+            margin-top:0.25rem;
+            font-size:80%;
+            color : #E74C3C;
+        }
+    }
+}

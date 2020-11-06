@@ -61,7 +61,6 @@ const MyPlayersCoachPage = (props) => {
 
 
     const handleExclude = (player) => {
-        console.log(player)
         //copie tableau original des players
         const originalPlayers = [...players]
 
@@ -73,7 +72,6 @@ const MyPlayersCoachPage = (props) => {
             team: null
         })
             .then(response => {
-                console.log(response.data)
                 //TODO : FLASH SUCCESS
             })
             .catch(error => {

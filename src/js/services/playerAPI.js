@@ -1,15 +1,21 @@
 import Axios from "axios";
-import { API_URL, PLAYERS_API, LOCAL_URL } from "../../config";
+import { API_URL, PLAYERS_API, LOCAL_URL, TEAMS_API } from "../../config";
 
-function findAllPlayers(){
+function findAllPlayers() {
     return Axios
-            .get(PLAYERS_API)
-            .then(response => response.data['hydra:member'])
+        .get(PLAYERS_API)
+        .then(response => response.data['hydra:member'])
 }
 
-function deletePlayer(id){
+function findPlayer(id) {
     return Axios
-            .delete(PLAYERS_API + "/" + id)
+        .get(PLAYERS_API + "/" + id)
+}
+
+
+function deletePlayer(id) {
+    return Axios
+        .delete(PLAYERS_API + "/" + id)
 }
 
 function sendMailToPlayer(email, club) {
@@ -23,45 +29,51 @@ function sendMailToPlayer(email, club) {
         )
 }
 
-function setTeamToPlayer(player, teamId){
+function setTeamToPlayer(player, teamId) {
     return Axios.put(PLAYERS_API + "/" + player.id, {
-            "user": "/api/users/" + player.user.id,
-            "team": "/api/teams/" + teamId
-            })
+        "user": "/api/users/" + player.user.id,
+        "team": "/api/teams/" + teamId
+    })
 }
 
-function fetchPlayerWithoutId(){
+function fetchPlayerWithoutId() {
     return Axios.get(PLAYERS_API)
 }
 
-function fetchProfilePicture(picture){
+function fetchProfilePicture(picture) {
     return Axios.get(API_URL + "image/" + picture)
 }
 
-function uploadNewPicture(bodyFormData){
+function uploadNewPicture(bodyFormData) {
     return Axios({
-                method: 'post',
-                url: API_URL + 'upload',
-                data: bodyFormData,
-                headers: {'Content-Type': 'multipart/form-data' }
-                })
+        method: 'post',
+        url: API_URL + 'upload',
+        data: bodyFormData,
+        headers: { 'Content-Type': 'multipart/form-data' }
+    })
 }
 
-function setPlayer(player){
+function setPlayer(player) {
     return Axios.put(PLAYERS_API + "/" + player.id, {
-                height: parseInt(player.height),
-                weight: parseInt(player.weight),
-                injured: player.injured
-            })
+        height: parseInt(player.height),
+        weight: parseInt(player.weight),
+        injured: player.injured
+    })
+}
+
+function findPlayersOfTeamId(teamId) {
+    return Axios.get(TEAMS_API + '/' + teamId + '/players')
 }
 
 export default {
     sendMailToPlayer,
     findAllPlayers,
+    findPlayer,
     deletePlayer,
     setTeamToPlayer,
     fetchPlayerWithoutId,
     fetchProfilePicture,
     uploadNewPicture,
-    setPlayer
+    setPlayer,
+    findPlayersOfTeamId
 }
