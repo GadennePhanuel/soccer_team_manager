@@ -182,7 +182,6 @@ const FormationPage = (props) => {
      * @param tactic
      */
     const saveTactic = (tactic) => {
-        const tact = tactic;
         if(tactic !== undefined){
             tactic.team = "/api/teams/" + team.id;
             tactic.pos1 !== null && tacticSelected.pos1 !== undefined ? tactic.pos1 = "/api/players/" + tactic.pos1.id : tactic.pos1 = null;
@@ -199,13 +198,11 @@ const FormationPage = (props) => {
             console.log("save :" )
             console.log(tactic)
 
-            //todo corriger le put
             if(tactic.id !== undefined) {
                 tacticAPI.putTactic(tactic.id, tactic.team,tactic.type,tactic.pos1,tactic.pos2,tactic.pos3,tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7,tactic.pos8,tactic.pos9,tactic.pos10,tactic.pos11,)
-                //    .then(setRefreshKey(oldKey => oldKey + 1))
                     .then(response => {
                         console.log("MaJ tactic success " + tactic.id)
-                        setTacticsList(tacticsList)
+                        setRefreshKey2(refreshKey2+1)
                     })
                     .catch(error => console.log(error.response))
             }
@@ -214,12 +211,9 @@ const FormationPage = (props) => {
                     tactic.team,tactic.type,tactic.pos1,tactic.pos2,tactic.pos3,tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7,tactic.pos8,tactic.pos9,tactic.pos10,tactic.pos11,
                 )
                     .then(response => {
-                    //        console.log("post response :")
-                    //        console.log(response.data)
                             tacticsList.push(response.data)
                             setTacticsList(tacticsList)
                             setTacticSelected(response.data)
-                          //  console.log(tacticsList)
                             setRefreshKey(refreshKey + 1)
                         }
                     )
@@ -247,7 +241,8 @@ const FormationPage = (props) => {
         let value = event.currentTarget.value;
         value = value.split('/');
         switch (value[0]){
-            case "load":setTacticSelected(tacticsList[value[1]]);break;
+            case "load":setTacticSelected(tacticsList[value[1]]);
+            break;
             case "new":
                 let newTactic = {}
                 newTactic.type = value[1];
