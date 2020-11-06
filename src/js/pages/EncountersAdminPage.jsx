@@ -54,7 +54,7 @@ const EncountersAdminPage = (props) => {
     const filteredEncounters = encounters.filter(e =>
         e.team.label.toLowerCase().includes(search.toLowerCase()) ||
         e.team.category.toLowerCase().includes(search.toLowerCase())
-     
+
     )
 
 
@@ -78,7 +78,6 @@ const EncountersAdminPage = (props) => {
         encounterAPI.findAllEncounters()
             .then(response => {
                 setEncounters(response)
-                console.log(response)
             })
             .catch(error => console.log(error.response));
 
@@ -192,7 +191,6 @@ const EncountersAdminPage = (props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>{console.log(filteredEncounters)}</td></tr>
                     {
                         (encounters !== null && role === 'ROLE_ADMIN') ? (
                             filteredEncounters.map(encounter => (
