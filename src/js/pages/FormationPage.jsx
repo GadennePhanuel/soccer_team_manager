@@ -43,6 +43,9 @@ const FormationPage = (props) => {
  //   console.log(tacticsList)
 
     const tacticTypeList = ["5-3-2", "5-4-1", "3-5-2", "4-4-2-losange", "4-4-2-carré", "4-3-3", "4-5-1"]
+    console.log("tactList :")
+    console.log(tacticsList)
+
     const [tacticSelected, setTacticSelected] = useState()
 
     const [playersSelected, setPlayersSelected] = useState([])
@@ -76,8 +79,12 @@ const FormationPage = (props) => {
                     else {
                         //todo gérer les cas ou slotSelect correspond à n slotSelection,
                         // dans ce cas faire en sorte d'intervertir les deux cardPlayer
-                        let switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]
-                     //   console.log(switchedPlayer)
+                    //    console.log(posTarget)
+                    //    console.log(tacticSelected)
+                        let switchedPlayer = null
+                        if(tacticSelected[posTarget] != undefined) {
+                            switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]}
+                    //    console.log(switchedPlayer)
                         tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
                         tacticSelected[posOrigin] = switchedPlayer
                     }
