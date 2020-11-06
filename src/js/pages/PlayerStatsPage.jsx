@@ -1,6 +1,8 @@
-import Axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import '../../scss/pages/PlayerStatsPage.scss';
+import playerAPI from '../services/playerAPI';
+import trainingsAPI from '../services/trainingsAPI';
+import encounterAPI from '../services/encounterAPI';
 
 const PlayerStatsPage = (props) => {
 
@@ -55,12 +57,12 @@ const PlayerStatsPage = (props) => {
 
     useEffect(() => {
         //récupération du player en BDD
-        Axios.get('http://localhost:8000/api/players/' + id)
+        playerAPI.findPlayer(id)
             .then(response => {
                 setPlayer(response.data)
 
                 if (response.data.picture) {
-                    Axios.get('http://localhost:8000/api/image/' + response.data.picture)
+                    playerAPI.fetchProfilePicture(response.data.picture)
                         .then(response => {
                             setPicture64(response.data.data)
                         })
@@ -70,7 +72,7 @@ const PlayerStatsPage = (props) => {
                 setAge(getAge(response.data.user.birthday))
 
                 //récupération des trainings de son équipe
-                Axios.get('http://localhost:8000/api/teams/' + response.data.team.id + '/trainings')
+                trainingsAPI.findTrainingsById(response.data.team.id)
                     .then(response => {
                         //obtention de d'un tableau contenant tous les entrainements de son équipe
                         setTrainings(response.data['hydra:member'])
@@ -89,7 +91,7 @@ const PlayerStatsPage = (props) => {
                     })
 
                 //récupération des rencontres de son équipes
-                Axios.get('http://localhost:8000/api/teams/' + response.data.team.id + '/encounters')
+                encounterAPI.findEncountersById(response.data.team.id)
                     .then(response => {
                         setEncounters(response.data['hydra:member'])
 
