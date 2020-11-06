@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import TeamContext from '../contexts/TeamContext';
 import teamAPI from '../services/teamAPI';
 import '../../scss/pages/MyPlayersCoachPage.scss';
-import Axios from 'axios';
 import { Link } from 'react-router-dom';
+import playerAPI from '../services/playerAPI';
 
 const MyPlayersCoachPage = (props) => {
 
@@ -38,7 +38,7 @@ const MyPlayersCoachPage = (props) => {
                     response.data.players.forEach(player => {
 
                         if (player.picture) {
-                            Axios.get('http://localhost:8000/api/image/' + player.picture)
+                            playerAPI.fetchProfilePicture(player.picture)
                                 .then(response => {
                                     setPictures64(pictures64 => [...pictures64, { [player.id]: response.data.data }])
                                 })
@@ -68,9 +68,7 @@ const MyPlayersCoachPage = (props) => {
         setPlayers(players.filter((playerItem) => playerItem.id !== player.id))
 
         //PUT player/id -> on set team à null
-        Axios.put('http://localhost:8000/api/players/' + player.id, {
-            team: null
-        })
+        playerAPI.excludePlayerOfTeam(player.id)
             .then(response => {
                 //TODO : FLASH SUCCESS
             })
