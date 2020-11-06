@@ -24,7 +24,7 @@ import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 import TrainingsPage from "./js/pages/TrainingsPage";
 import PlanningPlayer from "./js/pages/PlanningPlayer";
-
+import FormationPage from "./js/pages/FormationPage";
 
 
 function App() {
