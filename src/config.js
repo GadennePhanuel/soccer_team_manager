@@ -8,5 +8,6 @@ export const COACHS_API = API_URL + "coaches";
 export const PLAYERS_API = API_URL + "players";
 export const CLUBS_API = API_URL + "clubs";
 export const TEAMS_API = API_URL + "teams";
+export const TACTICS_API = API_URL + "tactics";
 
 export const LOGIN_API = API_URL + "login_check";

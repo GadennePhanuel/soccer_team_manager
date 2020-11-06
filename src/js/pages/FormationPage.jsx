@@ -63,7 +63,6 @@ const FormationPage = (props) => {
                 }, 0);
             },
             end:(item,monitor)=>{
-                //todo gerer slotSelected vers player List
                 const dropResult = monitor.getDropResult();
                 if(dropResult && dropResult.name != null){
                     let posTarget = dropResult.name;
@@ -130,32 +129,43 @@ const FormationPage = (props) => {
         )
     };
 
-    const saveTactic = (tactic) => {
+    const saveTactic = async (tactic) => {
+        const tact = tactic;
         if(tactic !== undefined){
-            tactic.team = team;
-            if(tactic.pos1 !== null) {tactic.pos1 = players.filter(player => player.id === tactic.pos1.id)[0]}
-            if(tactic.pos2 !== null ) {tactic.pos2 = players.filter(player => player.id === tactic.pos2.id)[0] }
-            if(tactic.pos3 !== null ) {tactic.pos3 = players.filter(player => player.id === tactic.pos3.id)[0] }
-            if(tactic.pos4 !== null ) {tactic.pos4 = players.filter(player => player.id === tactic.pos4.id)[0] }
-            if(tactic.pos5 !== null ) {tactic.pos5 = players.filter(player => player.id === tactic.pos5.id)[0] }
-            if(tactic.pos6 !== null ) {tactic.pos6 = players.filter(player => player.id === tactic.pos6.id)[0] }
-            if(tactic.pos7 !== null ) {tactic.pos7 = players.filter(player => player.id === tactic.pos7.id)[0] }
-            if(tactic.pos8 !== null ) {tactic.pos8 = players.filter(player => player.id === tactic.pos8.id)[0] }
-            if(tactic.pos9 !== null ) {tactic.pos9 = players.filter(player => player.id === tactic.pos9.id)[0] }
-            if(tactic.pos10 !== null ) {tactic.pos10 = players.filter(player => player.id === tactic.pos10.id)[0] }
-            if(tactic.pos11 !== null ) {tactic.pos11 = players.filter(player => player.id === tactic.pos11.id)[0] }
-          //  console.log(tacticSelected)
+            tactic.team = "/api/teams/" + team.id;
+            tactic.pos1 !== null && tacticSelected.pos1 !== undefined ? tactic.pos1 = "/api/players/" + tactic.pos1.id : tactic.pos1 = null;
+            tactic.pos2 !== null && tacticSelected.pos2 !== undefined ? tactic.pos2 = "/api/players/" + tactic.pos2.id : tactic.pos2 = null;
+            tactic.pos3 !== null && tacticSelected.pos3 !== undefined ? tactic.pos3 = "/api/players/" + tactic.pos3.id : tactic.pos3 = null;
+            tactic.pos4 !== null && tacticSelected.pos4 !== undefined ? tactic.pos4 = "/api/players/" + tactic.pos4.id : tactic.pos4 = null;
+            tactic.pos5 !== null && tacticSelected.pos5 !== undefined ? tactic.pos5 = "/api/players/" + tactic.pos5.id : tactic.pos5 = null;
+            tactic.pos6 !== null && tacticSelected.pos6 !== undefined ? tactic.pos6 = "/api/players/" + tactic.pos6.id : tactic.pos6 = null;
+            tactic.pos7 !== null && tacticSelected.pos7 !== undefined ? tactic.pos7 = "/api/players/" + tactic.pos7.id : tactic.pos7 = null;
+            tactic.pos8 !== null && tacticSelected.pos8 !== undefined ? tactic.pos8 = "/api/players/" + tactic.pos8.id : tactic.pos8 = null;
+            tactic.pos9 !== null && tacticSelected.pos9 !== undefined ? tactic.pos9 = "/api/players/" + tactic.pos9.id : tactic.pos9 = null;
+            tactic.pos10 !== null && tacticSelected.pos10 !== undefined ? tactic.pos10 = "/api/players/" + tactic.pos10.id : tactic.pos10 = null;
+            tactic.pos11 !== null && tacticSelected.pos11 !== undefined ? tactic.pos11 = "/api/players/" + tactic.pos11.id : tactic.pos11 = null;
+            console.log("save :" )
+            console.log(tactic)
 
-            /*//todo stoped here
+            //todo put purge
             if(tactic.id !== undefined) {
-                tacticAPI.putTactic(tactic)
+                tacticAPI.putTactic(tactic.id, tactic.team,tactic.type,tactic.pos1,tactic.pos2,tactic.pos3,tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7,tactic.pos8,tactic.pos9,tactic.pos10,tactic.pos11,)
+                    .then(setRefreshKey(oldKey => oldKey + 1))
                     .catch(error => console.log(error.response))
             }
             else {
-                tacticAPI.postTactic(tactic)
-                    .then(setTacticsList(...tactic))
+                tacticAPI.postTactic(
+                    tactic.team,tactic.type,tactic.pos1,tactic.pos2,tactic.pos3,tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7,tactic.pos8,tactic.pos9,tactic.pos10,tactic.pos11,
+                )
+                    .then(
+                        console.log("tact :"),
+                        console.log(tact),
+                        tacticsList.push(tact),
+                        setTacticsList(tacticsList),
+                        setRefreshKey(oldKey => oldKey + 1)
+                    )
                     .catch(error => console.log(error.response))
-            }*/
+            }
         }
        /* if (editTeam.coach !== "") {
             editTeam.coach = "/api/coaches/" + editTeam.coach
@@ -217,6 +227,7 @@ const FormationPage = (props) => {
     }
 
     const [refreshKey, setRefreshKey] = useState([0])
+    const [refreshKey2, setRefreshKey2] = useState([0])
     /**
     * ajax recup des l'equipe selectionnée, et des tactics de cette equipe
     */
@@ -232,25 +243,27 @@ const FormationPage = (props) => {
                 .then(response => { setTacticsList(response)})
                 .catch(error => console.log(error.response))
         }
-    }, [currentTeamId])
+    }, [refreshKey2, currentTeamId])
 
     /**
      * chargement du tableau des joueur selectionnés soumis à la sellection d'une tactique
      */
     useEffect(() => {
         let tab = [];
+        console.log("useEffect PlayerSelected :")
+        console.log(tacticSelected)
         if(tacticSelected !== undefined && tacticSelected !== null) {
-            tacticSelected.pos1 !== null ? tab.push(players.filter(player => tacticSelected.pos1.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos2 !== null ? tab.push(players.filter(player => tacticSelected.pos2.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos3 !== null ? tab.push(players.filter(player => tacticSelected.pos3.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos4 !== null ? tab.push(players.filter(player => tacticSelected.pos4.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos5 !== null ? tab.push(players.filter(player => tacticSelected.pos5.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos6 !== null ? tab.push(players.filter(player => tacticSelected.pos6.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos7 !== null ? tab.push(players.filter(player => tacticSelected.pos7.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos8 !== null ? tab.push(players.filter(player => tacticSelected.pos8.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos9 !== null ? tab.push(players.filter(player => tacticSelected.pos9.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos10 !== null ? tab.push(players.filter(player => tacticSelected.pos10.id === player.id)[0]) : tab.push(null)
-             tacticSelected.pos11 !== null ? tab.push(players.filter(player => tacticSelected.pos11.id === player.id)[0]) : tab.push(null)
+            tacticSelected.pos1 !== null && tacticSelected.pos1 !== undefined ? tab.push(players.filter(player => tacticSelected.pos1.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos2 !== null && tacticSelected.pos2 !== undefined ? tab.push(players.filter(player => tacticSelected.pos2.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos3 !== null && tacticSelected.pos3 !== undefined ? tab.push(players.filter(player => tacticSelected.pos3.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos4 !== null && tacticSelected.pos4 !== undefined ? tab.push(players.filter(player => tacticSelected.pos4.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos5 !== null && tacticSelected.pos5 !== undefined ? tab.push(players.filter(player => tacticSelected.pos5.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos6 !== null && tacticSelected.pos6 !== undefined ? tab.push(players.filter(player => tacticSelected.pos6.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos7 !== null && tacticSelected.pos7 !== undefined ? tab.push(players.filter(player => tacticSelected.pos7.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos8 !== null && tacticSelected.pos8 !== undefined ? tab.push(players.filter(player => tacticSelected.pos8.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos9 !== null && tacticSelected.pos9 !== undefined ? tab.push(players.filter(player => tacticSelected.pos9.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos10 !== null && tacticSelected.pos10 !== undefined ? tab.push(players.filter(player => tacticSelected.pos10.id === player.id)[0]) : tab.push(null)
+             tacticSelected.pos11 !== null && tacticSelected.pos11 !== undefined ? tab.push(players.filter(player => tacticSelected.pos11.id === player.id)[0]) : tab.push(null)
 
 
         }
@@ -263,10 +276,10 @@ const FormationPage = (props) => {
      */
     useEffect (() => {
         let tab = players;
-        //console.log("playerSelected: ");
-        //console.log(playersSelected);
+        console.log("playerSelected: ");
+        console.log(playersSelected);
         {playersSelected.map(playerS =>(
-            playerS !== null ?
+            playerS !== null && playerS !== undefined ?
                 tab = tab.filter(player => player.id !== playerS.id)
                 : tab
             )
@@ -318,7 +331,7 @@ const FormationPage = (props) => {
                                 </optgroup>
                             </select>
 
-                            <button id="save" onClick={saveTactic(tacticSelected)}>Save</button>
+                            <button id="save" onClick={() =>saveTactic(tacticSelected)}>Save</button>
 
                             <div id="soccerField">
                                 {playersSelected &&
