@@ -81,4 +81,13 @@
     background-color:rgba(0,0,0,0.5);
     border: white dashed;
   }
+
+    .item-list__item{
+      border: solid 1px black;
+      position: relative;
+      background-color: rgb(56, 236, 39);
+      width: 150px;
+      margin: 4px;
+      margin-left: 8px;
+  }
 }
