@@ -14,16 +14,8 @@ import {useDrag, useDrop} from "react-dnd";
 import tacticAPI from "../services/tacticAPI";
 
 const FormationPage = (props) => {
-        //todo recup players de l'equipe
-        //todo recup selected Tactic
-        //todo filtrer players identifié dans selectedTactics
-            //creer une cardPlayer avec className="posted" et les placer dans les poste correspondant
-        //todo filtrer player sans poste,
-            //creer une cardPlayer et les passer dans playerList
-        //composant necessaire:
-            //todo composant poste className="poste" id="pos{Num]id (like bdd)
-            //todo const unpostedListe
-            //todo const selectedTactic
+    //todo corriger maj de tactic qui se purge...
+    //
 
     authAPI.setup();
     // si role != ROLE_ADMIN -> redirection vers le dashboard qui lui correspond
@@ -40,7 +32,7 @@ const FormationPage = (props) => {
 
     //console.log(players)
     const [tacticsList, setTacticsList] = useState([])
- //   console.log(tacticsList)
+    //console.log(tacticsList)
 
     const tacticTypeList = ["5-3-2", "5-4-1", "3-5-2", "4-4-2-losange", "4-4-2-carré", "4-3-3", "4-5-1"]
   //  console.log("tactList :")
@@ -56,6 +48,14 @@ const FormationPage = (props) => {
     // console.log("playerFree: ")
     // console.log(playersFree);
 
+    /**
+     * Composant PlayerCard pour display et Drag un joueur
+     * @param player
+     * @param className
+     * @param posOrigin
+     * @returns {JSX.Element}
+     * @constructor
+     */
     const PlayerCard = ({player, className, posOrigin}) => {
    //     console.log(player)
         const [{isDragging}, drag] = useDrag({
@@ -85,14 +85,13 @@ const FormationPage = (props) => {
                                 switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]
                             }
                         //  console.log(switchedPlayer)
-                            tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
+                            if(player !== null){
+                                tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
+                            }
+                            else {tacticSelected[posTarget] = null}
                             tacticSelected[posOrigin] = switchedPlayer
                         }
-                        else {
-                        //todo gérer les cas ou slotSelect correspond à n slotSelection,
-                        // dans ce cas faire en sorte d'intervertir les deux cardPlayer
-                            tacticSelected[posOrigin] = null;
-                            }
+                        else {tacticSelected[posOrigin] = null;}
                     }
                     setTacticSelected(tacticSelected);
                  //   console.log(tacticSelected)
@@ -116,6 +115,14 @@ const FormationPage = (props) => {
         )
     }
 
+    /**
+     * Composant SlotSelection les zone de drop des joueurs selectionnés
+     * @param id
+     * @param className
+     * @param child
+     * @returns {JSX.Element}
+     * @constructor
+     */
     const SlotSelection = ({id, className, child}) => {
         const [, drop] = useDrop({
             accept: "playerCard",
@@ -129,6 +136,14 @@ const FormationPage = (props) => {
         )
     };
 
+    /**
+     * composant FreePlayerList (zone de drop des joueurs non selectionnés)
+     * @param id
+     * @param className
+     * @param children
+     * @returns {JSX.Element}
+     * @constructor
+     */
     const FreePlayersList = ({id, className, children}) => {
         const [, drop] = useDrop({
             accept: "playerCard",
@@ -142,7 +157,31 @@ const FormationPage = (props) => {
         )
     };
 
-    const saveTactic = async (tactic) => {
+    /**
+     * suppression de tacticId
+     * @param tacticId
+     */
+    const deleteTactic = (tacticId) => {
+        const originalTacticsList = [...tacticsList];
+
+        //supression de l'affichage du coach selectionné
+        setTacticsList(tacticsList.filter((tactic) => tactic.id !== tacticId));
+
+        tacticAPI.deleteTactic(tacticId)
+            .then(
+                response => console.log("delete tactic success " + tacticId),
+                setTacticSelected()
+            )
+            .catch(error => {
+                setTacticsList(originalTacticsList);
+            });
+    }
+
+    /**
+     * Mise a jour et creation de tactic
+     * @param tactic
+     */
+    const saveTactic = (tactic) => {
         const tact = tactic;
         if(tactic !== undefined){
             tactic.team = "/api/teams/" + team.id;
@@ -160,44 +199,34 @@ const FormationPage = (props) => {
             console.log("save :" )
             console.log(tactic)
 
-            //todo put purge
+            //todo corriger le put
             if(tactic.id !== undefined) {
                 tacticAPI.putTactic(tactic.id, tactic.team,tactic.type,tactic.pos1,tactic.pos2,tactic.pos3,tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7,tactic.pos8,tactic.pos9,tactic.pos10,tactic.pos11,)
-                    .then(setRefreshKey(oldKey => oldKey + 1))
+                //    .then(setRefreshKey(oldKey => oldKey + 1))
+                    .then(response => {
+                        console.log("MaJ tactic success " + tactic.id)
+                        setTacticsList(tacticsList)
+                    })
                     .catch(error => console.log(error.response))
             }
             else {
                 tacticAPI.postTactic(
                     tactic.team,tactic.type,tactic.pos1,tactic.pos2,tactic.pos3,tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7,tactic.pos8,tactic.pos9,tactic.pos10,tactic.pos11,
                 )
-                    .then(
-                        console.log("tact :"),
-                        console.log(tact),
-                        tacticsList.push(tact),
-                        setTacticsList(tacticsList),
-                        setRefreshKey(oldKey => oldKey + 1)
+                    .then(response => {
+                    //        console.log("post response :")
+                    //        console.log(response.data)
+                            tacticsList.push(response.data)
+                            setTacticsList(tacticsList)
+                            setTacticSelected(response.data)
+                          //  console.log(tacticsList)
+                            setRefreshKey(refreshKey + 1)
+                        }
                     )
                     .catch(error => console.log(error.response))
             }
         }
-       /* if (editTeam.coach !== "") {
-            editTeam.coach = "/api/coaches/" + editTeam.coach
-        }
-        else {
-            editTeam.coach = null
-        }
-        editTeam.club = "/api/clubs/" + clubId
-        teamAPI.postTeam(editTeam)
-            //.then(data => [...teams, data])
-            .then(setRefreshKey(oldKey => oldKey + 1))
-            .catch(error => console.log(error.response))*/
     }
-
-    /*function selectPlayer(player, posId){
-        //retrait du joueur selectionné des joueurs libres
-        setPlayersFree(playersFree.filter(p => p.id !== player.id))
-        //changer le player id de la tacticSelect au bon emplacement
-    }*/
 
     /* //todo rendre dynamique le placement des fieldpos fonction de la tactic selectionnée
     const positions = {
@@ -331,20 +360,21 @@ const FormationPage = (props) => {
                             <label htmlFor="tacticSelect">Selectionner une tactique :</label>
                             <select name="tactic" id="tacticSelect" onChange={handleChange}>
                                 <option value=""> make a choice </option>
-                                <optgroup label="Existantes :">
-                                    {tacticsList.map((tactic, index) => (
-                                        <option key={tactic.id} value={"load/"+index}>{tactic.type}</option>
-                                    ))}
-                                </optgroup>
                                 <optgroup label="Création :">
                                     {tacticTypeList.map((tacticType, index) => (
                                             <option key={index} value={"new/"+tacticType}>{tacticType}</option>
                                         )
                                     )}
                                 </optgroup>
+                                <optgroup label="Existantes :">
+                                    {tacticsList.map((tactic, index) => (
+                                        <option key={tactic.id} value={"load/"+index}>{tactic.id + " / " +tactic.type}</option>
+                                    ))}
+                                </optgroup>
                             </select>
 
                             <button id="save" onClick={() =>saveTactic(tacticSelected)}>Save</button>
+                            <button id="delete" onClick={() =>deleteTactic(tacticSelected.id)}>delete</button>
 
                             <div id="soccerField">
                                 {playersSelected &&
