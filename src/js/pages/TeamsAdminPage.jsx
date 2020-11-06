@@ -49,11 +49,11 @@ const TeamsAdminPage = (props) => {
     const handleChange = (event) => {
         const { name, value } = event.currentTarget;
         setEditTeam({ ...editTeam, [name]: value })
-        console.log(editTeam)
+    //    console.log(editTeam)
     };
 
     const handleSubmit = async (event) => {
-        console.log("creation")
+    //    console.log("creation")
         event.preventDefault();
         if (editTeam.coach !== "") {
             editTeam.coach = "/api/coaches/" + editTeam.coach
