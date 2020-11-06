@@ -96,7 +96,6 @@ const EncountersPage = (props) => {
                 .then(response => {setTeam(response.data)})
                 .catch(error => console.log(error.response));
 
-                //playerAPI.findPlayer()
 
                 if (role === 'ROLE_COACH'){
                         encounterAPI.findEncountersById(currentTeamId)
@@ -155,6 +154,8 @@ const EncountersPage = (props) => {
     const handleHiddenForm = () => {
         changeHiddenForm("form-encounter")
         changeHiddenForm("showForm")
+
+        setErrorForm("")
     }
     
     const handleCanceled = (encounterId) => {

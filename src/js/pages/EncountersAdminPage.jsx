@@ -53,9 +53,8 @@ const EncountersAdminPage = (props) => {
 
     const filteredEncounters = encounters.filter(e =>
         e.team.label.toLowerCase().includes(search.toLowerCase()) ||
-        e.team.category.toLowerCase().includes(search.toLowerCase()) ||
-        e.labelOpposingTeam.toLowerCase().includes(search.toLowerCase())
-
+        e.team.category.toLowerCase().includes(search.toLowerCase())
+     
     )
 
 
