@@ -137,7 +137,6 @@ const PlanningPlayer = (props) => {
                 //envoie requete en BDD pour créer le trainingMissed du player connecté
                 trainingMissedsAPI.createTrainingMissed(currentTrainingPlannedId, id)
                     .then(response => {
-                        console.log(response.data)
                         checkTrainingOfDayClick(currentDate)
                     })
                     .catch(error => {
