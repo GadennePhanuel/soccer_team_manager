@@ -64,9 +64,25 @@ const TrainingsPage = () => {
     })
     const [currentTrainingId, setCurrentTrainingId] = useState('')
 
-    const onDateClick = (day) => {
-        //si la date est inférieur a la date du jour --> on affiche un modal pour lui dire d'aller se faire mettre
+    const [dateNotValid, setDateNotValid] = useState(true)
 
+    const onDateClick = (day) => {
+        //par defaut dateNotValid = true
+        setDateNotValid(true)
+
+        var today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        day = new Date(day.toLocaleDateString("en-US"))
+        day.setHours(0, 0, 0, 0)
+
+
+        //si la date est inférieur a la date du jour on conditionne l'affichage de la modal
+        if (day < today) {
+            setDateNotValid(true)
+        } else {
+            setDateNotValid(false)
+        }
 
         //parcours trainings, si un item training correspond a la date cliqué  on set training avec celui-ci trouvé & on change title avec "Modifier l'entrainement"
         setTraining({
@@ -81,7 +97,9 @@ const TrainingsPage = () => {
         setNewer(true)
         setErrors('');
         for (var i = 0; i < trainings.length; i++) {
-            if (new Date(trainings[i].date).toLocaleDateString('fr-FR') === day.toLocaleDateString('fr-FR')) {
+            var trainingDate = new Date(trainings[i].date)
+            trainingDate.setHours(0, 0, 0, 0)
+            if (trainingDate.toLocaleDateString('fr-FR') === day.toLocaleDateString('fr-FR')) {
                 setTraining({
                     ...training,
                     team: "/api/teams/" + currentTeamId,
@@ -90,7 +108,7 @@ const TrainingsPage = () => {
                     description: trainings[i].description,
                 })
                 setCurrentTrainingId(trainings[i].id)
-                setTitleModal('Entrainement du ' + day.toLocaleDateString('fr-FR'))
+                setTitleModal('Editer l\'entrainement du ' + day.toLocaleDateString('fr-FR'))
                 setNewer(false)
                 let trainId = trainings[i].id
                 //on charge aussi la liste de tous les joureurs de la team courante
@@ -135,11 +153,18 @@ const TrainingsPage = () => {
             }
         }
         showModal()
-        document.getElementById('formTraining').hidden = false
-        if (document.getElementById('abs_pres')) {
-            if (document.getElementById('abs_pres').hidden === false) {
-                document.getElementById('abs_pres').hidden = true
+        if (day >= today) {
+            if (document.getElementById('formTraining')) {
+                document.getElementById('formTraining').hidden = false
+                if (document.getElementById('abs_pres')) {
+                    if (document.getElementById('abs_pres').hidden === false) {
+                        document.getElementById('abs_pres').hidden = true
+                    }
+                }
             }
+        }
+        if (day < today) {
+            setTitleModal('Evénement du ' + day.toLocaleDateString('fr-FR'))
         }
     }
 
@@ -314,35 +339,61 @@ const TrainingsPage = () => {
                 handleClose={hideModal}
                 title={titleModal}
             >
-                <form onSubmit={handleSubmit} id="formTraining">
-                    <Field
-                        name="label"
-                        label="Titre"
-                        placeholder="Titre de l'entrainement..."
-                        value={training.label}
-                        onChange={handleChange}
-                        error={errors.label}
-                    ></Field>
-                    <Textarea
-                        name="description"
-                        label="Description"
-                        placeholder="Programme de l'entrainement..."
-                        value={training.description}
-                        onChange={handleChange}
-                        error={errors.description}
-                    ></Textarea>
-                    <div className="form-group submit-btn">
-                        <button type="submit" className="btn btn-primary ">
-                            {newer ? 'Créer' : 'Modifier'}
-                        </button>
-                        {!newer && (
-                            <button type="button" className="btn btn-danger" onClick={() => handleDelete(currentTrainingId)}>
-                                Supprimer
-                            </button>
-                        )}
+                {/* si la date selectionnée est inférieur a la date du jour */}
+                {(dateNotValid && !newer) && (
+                    <div>
+                        <div>
+                            <h5>{training.label}</h5>
+                            <p>{training.description}</p>
+                        </div>
+                        <div className="invalidDate">
+                            <h5>Absents</h5>
+                            {playersMisseds.map((playerMissed, index) => (
+                                <p key={index} type="button"> {playerMissed.player.user.lastName + ' ' + playerMissed.player.user.firstName} </p>
+                            ))}
+                        </div>
                     </div>
-                </form>
-                {!newer && (
+                )}
+                {dateNotValid && (
+                    <div className='note'>
+                        <p>Note : Vous ne pouvez pas créer ou modifier un événement à une date ultérieur a aujourd'hui</p>
+                    </div>
+                )}
+
+
+                {/* si la date selectionné est supérieur ou egale a la date du jour */}
+                {!dateNotValid && (
+
+                    <form onSubmit={handleSubmit} id="formTraining">
+                        <Field
+                            name="label"
+                            label="Titre"
+                            placeholder="Titre de l'entrainement..."
+                            value={training.label}
+                            onChange={handleChange}
+                            error={errors.label}
+                        ></Field>
+                        <Textarea
+                            name="description"
+                            label="Description"
+                            placeholder="Programme de l'entrainement..."
+                            value={training.description}
+                            onChange={handleChange}
+                            error={errors.description}
+                        ></Textarea>
+                        <div className="form-group submit-btn">
+                            <button type="submit" className="btn btn-primary ">
+                                {newer ? 'Créer' : 'Modifier'}
+                            </button>
+                            {!newer && (
+                                <button type="button" className="btn btn-danger" onClick={() => handleDelete(currentTrainingId)}>
+                                    Supprimer
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                )}
+                {(!newer && !dateNotValid) && (
                     <div className="absence-div">
                         <button type="button" className="btn btn-secondary btn-absence" onClick={handleManagement}>Gérer les absences</button>
                         <div className="col_abs_pres" id="abs_pres" hidden>
