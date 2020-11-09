@@ -38,11 +38,22 @@ const FormationPage = (props) => {
     const [tacticsList, setTacticsList] = useState([])
     //console.log(tacticsList)
 
-    const tacticTypeList = ["5-3-2", "5-4-1", "3-5-2", "4-4-2-losange", "4-4-2-carré", "4-3-3", "4-5-1"]
+    //todo tableau des type de tactics possibles, trier par nom de tactics, puis par position des post en %
+    //[x:y]
+    const tacticTypeList = [
+        [ "5-3-2", [50,90,"gardien"], [15,60,"Arrière lateral gauche"], [28,73,"Defenseur central gauche"], [50,76,"Defenseur central"], [72,73, "Defenseur central droit"], [85,60, "Arrière lateral droit"], [25,42,"Milieu gauche"], [50,50,"Milieu central"], [75,42,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
+        [ "5-4-1", [50,90,"gardien"], [15,60,"Arrière lateral gauche"], [28,73,"Defenseur central gauche"], [50,76,"Defenseur central"], [72,73, "Defenseur central droit"], [85,60, "Arrière lateral droit"], [15,36,"Milieu gauche"], [36,45,"Milieu central"], [64,45,"Milieu central"], [85,36,"Milier droit"], [50,15,"Avant centre"]],
+        [ "3-5-2", [50,90,"gardien"], [22,70,"Defenseur central"], [50,77,"Defenseur central"], [78,70,"Defenseur central"], [15,35, "Milieu gauche"], [32,45, "Milieu central"], [50,55,"Milieu central"], [68,45,"Milieu central"], [85,35,"Milieu droit"], [28,20,"Avant centre"], [72,20,"Avant centre"]],
+        [ "4-4-2-losange", [50,90,"gardien"], [15,65,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,65, "Defenseur central droit"], [50,62, "Milieu defensif"], [25,47,"Milieu gauche"], [50,35,"Milieu central"], [75,47,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
+        [ "4-4-2-carre", [50,90,"gardien"], [15,65,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,65, "Defenseur central droit"], [15,40, "Milieu gauche"], [35,53,"Milieu central"], [65,53,"Milieu central"], [85,40,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
+        [ "4-3-3", [50,90,"gardien"], [15,65,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,65, "Defenseur central droit"], [25,47, "Milieu gauche"], [50,50,"Milieu central"], [75,47,"Milieu droit"], [15,25,"Aillier gauche"], [85,25,"Aillier droit"], [50,15,"Avant centre"]],
+        [ "4-5-1", [50,90,"gardien"], [15,68,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,68, "Defenseur central droit"], [25,55, "Milieu defensif"], [75,55,"Milieu defensif"], [15,35,"Milieu gauche"], [50,37,"Milieu Offensif"], [85,35,"Milieu droit"], [50,15,"Avant centre"]]
+    ]
     //  console.log("tactList :")
     //  console.log(tacticsList)
 
     const [tacticSelected, setTacticSelected] = useState()
+//    console.log(tacticSelected)
 
     const [playersSelected, setPlayersSelected] = useState([])
     // console.log("playerSelected: ")
@@ -64,7 +75,7 @@ const FormationPage = (props) => {
         //     console.log(player)
         const [{ isDragging }, drag] = useDrag({
             item: { type: 'playerCard', player },
-            begin: () => {
+            begin: () => { //todo rendre invisible non fonctionnel
                 setTimeout(() => {
                     className = 'invisible'
                 }, 0);
@@ -127,15 +138,33 @@ const FormationPage = (props) => {
      * @returns {JSX.Element}
      * @constructor
      */
-    const SlotSelection = ({ id, className, child }) => {
+    const SlotSelection = ({ id, num, tactic, className, child }) => {
         const [, drop] = useDrop({
             accept: "playerCard",
             drop: () => ({ name: id }),
         });
 
+        const fieldWitdh = 512;
+        const fieldHeight = 685;
+
+        const slotWidth = 65;
+        const slotHeight = 65;
+
+        //todo
+        //travailler en %
+        //gérer decalage sur Y eventuel due position relative
+        //gerer dimenssion dynamique des slots.
+        //large slot 50px, large terrain 512
+        // x = pourcentage de position - la moitié de la largeur de slot convertit en pourcent
+        const x = tactic[num][0] - (slotWidth*100/fieldWitdh/2)
+        // y = pourcentage de position - la moitié de la largeur de slot convertit en pourcent avec gestion decalage relatif
+        const y = tactic[num][1] - (num-1)*(slotHeight*100/fieldHeight) - (slotHeight*100/fieldHeight/2)
+
         return (
-            <div ref={drop} id={id} className={className}>
-                {child}
+            <div ref={drop} id={id} className={className} style={{top:y+"%", left:x+"%", width:slotWidth, height:slotHeight}} >
+                <abbr title={tactic[num][2]}>
+                    {child}
+                </abbr>
             </div>
         )
     };
@@ -367,12 +396,12 @@ const FormationPage = (props) => {
 
     return (
         <div className="FormationPage wrapper_container">
-            <div className="flexBox">
+            {/*<div className="flexBox">
                 <h1>Formation Tactique</h1>
                 <h2>
                     {currentTeamId === "" ? "Pas d'équipe à charge" : team.label + ' ' + team.category}
                 </h2>
-            </div>
+            </div>*/}
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <div className="flexBox">
                     <div id="tacticBox">
@@ -395,8 +424,8 @@ const FormationPage = (props) => {
                             <option value=""> make a choice </option>
                             <optgroup label="Création :">
                                 {tacticTypeList.map((tacticType, index) => (
-                                    <option key={index} value={"new/" + tacticType}>{tacticType}</option>
-                                )
+                                    <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
+                                    )
                                 )}
                             </optgroup>
                             <optgroup label="Existantes :">
@@ -415,6 +444,8 @@ const FormationPage = (props) => {
                                     <SlotSelection
                                         key={index}
                                         id={"pos" + (index + 1)}
+                                        num = {index+1}
+                                        tactic = {tacticTypeList.filter((tactic) => tactic[0] === tacticSelected.type)[0]}
                                         className="fieldPos"
                                         child={
                                             <PlayerCard
