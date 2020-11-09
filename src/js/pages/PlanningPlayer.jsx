@@ -6,6 +6,7 @@ import encounterAPI from '../services/encounterAPI';
 import trainingMissedsAPI from '../services/trainingMissedsAPI';
 import trainingsAPI from '../services/trainingsAPI';
 import usersAPI from '../services/usersAPI';
+import '../../scss/pages/PlanningPlayer.scss'
 
 const PlanningPlayer = (props) => {
     const { isAuthenticated } = useContext(AuthContext);
@@ -68,9 +69,21 @@ const PlanningPlayer = (props) => {
     const [encounterPlanned, setEncounterPlanned] = useState(Boolean)
     const [encounter, setEncounter] = useState({})
 
+    const [dateNotValid, setDateNotValid] = useState(true)
 
 
     function checkTrainingOfDayClick(day) {
+        day = new Date(day.toLocaleDateString("en-US"))
+        day.setHours(0, 0, 0, 0)
+        var today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        //si la date est inférieur a la date du jour on conditionne l'affichage de la modal
+        if (day < today) {
+            setDateNotValid(true)
+        } else {
+            setDateNotValid(false)
+        }
 
         trainingsAPI.findTrainingsById(teamId)
             .then(response => {
@@ -79,7 +92,9 @@ const PlanningPlayer = (props) => {
                 //parcourir le tableau des trainings, si un training est prévu a la date cliqué on set le training trouvé et on affiche les infos dans la fenetre modale
                 //et on passe setTrainingPlanned(true)
                 for (var i = 0; i < trainingsTmp.length; i++) {
-                    if (new Date(trainingsTmp[i].date).toLocaleDateString('fr-FR') === day.toLocaleDateString('fr-FR')) {
+                    var trainingDate = new Date(trainings[i].date)
+                    trainingDate.setHours(0, 0, 0, 0)
+                    if (trainingDate.toLocaleDateString('fr-FR') === day.toLocaleDateString('fr-FR')) {
                         setTraining(trainingsTmp[i])
                         //on parcours les trainingMisseds du training retenu. SI l'id du player connecté y est on setAbsence(true)
                         for (var j = 0; j < trainingsTmp[i].trainingMisseds.length; j++) {
@@ -193,16 +208,27 @@ const PlanningPlayer = (props) => {
                         <p>{training.team.label + ' ' + training.team.category + ' : ' + training.label}</p>
                         <p>{training.description}</p>
                         <div className="select-div">
-                            <p>Présence :</p>
                             <div>
-                                <div>
-                                    <input type="radio" name="injured" id="Oui" value={true} checked={absence === false} onChange={handleChangeAbsence} />
-                                    <label htmlFor="Oui">Oui</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="injured" id="Non" value={false} checked={absence === true} onChange={handleChangeAbsence} />
-                                    <label htmlFor="Non">Non</label>
-                                </div>
+                                {!dateNotValid && (
+                                    <div>
+                                        <p>Présence :</p>
+                                        <div>
+                                            <input type="radio" name="injured" id="Oui" value={true} checked={absence === false} onChange={handleChangeAbsence} />
+                                            <label htmlFor="Oui">Oui</label>
+                                        </div>
+                                        <div>
+                                            <input type="radio" name="injured" id="Non" value={false} checked={absence === true} onChange={handleChangeAbsence} />
+                                            <label htmlFor="Non">Non</label>
+                                        </div>
+
+                                    </div>
+                                )}
+                                {dateNotValid && (
+                                    <div>
+                                        <p className="infosAbs">Vous avez été {absence ? 'absent' : 'présent'} à cet entrainement</p>
+                                    </div>
+                                )}
+
                             </div>
                         </div>
                     </div>
