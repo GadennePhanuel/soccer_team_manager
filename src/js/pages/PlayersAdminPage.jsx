@@ -120,7 +120,7 @@ const PlayersAdminPage = (props) => {
     return (
         <div className="wrapper_container PlayersAdminPage">
 
-            <h1>Joueurs du club</h1>
+            <h1>Joueurs inscrits</h1>
 
             {role === 'ROLE_ADMIN' &&
                 <div className="div-invit">

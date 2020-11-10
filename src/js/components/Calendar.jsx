@@ -126,7 +126,7 @@ const Calendar = ({ parentCallBack, eventsT = [], eventsE = [], customId = "" })
 
             <div className="legend_events">
                 {eventsT.length > 0 && (<> Entrainement: <span className="legend_eventT-item"></span></>)}
-                {eventsE.length > 0 && (<>Match: <span className="legend_eventE-item"></span></>)}
+                {eventsE.length > 0 && (<> Match: <span className="legend_eventE-item"></span></>)}
             </div>
 
             <div>{daysOfWeek()}</div>
