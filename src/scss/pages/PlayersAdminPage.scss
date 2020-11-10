@@ -15,11 +15,10 @@
 
 
     #div-search {
-        align-items: flex-start;
         width: 100%;
-
+        margin-bottom: 0;
         #search {
-            width: 40%;
+            width: 100%;
         }
     }
 
@@ -63,9 +62,21 @@
       }
     }
 
+    .tables_container{
+        width: 90%;
+    }
+
     table{
+        width: 100%;
         td{
             vertical-align: middle;
+        }
+    }
+    .btn_players{
+        margin-bottom: 10px;
+        &:focus{
+            background-color: $third-color;
+            box-shadow: none;
         }
     }
 }

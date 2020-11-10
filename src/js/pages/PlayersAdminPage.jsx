@@ -22,7 +22,10 @@ const PlayersAdminPage = (props) => {
     }
     //déclare une variable d'état "players", son état initial est un tableau vide
     const [players, setPlayers] = useState([]);
+    const [playersNoTeam, setPlayersNoTeam] = useState([])
+
     const [search, setSearch] = useState("");
+    const [search2, setSearch2] = useState("");
 
     const [email, setEmail] = useState('')
 
@@ -35,11 +38,25 @@ const PlayersAdminPage = (props) => {
 
     const { currentTeamId } = useContext(TeamContext)
 
+    const [refreshKey, setRefreshKey] = useState(0)
+
     useEffect(() => {
         playerAPI.findAllPlayers()
-            .then(data => setPlayers(data))
+            .then(data => {
+                var playersTmp = []
+                var playersNoTeamTmp = []
+                data.forEach(player => {
+                    if (player.team) {
+                        playersTmp.push(player)
+                    } else {
+                        playersNoTeamTmp.push(player)
+                    }
+                })
+                setPlayers(playersTmp)
+                setPlayersNoTeam(playersNoTeamTmp)
+            })
             .catch(error => console.log(error.response));
-    }, [])
+    }, [refreshKey])
 
 
     const handleDelete = id => {
@@ -61,12 +78,20 @@ const PlayersAdminPage = (props) => {
         const value = event.currentTarget.value;
         setSearch(value);
     }
+    const handleSearch2 = event => {
+        const value = event.currentTarget.value;
+        setSearch2(value);
+    }
 
 
     const filteredPlayers = players.filter(p =>
         p.user.firstName.toLowerCase().includes(search.toLowerCase()) ||
         p.user.lastName.toLowerCase().includes(search.toLowerCase()) ||
         (p.team && p.team.label.toLowerCase().includes(search.toLowerCase())))
+    const filteredPlayersNT = playersNoTeam.filter(p =>
+        p.user.firstName.toLowerCase().includes(search2.toLowerCase()) ||
+        p.user.lastName.toLowerCase().includes(search2.toLowerCase()) ||
+        (p.team && p.team.label.toLowerCase().includes(search2.toLowerCase())))
 
 
 
@@ -108,11 +133,20 @@ const PlayersAdminPage = (props) => {
     const handleChoice = (player) => {
         playerAPI.setTeamToPlayer(player, currentTeamId)
             .then(response => {
-                playerAPI.findAllPlayers()
-                    .then(data => setPlayers(data))
-                    .catch(error => console.log(error.response));
+                setRefreshKey(refreshKey + 1)
             })
             .catch(error => console.log(error.response))
+    }
+
+    const HandleHS = () => {
+        console.log("test")
+        if (document.getElementById('table_playersT').hidden === true) {
+            document.getElementById('table_playersT').hidden = false
+            document.getElementById('table_playersNT').hidden = true
+        } else {
+            document.getElementById('table_playersT').hidden = true
+            document.getElementById('table_playersNT').hidden = false
+        }
     }
 
 
@@ -152,59 +186,99 @@ const PlayersAdminPage = (props) => {
 
                 </div>
             }
+            <div className="tables_container">
+                <button className="btn_players btn btn-secondary" onClick={HandleHS}>Joueurs non selectionnés</button>
 
-            <div>
-                <div id="div-search" className="form-group">
-                    <input id="search" type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
-                </div>
-                <table className="table table-hover">
-                    <thead>
-                        <tr className="thead-color">
-                            <th scope="col">Joueur</th>
-                            <th scope="col">Email</th>
-                            <th scope="col">Telephone</th>
-                            <th scope="col">Equipe</th>
-                            {(role === 'ROLE_ADMIN' || role === 'ROLE_COACH') &&
-                                <th> </th>
-                            }
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            // repetition pour chaque player
-                        }
-                        {filteredPlayers.map(player => (
-                            <tr key={player.id}>
-                                <td>{player.user.lastName + ' ' + player.user.firstName}</td>
-                                <td>{player.user.email}</td>
-                                <td>{player.user.phone}</td>
-                                <td>{
-                                    player.team ? (player.team.label + ' ' + player.team.category) : 'non attribué'
-                                }
-                                </td>
-                                {role === 'ROLE_ADMIN' &&
-                                    <td>
-                                        <button
-                                            onClick={() => handleDelete(player.id)}
-                                            className="btn btn-sm btn-danger">
-                                            Supprimer
-                                        </button>
-                                    </td>
-                                }
-                                {(role === 'ROLE_COACH' && currentTeamId !== '') &&
-                                    <td>
-                                        {!player.team &&
-                                            <button onClick={() => handleChoice(player)} className="btn btn-success">
-                                                Selectionner
-                                            </button>
-                                        }
-                                    </td>
+                <div id="table_playersT">
+                    <div id="div-search" className="form-group">
+                        <input id="search" type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
+                    </div>
+                    <table className="table table-hover">
+                        <thead>
+                            <tr className="thead-color">
+                                <th scope="col">Joueur</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Telephone</th>
+                                <th scope="col">Equipe</th>
+                                {(role === 'ROLE_ADMIN') &&
+                                    <th> </th>
                                 }
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-
+                        </thead>
+                        <tbody>
+                            {
+                                // repetition pour chaque player
+                            }
+                            {filteredPlayers.map(player => (
+                                <tr key={player.id}>
+                                    <td>{player.user.lastName + ' ' + player.user.firstName}</td>
+                                    <td>{player.user.email}</td>
+                                    <td>{player.user.phone}</td>
+                                    <td>{player.team.label + ' ' + player.team.category}
+                                    </td>
+                                    {role === 'ROLE_ADMIN' &&
+                                        <td>
+                                            <button
+                                                onClick={() => handleDelete(player.id)}
+                                                className="btn btn-sm btn-danger">
+                                                Supprimer
+                                        </button>
+                                        </td>
+                                    }
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div id="table_playersNT" hidden>
+                    <div id="div-search" className="form-group">
+                        <input id="search" type="text" onChange={handleSearch2} value={search2} className="form-control" placeholder="Rechercher" />
+                    </div>
+                    <table className="table table-hover">
+                        <thead>
+                            <tr className="thead-color">
+                                <th scope="col">Joueur</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Telephone</th>
+                                <th scope="col">Equipe</th>
+                                {(role === 'ROLE_ADMIN' || role === 'ROLE_COACH') &&
+                                    <th> </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {
+                                // repetition pour chaque player
+                            }
+                            {filteredPlayersNT.map(player => (
+                                <tr key={player.id}>
+                                    <td>{player.user.lastName + ' ' + player.user.firstName}</td>
+                                    <td>{player.user.email}</td>
+                                    <td>{player.user.phone}</td>
+                                    <td>non attribué</td>
+                                    {role === 'ROLE_ADMIN' &&
+                                        <td>
+                                            <button
+                                                onClick={() => handleDelete(player.id)}
+                                                className="btn btn-sm btn-danger">
+                                                Supprimer
+                                        </button>
+                                        </td>
+                                    }
+                                    {(role === 'ROLE_COACH' && currentTeamId !== '') &&
+                                        <td>
+                                            {!player.team &&
+                                                <button onClick={() => handleChoice(player)} className="btn btn-success">
+                                                    Selectionner
+                                            </button>
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );
