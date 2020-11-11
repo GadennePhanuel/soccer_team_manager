@@ -4,6 +4,8 @@ import teamAPI from '../services/teamAPI';
 import '../../scss/pages/MyPlayersCoachPage.scss';
 import { Link } from 'react-router-dom';
 import playerAPI from '../services/playerAPI';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import Loader from "react-loader-spinner";
 
 const MyPlayersCoachPage = (props) => {
 
@@ -13,6 +15,8 @@ const MyPlayersCoachPage = (props) => {
     const [players, setPlayers] = useState([])
     const [pictures64, setPictures64] = useState([])
     const [ages, setAges] = useState([])
+
+    const [loading, setLoading] = useState(false)
 
     function getAge(dateString) {
         var today = new Date();
@@ -26,6 +30,7 @@ const MyPlayersCoachPage = (props) => {
     }
 
     useEffect(() => {
+        setLoading(true)
         setPictures64([])
         setAges([])
         //on récupére la team courante
@@ -48,13 +53,11 @@ const MyPlayersCoachPage = (props) => {
                         setAges(ages => [...ages, { [player.id]: getAge(player.user.birthday) }])
 
                     })
+                    setLoading(false)
                 })
                 .catch(error => {
                     console.log(error.response)
                 })
-
-            //je récupére toutes les stats
-
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentTeamId])
@@ -82,75 +85,87 @@ const MyPlayersCoachPage = (props) => {
 
     return (
         <div className="wrapper_container MyPlayersCoachPage">
+            {loading && (
+                <h1>
+                    <Loader type="ThreeDots" height="20" width="600" color="Grey" />
+                </h1>
+            )}
+            {!loading && (
+                <h1>
+                    {currentTeamId === "" ? "Pas d'équipe à charge" : "Joueurs " + team.label + ' ' + team.category}
+                </h1>
+            )}
 
-            <h1>
-                {currentTeamId === "" ? "Pas d'équipe à charge" : "Joueurs " + team.label + ' ' + team.category}
-            </h1>
+            {loading && (
+                <div className="cardsLoader">
+                    <Loader type="Circles" height="200" width="200" color="Grey" />
+                </div>
+            )}
+            {!loading && (
+                <div className="cardsDiv">
+                    {players.map(player => (
+                        <div className="card" key={player.id}>
 
-            <div className="cardsDiv">
-                {players.map(player => (
-                    <div className="card" key={player.id}>
+                            {player.picture && (
+                                <div className="card-img-top" >
+                                    {pictures64.map((picture, index) => (
+                                        picture[player.id] && (
+                                            <div key={index} className='picture-profil'>
+                                                {picture[player.id] && (
+                                                    <img src={`data:image/jpeg;base64,${picture[player.id]}`} alt="" />
+                                                )}
+                                            </div>
+                                        )
+                                    ))}
+                                </div>
+                            )}
 
-                        {player.picture && (
-                            <div className="card-img-top" >
-                                {pictures64.map((picture, index) => (
-                                    picture[player.id] && (
-                                        <div key={index} className='picture-profil'>
-                                            {picture[player.id] && (
-                                                <img src={`data:image/jpeg;base64,${picture[player.id]}`} alt="" />
-                                            )}
-                                        </div>
-                                    )
-                                ))}
-                            </div>
-                        )}
+                            {!player.picture && (
+                                <div className="user-picture card-img-top"></div>
+                            )}
+                            <div className="card-body">
+                                <h5 className="card-title">{player.user.lastName + ' ' + player.user.firstName}</h5>
+                                <div className="player-infos">
+                                    {ages.map((age, index) => (
+                                        age[player.id] && (
+                                            <div key={index}>
+                                                {age[player.id] && (
+                                                    <p>{age[player.id]}ans</p>
+                                                )}
+                                            </div>
+                                        )
+                                    ))}
+                                    <div>
+                                        <p>{player.height}cm</p>
+                                    </div>
+                                    <div>
+                                        <p>{player.weight}kg</p>
+                                    </div>
+                                </div>
+                                <div className="player-stats">
+                                    <div>
+                                        <p>{player.totalRedCard} <span className="redCard"></span></p>
+                                    </div>
+                                    <div>
+                                        <p>{player.totalYellowCard} <span className="yellowCard"></span></p>
+                                    </div>
+                                    <div>
+                                        <p>{player.totalPassAssist} <span className="passAssist"></span></p>
+                                    </div>
+                                    <div>
+                                        <p>{player.totalGoal} <span className="goal"></span></p>
+                                    </div>
+                                </div>
 
-                        {!player.picture && (
-                            <div className="user-picture card-img-top"></div>
-                        )}
-                        <div className="card-body">
-                            <h5 className="card-title">{player.user.lastName + ' ' + player.user.firstName}</h5>
-                            <div className="player-infos">
-                                {ages.map((age, index) => (
-                                    age[player.id] && (
-                                        <div key={index}>
-                                            {age[player.id] && (
-                                                <p>{age[player.id]}ans</p>
-                                            )}
-                                        </div>
-                                    )
-                                ))}
-                                <div>
-                                    <p>{player.height}cm</p>
+                                <div className="btns-card">
+                                    <Link to={"/player/" + player.id + "/stats"} className="btn btn-primary btn-infos">Détails</Link>
+                                    <button className="btn btn-secondary btn-exclude" onClick={() => handleExclude(player)}>Exclure</button>
                                 </div>
-                                <div>
-                                    <p>{player.weight}kg</p>
-                                </div>
-                            </div>
-                            <div className="player-stats">
-                                <div>
-                                    <p>{player.totalRedCard} <span className="redCard"></span></p>
-                                </div>
-                                <div>
-                                    <p>{player.totalYellowCard} <span className="yellowCard"></span></p>
-                                </div>
-                                <div>
-                                    <p>{player.totalPassAssist} <span className="passAssist"></span></p>
-                                </div>
-                                <div>
-                                    <p>{player.totalGoal} <span className="goal"></span></p>
-                                </div>
-                            </div>
-
-                            <div className="btns-card">
-                                <Link to={"/player/" + player.id + "/stats"} className="btn btn-primary btn-infos">Détails</Link>
-                                <button className="btn btn-secondary btn-exclude" onClick={() => handleExclude(player)}>Exclure</button>
                             </div>
                         </div>
-                    </div>
-                ))}
-            </div>
-
+                    ))}
+                </div>
+            )}
 
         </div >
     );
