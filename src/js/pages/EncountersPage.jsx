@@ -8,9 +8,6 @@ import Field from "../components/forms/Field";
 import Select from "../components/forms/Select";
 import dateFormat from 'dateformat';
 import "../../scss/pages/EncountersPage.scss";
-import { setHours } from "date-fns";
-
-
 
 const EncountersPage = (props) => {
     authAPI.setup();
@@ -27,7 +24,7 @@ const EncountersPage = (props) => {
     if (club === "new") {
         props.history.replace("/createClub/new")
     }
-    
+
     const { currentTeamId } = useContext(TeamContext);
     const [currentId, setCurrentId] = useState("")
 
@@ -35,16 +32,16 @@ const EncountersPage = (props) => {
     const [oldEncounters, setOldEncounters] = useState([]);
     const [team, setTeam] = useState({});
     const [refreshKey, setRefreshKey] = useState(0)
-    
 
-    const [error, setError] =useState({
+
+    const [error, setError] = useState({
         team: "",
         date: "",
         labelOpposingTeam: "",
         categoryOpposingTeam: ""
     });
 
-    const [errorForm, setErrorForm] =useState({
+    const [errorForm, setErrorForm] = useState({
         team: "",
         date: "",
         labelOpposingTeam: "",
@@ -58,7 +55,7 @@ const EncountersPage = (props) => {
         labelOpposingTeam: "",
         categoryOpposingTeam: ""
     });
-    
+
     const [putEncounter, setPutEncounter] = useState({
         team: "",
         date: "",
@@ -91,106 +88,106 @@ const EncountersPage = (props) => {
 
 
 
-        useEffect(() => {    
+    useEffect(() => {
 
 
-            if(currentTeamId !== ""){
-                setPostEncounters({...postEncounters, team: "/api/teams/" + currentTeamId})
-                setPutEncounter({...putEncounter, team: "/api/teams/" + currentTeamId})
+        if (currentTeamId !== "") {
+            setPostEncounters({ ...postEncounters, team: "/api/teams/" + currentTeamId })
+            setPutEncounter({ ...putEncounter, team: "/api/teams/" + currentTeamId })
 
-                teamAPI.findTeam(currentTeamId)
-                .then(response => {setTeam(response.data)})
+            teamAPI.findTeam(currentTeamId)
+                .then(response => { setTeam(response.data) })
                 .catch(error => console.log(error.response));
 
 
-                if (role === 'ROLE_COACH'){
-                        encounterAPI.findEncountersById(currentTeamId)
-                        .then(response => {
-                            
-                            var encountersArray = [];
-                            var oldEncountersArray = [];
-                            response.data['hydra:member'].forEach(function(encounter){ 
-                               let day = new Date() 
-                               let today = day.setHours(0,0,0,0)
-                            
-                               let encounterD = new Date(encounter.date)
-                               let encounterDay = encounterD.setHours(0,0,0,0)
+            if (role === 'ROLE_COACH') {
+                encounterAPI.findEncountersById(currentTeamId)
+                    .then(response => {
+
+                        var encountersArray = [];
+                        var oldEncountersArray = [];
+                        response.data['hydra:member'].forEach(function (encounter) {
+                            let day = new Date()
+                            let today = day.setHours(0, 0, 0, 0)
+
+                            let encounterD = new Date(encounter.date)
+                            let encounterDay = encounterD.setHours(0, 0, 0, 0)
 
 
 
-                               if(today <= encounterDay){
-                                    
-                                    encountersArray.push(encounter)
+                            if (today <= encounterDay) {
 
-                               }else{
+                                encountersArray.push(encounter)
 
-                                    oldEncountersArray.push(encounter)
-                               }
- 
-                            })
-                            setEncounters(encountersArray)
-                            setOldEncounters(oldEncountersArray)
-                            
-                    })
-                        //.then(response =>setEncounters(response.data['hydra:member']))
-                        .catch(error => console.log(error.response));
-                        
-                    }   
-            } 
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        ,[currentTeamId,refreshKey])
-    
-        const handleSubmit = (event) => {
-            event.preventDefault()
+                            } else {
 
-            let today = new Date()
-            today.setHours(0, 0, 0, 0)
-    
-            let encounterD = new Date(postEncounters.date)
-            let encounterDay = encounterD.setHours(0,0,0,0)
+                                oldEncountersArray.push(encounter)
+                            }
 
-            console.log(encounterDay)
-            if (today <= encounterDay){
-                encounterAPI.postEncounter(postEncounters)
-                    .then(response => {    
-                        setPostEncounters({
-                            team: currentTeamId,
-                            date: "",
-                            labelOpposingTeam: "",
-                            categoryOpposingTeam: ""
                         })
-                        setRefreshKey(refreshKey + 1)
-                        setErrorForm('')
+                        setEncounters(encountersArray)
+                        setOldEncounters(oldEncountersArray)
+
                     })
-                
-                    
-                    .catch(errorForm => {
-                        console.log(errorForm.response)
-                        const { violations } = errorForm.response.data;
+                    //.then(response =>setEncounters(response.data['hydra:member']))
+                    .catch(error => console.log(error.response));
 
-                        const apiErrorsForm = [''];
+            }
+        }
+    }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        , [currentTeamId, refreshKey])
 
-                        if (violations) {
-                            violations.forEach((violation) => {
+    const handleSubmit = (event) => {
+        event.preventDefault()
+
+        let today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        let encounterD = new Date(postEncounters.date)
+        let encounterDay = encounterD.setHours(0, 0, 0, 0)
+
+        console.log(encounterDay)
+        if (today <= encounterDay) {
+            encounterAPI.postEncounter(postEncounters)
+                .then(response => {
+                    setPostEncounters({
+                        team: currentTeamId,
+                        date: "",
+                        labelOpposingTeam: "",
+                        categoryOpposingTeam: ""
+                    })
+                    setRefreshKey(refreshKey + 1)
+                    setErrorForm('')
+                })
+
+
+                .catch(errorForm => {
+                    console.log(errorForm.response)
+                    const { violations } = errorForm.response.data;
+
+                    const apiErrorsForm = [''];
+
+                    if (violations) {
+                        violations.forEach((violation) => {
                             apiErrorsForm[violation.propertyPath] = violation.message;
                         });
                         setErrorForm(apiErrorsForm);
                     }
                 })
-            }else{
-                console.log("Vous ne pouvez créer un match à une date inférieur à celle du jour")
-            }
+        } else {
+            console.log("Vous ne pouvez créer un match à une date inférieur à celle du jour")
         }
+    }
     const handleChangeForm = (event) => {
         const { name, value } = event.currentTarget;
-        setPostEncounters({...postEncounters,[name]: value});
+        setPostEncounters({ ...postEncounters, [name]: value });
     }
 
     const handleChange = (event) => {
         const { name, value } = event.currentTarget;
-        setPutEncounter({...putEncounter,[name]: value});
-        
+        setPutEncounter({ ...putEncounter, [name]: value });
+
     }
 
     const handleHiddenForm = () => {
@@ -199,7 +196,7 @@ const EncountersPage = (props) => {
 
         setErrorForm("")
     }
-    
+
     const handleCanceled = (encounterId) => {
         changeHidden('btn-delete-', encounterId)
         changeHidden('btn-edit-', encounterId)
@@ -208,7 +205,7 @@ const EncountersPage = (props) => {
         changeHidden('date-', encounterId)
         changeHidden('input-labelOpposingTeam-', encounterId)
         changeHidden('input-categoryOpposingTeam-', encounterId)
-        changeHidden('input-date-', encounterId) 
+        changeHidden('input-date-', encounterId)
         changeHidden('btn-canceled-', encounterId)
         changeHidden('btn-put-', encounterId)
         setError('');
@@ -223,34 +220,34 @@ const EncountersPage = (props) => {
         changeHidden('date-', encounterId)
         changeHidden('input-labelOpposingTeam-', encounterId)
         changeHidden('input-categoryOpposingTeam-', encounterId)
-        changeHidden('input-date-', encounterId) 
+        changeHidden('input-date-', encounterId)
         changeHidden('btn-canceled-', encounterId)
         changeHidden('btn-put-', encounterId)
         // recupération des données du match pour les inputs
-            setPutEncounter({
-                ...putEncounter,
-                team: "/api/teams/" + currentTeamId,
-                date: document.getElementById('input-date-' + encounterId).value,
-                labelOpposingTeam: document.getElementById('input-labelOpposingTeam-' + encounterId).value,
-                categoryOpposingTeam: document.getElementById('input-categoryOpposingTeam-' + encounterId).value
-            })
-            setError("")
-        
+        setPutEncounter({
+            ...putEncounter,
+            team: "/api/teams/" + currentTeamId,
+            date: document.getElementById('input-date-' + encounterId).value,
+            labelOpposingTeam: document.getElementById('input-labelOpposingTeam-' + encounterId).value,
+            categoryOpposingTeam: document.getElementById('input-categoryOpposingTeam-' + encounterId).value
+        })
+        setError("")
+
     }
 
-    const handlePutEncounter = id => {    
+    const handlePutEncounter = id => {
         setCurrentId(id)
         let today = new Date()
-        today.setHours(0,0,0,0)
+        today.setHours(0, 0, 0, 0)
 
         let encounterD = new Date(putEncounter.date);
-        let encounterDay = encounterD.setHours(0,0,0,0)
+        let encounterDay = encounterD.setHours(0, 0, 0, 0)
 
 
-        if(today <= encounterDay){
-        //Modifie les données du match
-            encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date,putEncounter.labelOpposingTeam,putEncounter.categoryOpposingTeam)
-            //met à jour le tableau
+        if (today <= encounterDay) {
+            //Modifie les données du match
+            encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date, putEncounter.labelOpposingTeam, putEncounter.categoryOpposingTeam)
+                //met à jour le tableau
                 .then(response => {
                     setRefreshKey(refreshKey + 1)
                     handleCanceled(id)
@@ -263,12 +260,12 @@ const EncountersPage = (props) => {
 
                     if (violations) {
                         violations.forEach((violation) => {
-                        apiErrors[violation.propertyPath] = violation.message;
-                    });
-                    setError(apiErrors);
-                }
-            })
-        }else{
+                            apiErrors[violation.propertyPath] = violation.message;
+                        });
+                        setError(apiErrors);
+                    }
+                })
+        } else {
             console.log("Vous ne pouvez modifier la date à une date inférieur à celle du jour")
         }
     }
@@ -277,16 +274,16 @@ const EncountersPage = (props) => {
 
         let e = document.getElementById("statusMatch")
         let match = e.options[e.selectedIndex].value;
-        
-            if(parseInt(match) === 0){
-                changeHiddenForm("incoming-match")
-                changeHiddenForm("past-match")
-                
-            }else if (parseInt(match) === 1) {
-                changeHiddenForm("incoming-match")
-                changeHiddenForm("past-match")
-                
-            }
+
+        if (parseInt(match) === 0) {
+            changeHiddenForm("incoming-match")
+            changeHiddenForm("past-match")
+
+        } else if (parseInt(match) === 1) {
+            changeHiddenForm("incoming-match")
+            changeHiddenForm("past-match")
+
+        }
     }
 
     const handleDelete = id => {
@@ -307,68 +304,68 @@ const EncountersPage = (props) => {
 
     return (
         <div className="wrapper_container EncountersPage">
-               <h1>Matchs</h1>
+            <h1>Matchs</h1>
             {role === 'ROLE_COACH' &&
-            <div id="createEncounter">
-                <form hidden onSubmit={handleSubmit} id="form-encounter" className='formEncounter'>
-                    <fieldset>
-                        <legend>Création de match</legend>
-                        <Field
-                            type="date"
-                            name="date"
-                            label="date"
-                            placeholder="date du match"
-                            onChange={handleChangeForm}
-                            value={postEncounters.date}
-                            error={errorForm.date}
-                            required
-                        />
-                        <Field
-                            name="labelOpposingTeam"
-                            label="Nom de l'équipe adverse"
-                            placeholder="Nom d'équipe'..."
-                            onChange={handleChangeForm}
-                            value={postEncounters.labelOpposingTeam}
-                            error={errorForm.labelOpposingTeam}
-                            required
-                        />
-                        <Field
-                            name="categoryOpposingTeam"
-                            label="Catégorie"
-                            placeholder="Catégorie..."
-                            onChange={handleChangeForm}
-                            value={postEncounters.categoryOpposingTeam}
-                            error={errorForm.categoryOpposingTeam}
-                            required
-                        />
-                        <div className ="wrapper" id="sendDiv">
-                            <button id="addEncounter" className="btn btn-primary" type="submit" >
-                                Envoyer 
+                <div id="createEncounter">
+                    <form hidden onSubmit={handleSubmit} id="form-encounter" className='formEncounter'>
+                        <fieldset>
+                            <legend>Création de match</legend>
+                            <Field
+                                type="date"
+                                name="date"
+                                label="date"
+                                placeholder="date du match"
+                                onChange={handleChangeForm}
+                                value={postEncounters.date}
+                                error={errorForm.date}
+                                required
+                            />
+                            <Field
+                                name="labelOpposingTeam"
+                                label="Nom de l'équipe adverse"
+                                placeholder="Nom d'équipe'..."
+                                onChange={handleChangeForm}
+                                value={postEncounters.labelOpposingTeam}
+                                error={errorForm.labelOpposingTeam}
+                                required
+                            />
+                            <Field
+                                name="categoryOpposingTeam"
+                                label="Catégorie"
+                                placeholder="Catégorie..."
+                                onChange={handleChangeForm}
+                                value={postEncounters.categoryOpposingTeam}
+                                error={errorForm.categoryOpposingTeam}
+                                required
+                            />
+                            <div className="wrapper" id="sendDiv">
+                                <button id="addEncounter" className="btn btn-primary" type="submit" >
+                                    Envoyer
                             </button>
-                            <button id="cancelEncounter" className="btn btn-danger" type="button" onClick={handleHiddenForm} >
-                                Annuler 
+                                <button id="cancelEncounter" className="btn btn-danger" type="button" onClick={handleHiddenForm} >
+                                    Annuler
                             </button>
-                        </div>
-                    </fieldset>
-                </form>
-                <div className = "wrapper" id="showFormDiv">
-                    <button id="showForm" className="btn btn-primary"  type="button" onClick={handleHiddenForm}>
-                        Créer un match
+                            </div>
+                        </fieldset>
+                    </form>
+                    <div className="wrapper" id="showFormDiv">
+                        <button id="showForm" className="btn btn-primary" type="button" onClick={handleHiddenForm}>
+                            Créer un match
                     </button>
+                    </div>
                 </div>
-            </div>
             }
-             {/* <select id="match-select">
+            {/* <select id="match-select">
                 <option value="0">Match à venir </option>
                 <option value="1">Match passés</option> 
             </select> */}
-            <Select 
+            <Select
                 onChange={handleArray}
-                name = "statusMatch"
+                name="statusMatch"
                 className={"form-control " + (error && " is-invalid")}
             >
-                <option  value="0">Match à venir</option>
-                <option  value="1">Match passés</option>
+                <option value="0">Match à venir</option>
+                <option value="1">Match passés</option>
             </Select>
             <table id="incoming-match" className="table table-hover">
                 <thead>
@@ -384,113 +381,113 @@ const EncountersPage = (props) => {
                         }
                     </tr>
                 </thead>
-                <tbody>    
+                <tbody>
                     {
-                    (currentTeamId !== "" && encounters !== null && role === 'ROLE_COACH') ?(
-                        encounters.map(encounter => (  
-                        <tr key={encounter.id}>
-                            <td>{team.label}</td>
-                            <td>{team.category}</td>
-                            <td>
-                                <p id={"labelOpposingTeam-" + encounter.id}>
-                                    {encounter.labelOpposingTeam}
-                                </p>
-                                <input
-                                    hidden
-                                    type ="text"
-                                    id={"input-labelOpposingTeam-" + encounter.id}
-                                    name="labelOpposingTeam"
-                                    label="Nom de l'équipe adverse"
-                                    placeholder="Nom d'équipe..."
-                                    onChange={handleChange}
-                                    defaultValue={encounter.labelOpposingTeam}
-                                    error={error.labelOpposingTeam}
-                                />
-                                {(error && encounter.id === currentId) && <p className= "error">{error.labelOpposingTeam}</p>}
-                            </td>                            
-                            <td>
-                                <p id={"categoryOpposingTeam-" + encounter.id}>
-                                    {encounter.categoryOpposingTeam}
-                                </p>
-                                <input
-                                    hidden
-                                    type="text"
-                                    id={"input-categoryOpposingTeam-" + encounter.id}
-                                    name="categoryOpposingTeam"
-                                    label="Catégorie"
-                                    placeholder="Catégorie..."
-                                    onChange={handleChange}
-                                    defaultValue={encounter.categoryOpposingTeam}
-                                    error={error.categoryOpposingTeam}
-                                    
-                                />
-                                {(error && encounter.id === currentId) && <p className= "error">{error.categoryOpposingTeam}</p>}
-                            </td>
-                            <td>
-                                <p id={"date-" + encounter.id}>
-                                    {formattedDate( new Date (encounter.date))}
-                                </p>
-                               <input
-                                    hidden
-                                    type="date"
-                                    id={"input-date-" + encounter.id}
-                                    name="date"
-                                    label="date"
-                                    placeholder="date du match"
-                                    onChange={handleChange}
-                                    defaultValue= {dateFormat(encounter.date, "yyyy-mm-dd")}
-                                    error={error.date}
-                                
-                                />
-                                {(error && encounter.id === currentId) && <p className= "error">{error.date}</p>}
-                            </td>
-                            <td>
-                                {
-                                    encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
-                                }
-                            </td>
-                                
-                            {(encounters !== null &&  role === "ROLE_COACH") &&
-                                <td>
-                                    <button
-                                        onClick={() => handleEdit(encounter.id)}
-                                        id={"btn-edit-" + encounter.id}
-                                        className="btn btn-sm btn-warning edit">
-                                        editer
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(encounter.id)}
-                                        id={"btn-delete-" + encounter.id}
-                                        className="btn btn-sm btn-danger">
-                                        Supprimer
-                                    </button>
-                                    <button
-                                        hidden
-                                        onClick={() => handlePutEncounter(encounter.id)}
-                                        id={"btn-put-" + encounter.id}
-                                        className="btn btn-sm btn-success confirm">
-                                        valider
-                                    </button>
-                                    <button
-                                        hidden
-                                        onClick={() => handleCanceled(encounter.id)}
-                                        id={"btn-canceled-" + encounter.id}
-                                        className="btn btn-sm btn-danger">
-                                        annuler
-                                    </button>
-                                </td>
-                            } 
-                        </tr>
-                        )
-                    )) : 
-                        
-                        <tr>
-                            <td>Aucun match trouvé pour cette équipe</td>
-                        </tr>
-                    
+                        (currentTeamId !== "" && encounters !== null && role === 'ROLE_COACH') ? (
+                            encounters.map(encounter => (
+                                <tr key={encounter.id}>
+                                    <td>{team.label}</td>
+                                    <td>{team.category}</td>
+                                    <td>
+                                        <p id={"labelOpposingTeam-" + encounter.id}>
+                                            {encounter.labelOpposingTeam}
+                                        </p>
+                                        <input
+                                            hidden
+                                            type="text"
+                                            id={"input-labelOpposingTeam-" + encounter.id}
+                                            name="labelOpposingTeam"
+                                            label="Nom de l'équipe adverse"
+                                            placeholder="Nom d'équipe..."
+                                            onChange={handleChange}
+                                            defaultValue={encounter.labelOpposingTeam}
+                                            error={error.labelOpposingTeam}
+                                        />
+                                        {(error && encounter.id === currentId) && <p className="error">{error.labelOpposingTeam}</p>}
+                                    </td>
+                                    <td>
+                                        <p id={"categoryOpposingTeam-" + encounter.id}>
+                                            {encounter.categoryOpposingTeam}
+                                        </p>
+                                        <input
+                                            hidden
+                                            type="text"
+                                            id={"input-categoryOpposingTeam-" + encounter.id}
+                                            name="categoryOpposingTeam"
+                                            label="Catégorie"
+                                            placeholder="Catégorie..."
+                                            onChange={handleChange}
+                                            defaultValue={encounter.categoryOpposingTeam}
+                                            error={error.categoryOpposingTeam}
 
-                        }   
-                    
+                                        />
+                                        {(error && encounter.id === currentId) && <p className="error">{error.categoryOpposingTeam}</p>}
+                                    </td>
+                                    <td>
+                                        <p id={"date-" + encounter.id}>
+                                            {formattedDate(new Date(encounter.date))}
+                                        </p>
+                                        <input
+                                            hidden
+                                            type="date"
+                                            id={"input-date-" + encounter.id}
+                                            name="date"
+                                            label="date"
+                                            placeholder="date du match"
+                                            onChange={handleChange}
+                                            defaultValue={dateFormat(encounter.date, "yyyy-mm-dd")}
+                                            error={error.date}
+
+                                        />
+                                        {(error && encounter.id === currentId) && <p className="error">{error.date}</p>}
+                                    </td>
+                                    <td>
+                                        {
+                                            encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
+                                        }
+                                    </td>
+
+                                    {(encounters !== null && role === "ROLE_COACH") &&
+                                        <td>
+                                            <button
+                                                onClick={() => handleEdit(encounter.id)}
+                                                id={"btn-edit-" + encounter.id}
+                                                className="btn btn-sm btn-warning edit">
+                                                editer
+                                    </button>
+                                            <button
+                                                onClick={() => handleDelete(encounter.id)}
+                                                id={"btn-delete-" + encounter.id}
+                                                className="btn btn-sm btn-danger">
+                                                Supprimer
+                                    </button>
+                                            <button
+                                                hidden
+                                                onClick={() => handlePutEncounter(encounter.id)}
+                                                id={"btn-put-" + encounter.id}
+                                                className="btn btn-sm btn-success confirm">
+                                                valider
+                                    </button>
+                                            <button
+                                                hidden
+                                                onClick={() => handleCanceled(encounter.id)}
+                                                id={"btn-canceled-" + encounter.id}
+                                                className="btn btn-sm btn-danger">
+                                                annuler
+                                    </button>
+                                        </td>
+                                    }
+                                </tr>
+                            )
+                            )) :
+
+                            <tr>
+                                <td>Aucun match trouvé pour cette équipe</td>
+                            </tr>
+
+
+                    }
+
                 </tbody>
             </table>
             <table id="past-match" className="table table-hover" hidden>
@@ -503,85 +500,85 @@ const EncountersPage = (props) => {
                         <th scope="col">Date</th>
                         <th scope="col">Tactique</th>
                         <th scope="col">Score</th>
-                        
+
                     </tr>
                 </thead>
-                <tbody>    
+                <tbody>
                     {
-                    (currentTeamId !== "" && encounters !== null && role === 'ROLE_COACH') ?(
-                        oldEncounters.map(encounter => (  
-                        <tr key={encounter.id}>
-                            <td>{team.label}</td>
-                            <td>{team.category}</td>
-                            <td>
-                                <p id={"labelOpposingTeam-" + encounter.id}>
-                                    {encounter.labelOpposingTeam}
-                                </p>
-                                <input
-                                    hidden
-                                    type ="text"
-                                    id={"input-labelOpposingTeam-" + encounter.id}
-                                    name="labelOpposingTeam"
-                                    label="Nom de l'équipe adverse"
-                                    placeholder="Nom d'équipe..."
-                                    onChange={handleChange}
-                                    defaultValue={encounter.labelOpposingTeam}
-                                    error={error.labelOpposingTeam}
-                                />
-                                {(error && encounter.id === currentId) && <p className= "error">{error.labelOpposingTeam}</p>}
-                            </td>                            
-                            <td>
-                                <p id={"categoryOpposingTeam-" + encounter.id}>
-                                    {encounter.categoryOpposingTeam}
-                                </p>
-                                <input
-                                    hidden
-                                    type="text"
-                                    id={"input-categoryOpposingTeam-" + encounter.id}
-                                    name="categoryOpposingTeam"
-                                    label="Catégorie"
-                                    placeholder="Catégorie..."
-                                    onChange={handleChange}
-                                    defaultValue={encounter.categoryOpposingTeam}
-                                    error={error.categoryOpposingTeam}
-                                    
-                                />
-                                {(error && encounter.id === currentId) && <p className= "error">{error.categoryOpposingTeam}</p>}
-                            </td>
-                            <td>
-                                <p id={"date-" + encounter.id}>
-                                    {formattedDate( new Date (encounter.date))}
-                                </p>
-                               <input
-                                    hidden
-                                    type="date"
-                                    id={"input-date-" + encounter.id}
-                                    name="date"
-                                    label="date"
-                                    placeholder="date du match"
-                                    onChange={handleChange}
-                                    defaultValue= {dateFormat(encounter.date, "yyyy-mm-dd")}
-                                    error={error.date}
-                                
-                                />
-                                {(error && encounter.id === currentId) && <p className= "error">{error.date}</p>}
-                            </td>
-                            <td>
-                                {
-                                    encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
-                                }
-                            </td>
-                            <td>{(encounter.home && encounter.visitor) ? encounter.home + "-" + encounter.visitor : "Pas de score attribué" }</td>
-                    
-                        </tr>
-                        )
-                        )):                        
+                        (currentTeamId !== "" && encounters !== null && role === 'ROLE_COACH') ? (
+                            oldEncounters.map(encounter => (
+                                <tr key={encounter.id}>
+                                    <td>{team.label}</td>
+                                    <td>{team.category}</td>
+                                    <td>
+                                        <p id={"labelOpposingTeam-" + encounter.id}>
+                                            {encounter.labelOpposingTeam}
+                                        </p>
+                                        <input
+                                            hidden
+                                            type="text"
+                                            id={"input-labelOpposingTeam-" + encounter.id}
+                                            name="labelOpposingTeam"
+                                            label="Nom de l'équipe adverse"
+                                            placeholder="Nom d'équipe..."
+                                            onChange={handleChange}
+                                            defaultValue={encounter.labelOpposingTeam}
+                                            error={error.labelOpposingTeam}
+                                        />
+                                        {(error && encounter.id === currentId) && <p className="error">{error.labelOpposingTeam}</p>}
+                                    </td>
+                                    <td>
+                                        <p id={"categoryOpposingTeam-" + encounter.id}>
+                                            {encounter.categoryOpposingTeam}
+                                        </p>
+                                        <input
+                                            hidden
+                                            type="text"
+                                            id={"input-categoryOpposingTeam-" + encounter.id}
+                                            name="categoryOpposingTeam"
+                                            label="Catégorie"
+                                            placeholder="Catégorie..."
+                                            onChange={handleChange}
+                                            defaultValue={encounter.categoryOpposingTeam}
+                                            error={error.categoryOpposingTeam}
+
+                                        />
+                                        {(error && encounter.id === currentId) && <p className="error">{error.categoryOpposingTeam}</p>}
+                                    </td>
+                                    <td>
+                                        <p id={"date-" + encounter.id}>
+                                            {formattedDate(new Date(encounter.date))}
+                                        </p>
+                                        <input
+                                            hidden
+                                            type="date"
+                                            id={"input-date-" + encounter.id}
+                                            name="date"
+                                            label="date"
+                                            placeholder="date du match"
+                                            onChange={handleChange}
+                                            defaultValue={dateFormat(encounter.date, "yyyy-mm-dd")}
+                                            error={error.date}
+
+                                        />
+                                        {(error && encounter.id === currentId) && <p className="error">{error.date}</p>}
+                                    </td>
+                                    <td>
+                                        {
+                                            encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
+                                        }
+                                    </td>
+                                    <td>{(encounter.home && encounter.visitor) ? encounter.home + "-" + encounter.visitor : "Pas de score attribué"}</td>
+
+                                </tr>
+                            )
+                            )) :
                             <tr>
                                 <td>Aucun match trouvé pour cette équipe</td>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                    }
+                </tbody>
+            </table>
         </div>
     );
 
