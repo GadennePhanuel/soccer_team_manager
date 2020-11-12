@@ -35,45 +35,82 @@
     position:relative;
     border: solid 1px black;
     background-color:rgba(0,0,0,0.5);
-    width:50px;
-    height:50px;
+    font-size:10px;
+    width:75px;
+    height:75px;
   }
+
   .playerCard {
+  //  display:flex;
+  //  flex-direction: column;
     border: solid 1px black;
     position:relative;
-    background-color:grey;
+    background-color: $fifth-color-lighten;
+  //  background-color:grey;
     width:150px;
     margin:4px;
     margin-left:8px;
+    text-align: center;
   }
 
   .playerCardSloted {
+  //  border: solid 1px black;
+    text-align: center;
+    color:$base-color;
+    width:75px;
+    height:75px;
+  }
+
+  .playerCardSloted .nameCard {
+    z-index:1;
     font-size:10px;
-    width:50px;
-    height:50px;
-  }
-
-  .base {
     position:relative;
-    background-color:teal;
-    width: 140px;
-    height: 140px;
-    top: 5px;
-    left: 5px;
+    background-color: $fifth-color-lighten;
+    top:0px;
+    left:0px;
   }
 
-  .taken {
-    border :solid 5px white;
+  .playerCardSloted .noNameCard {
+    z-index:1;
+    font-size:10px;
+    position:relative;
+    background-color: $second-color;
+    top:0px;
+    left:0px;
   }
 
-  /*.case {
-    display: inline-block;
-    margin: 10px;
-    border: solid 1px black;
-    background-color:white;
-    width: 150px;
-    min-height: 150px;
-  }*/
+  .emptyPics {
+    z-index:1;
+    position:absolute;
+    background-color: rgba(0,0,0,0.5);
+    top:0px;
+    left:0px;
+    width:75px;
+    height:75px;
+  }
+
+  .playerCardSloted .picture-profil {
+    z-index:0;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:75px;
+    height:75px;
+  }
+
+  .playerCardSloted .user-picture {
+    z-index:0;
+    position:absolute;
+    top:0px;
+    left:0px;
+    width:75px;
+    height:75px;
+  }
+
+  .emptyCard {
+    width:75px;
+    height:75px;
+  }
 
   .hovered {
     width: 50px;
@@ -82,12 +119,34 @@
     border: white dashed;
   }
 
-    .item-list__item{
-      border: solid 1px black;
-      position: relative;
-      background-color: rgb(56, 236, 39);
-      width: 150px;
-      margin: 4px;
-      margin-left: 8px;
+  /*.item-list__item{
+    border: solid 1px black;
+    position: relative;
+    background-color: rgb(56, 236, 39);
+    width: 50px;
+    height: 50px;
+  }*/
+
+  .picture-profil{
+    width:50px;
+    height:50px;
+    border-radius: 50%;
+
+    background-size: contain;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
   }
+
+  .user-picture{
+    height: 50px;
+    width:50px;
+    border-radius: 50%;
+    background: url("../img/user.png") center center no-repeat;
+    background-size: contain;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+  }
+
 }

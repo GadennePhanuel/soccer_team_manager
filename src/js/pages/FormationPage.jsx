@@ -16,10 +16,10 @@ import { Preview } from 'react-dnd-preview/dist/cjs/Preview';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview/dist/cjs/usePreview';
+import {Link} from "react-router-dom";
+import playerAPI from "../services/playerAPI";
 
 const FormationPage = (props) => {
-    //todo corriger maj de tactic qui se purge...
-    //
 
     authAPI.setup();
     // si role != ROLE_ADMIN -> redirection vers le dashboard qui lui correspond
@@ -33,13 +33,20 @@ const FormationPage = (props) => {
     const [team, setTeam] = useState({})
     //console.log(team)
     const [players, setPlayers] = useState([])
+    const [pictures64, setPictures64] = useState([])
 
     //console.log(players)
     const [tacticsList, setTacticsList] = useState([])
     //console.log(tacticsList)
 
-    //todo tableau des type de tactics possibles, trier par nom de tactics, puis par position des post en %
-    //[x:y]
+    /**
+     *
+     * @type {(string|(number|string)[])[][]}
+     * [
+     *  [typeTactic,[x,y,identifiantPost],...]
+     *  ...
+     *  ]
+     */
     const tacticTypeList = [
         [ "5-3-2", [50,90,"gardien"], [15,60,"Arrière lateral gauche"], [28,73,"Defenseur central gauche"], [50,76,"Defenseur central"], [72,73, "Defenseur central droit"], [85,60, "Arrière lateral droit"], [25,42,"Milieu gauche"], [50,50,"Milieu central"], [75,42,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
         [ "5-4-1", [50,90,"gardien"], [15,60,"Arrière lateral gauche"], [28,73,"Defenseur central gauche"], [50,76,"Defenseur central"], [72,73, "Defenseur central droit"], [85,60, "Arrière lateral droit"], [15,36,"Milieu gauche"], [36,45,"Milieu central"], [64,45,"Milieu central"], [85,36,"Milier droit"], [50,15,"Avant centre"]],
@@ -49,8 +56,8 @@ const FormationPage = (props) => {
         [ "4-3-3", [50,90,"gardien"], [15,65,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,65, "Defenseur central droit"], [25,47, "Milieu gauche"], [50,50,"Milieu central"], [75,47,"Milieu droit"], [15,25,"Aillier gauche"], [85,25,"Aillier droit"], [50,15,"Avant centre"]],
         [ "4-5-1", [50,90,"gardien"], [15,68,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,68, "Defenseur central droit"], [25,55, "Milieu defensif"], [75,55,"Milieu defensif"], [15,35,"Milieu gauche"], [50,37,"Milieu Offensif"], [85,35,"Milieu droit"], [50,15,"Avant centre"]]
     ]
-    //  console.log("tactList :")
-    //  console.log(tacticsList)
+   //   console.log("tactList :")
+   //   console.log(tacticsList)
 
     const [tacticSelected, setTacticSelected] = useState()
 //    console.log(tacticSelected)
@@ -73,44 +80,42 @@ const FormationPage = (props) => {
      */
     const PlayerCard = ({ player, className, posOrigin }) => {
         //     console.log(player)
-        const [{ isDragging }, drag] = useDrag({
+        const [, drag] = useDrag({
             item: { type: 'playerCard', player },
-            begin: () => { //todo rendre invisible non fonctionnel
-                setTimeout(() => {
-                    className = 'invisible'
-                }, 0);
-            },
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (dropResult && dropResult.name != null) {
                     let posTarget = dropResult.name;
-                    console.log(posTarget)
+   //                 console.log(posTarget)
                     //    console.log(tacticSelected[posId].id)
-                    if (posOrigin === "free") {
+                    if(tacticSelected) {
+                        if (posOrigin === "free") {
 
-                        tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0];
-                        //    console.log(tacticSelected[posId]);
-                    }
-                    else {
-                        if (posTarget !== "free") {
-                            console.log(posTarget)
-                            console.log(tacticSelected)
-                            let switchedPlayer = null
-                            if (tacticSelected[posTarget] !== undefined && tacticSelected[posTarget] !== null) {
-                                switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]
+                            tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0];
+                            //    console.log(tacticSelected[posId]);
+                        } else {
+                            if (posTarget !== "free") {
+                                //                        console.log(posTarget)
+                                //                       console.log(tacticSelected)
+                                let switchedPlayer = null
+                                if (tacticSelected[posTarget] !== undefined && tacticSelected[posTarget] !== null) {
+                                    switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]
+                                }
+                                //  console.log(switchedPlayer)
+                                if (player !== null) {
+                                    tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
+                                } else {
+                                    tacticSelected[posTarget] = null
+                                }
+                                tacticSelected[posOrigin] = switchedPlayer
+                            } else {
+                                tacticSelected[posOrigin] = null;
                             }
-                            //  console.log(switchedPlayer)
-                            if (player !== null) {
-                                tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
-                            }
-                            else { tacticSelected[posTarget] = null }
-                            tacticSelected[posOrigin] = switchedPlayer
                         }
-                        else { tacticSelected[posOrigin] = null; }
+                        setTacticSelected(tacticSelected);
+                        //   console.log(tacticSelected)
+                        setRefreshPlayerSelected(refreshPlayerSelected + 1)
                     }
-                    setTacticSelected(tacticSelected);
-                    //   console.log(tacticSelected)
-                    setRefreshKey(oldKey => oldKey + 1)
                 }
             },
             collect: (monitor) => ({
@@ -118,18 +123,31 @@ const FormationPage = (props) => {
             }),
         });
 
-        /* const firstName=player.user.firstName;
-         const lastName=player.user.lastName;*/
-
         return (
             <div ref={drag} className={className}>
-                {player !== null ? <p>{player.user.firstName} {player.user.lastName}</p>
-                    : <p> n/a </p>
+                {player !== null ?
+                    <div>
+                        <p className="nameCard">{player.user.firstName} {player.user.lastName}</p>
+                        {player.picture ?
+                            <div className="card-img-top" >
+                                {pictures64.map((picture, index) => (
+                                    picture[player.id] && (
+                                        <div key={index} className='picture-profil'>
+                                            {picture[player.id] && (
+                                                <img src={`data:image/jpeg;base64,${picture[player.id]}`} alt="" />
+                                            )}
+                                        </div>
+                                    )
+                                ))}
+                            </div>
+                            : <div className="user-picture"></div>
+                        }
+                    </div>
+                    : <div className="playerCardSloted emptyCard"> Non Assigné </div>
                 }
             </div>
         )
     }
-
     /**
      * Composant SlotSelection les zone de drop des joueurs selectionnés
      * @param id
@@ -138,7 +156,7 @@ const FormationPage = (props) => {
      * @returns {JSX.Element}
      * @constructor
      */
-    const SlotSelection = ({ id, num, tactic, className, child }) => {
+    const SlotSelection = ({ id, num, tactic, className, children }) => {
         const [, drop] = useDrop({
             accept: "playerCard",
             drop: () => ({ name: id }),
@@ -147,8 +165,8 @@ const FormationPage = (props) => {
         const fieldWitdh = 512;
         const fieldHeight = 685;
 
-        const slotWidth = 65;
-        const slotHeight = 65;
+        const slotWidth = 75;
+        const slotHeight = 75;
 
         //todo
         //travailler en %
@@ -163,7 +181,7 @@ const FormationPage = (props) => {
         return (
             <div ref={drop} id={id} className={className} style={{top:y+"%", left:x+"%", width:slotWidth, height:slotHeight}} >
                 <abbr title={tactic[num][2]}>
-                    {child}
+                    {children}
                 </abbr>
             </div>
         )
@@ -215,7 +233,9 @@ const FormationPage = (props) => {
      * @param tactic
      */
     const saveTactic = (tactic) => {
-        if (tactic !== undefined) {
+        console.log("save :")
+        console.log(playersSelected)
+        if (tactic !== undefined && playersSelected.length > 0) {
             tactic.team = "/api/teams/" + team.id;
             tactic.pos1 !== null && tacticSelected.pos1 !== undefined ? tactic.pos1 = "/api/players/" + tactic.pos1.id : tactic.pos1 = null;
             tactic.pos2 !== null && tacticSelected.pos2 !== undefined ? tactic.pos2 = "/api/players/" + tactic.pos2.id : tactic.pos2 = null;
@@ -228,8 +248,7 @@ const FormationPage = (props) => {
             tactic.pos9 !== null && tacticSelected.pos9 !== undefined ? tactic.pos9 = "/api/players/" + tactic.pos9.id : tactic.pos9 = null;
             tactic.pos10 !== null && tacticSelected.pos10 !== undefined ? tactic.pos10 = "/api/players/" + tactic.pos10.id : tactic.pos10 = null;
             tactic.pos11 !== null && tacticSelected.pos11 !== undefined ? tactic.pos11 = "/api/players/" + tactic.pos11.id : tactic.pos11 = null;
-            console.log("save :")
-            console.log(tactic)
+    //        console.log(tactic)
 
             if (tactic.id !== undefined) {
                 tacticAPI.putTactic(tactic.id, tactic.team, tactic.type, tactic.pos1, tactic.pos2, tactic.pos3, tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7, tactic.pos8, tactic.pos9, tactic.pos10, tactic.pos11,)
@@ -247,12 +266,13 @@ const FormationPage = (props) => {
                         tacticsList.push(response.data)
                         setTacticsList(tacticsList)
                         setTacticSelected(response.data)
-                        setRefreshKey(refreshKey + 1)
+                        setRefreshPlayerSelected(refreshPlayerSelected + 1)
                     }
                     )
                     .catch(error => console.log(error.response))
             }
         }
+    //todo gerer erreur si pas de tactique selectionné et pas de joueurassigné //do const erreur
     }
 
     /* //todo rendre dynamique le placement des fieldpos fonction de la tactic selectionnée
@@ -296,17 +316,34 @@ const FormationPage = (props) => {
 
     }
 
-    const [refreshKey, setRefreshKey] = useState([0])
+    /*function purgeUnteamed(){ //todo
+        tacticsList.map(tactic => (
+            if(players.filter(player => player.id === tactic.pos1.id) === null) { tactic.pos1 = null }
+        ))
+    }*/
+
+    const [refreshPlayerSelected, setRefreshPlayerSelected] = useState([0])
     const [refreshKey2, setRefreshKey2] = useState([0])
     /**
     * ajax recup des l'equipe selectionnée, et des tactics de cette equipe
     */
     useEffect(() => {
+        setPictures64([])
         if (currentTeamId !== '') {
             teamAPI.findTeam(currentTeamId)
                 .then(response => {
                     setTeam(response.data)
                     setPlayers(response.data.players)
+
+                    response.data.players.forEach(player => {
+
+                        if (player.picture) {
+                            playerAPI.fetchProfilePicture(player.picture)
+                                .then(response => {
+                                    setPictures64(pictures64 => [...pictures64, { [player.id]: response.data.data }])
+                                })
+                        }
+                    })
                 })
                 .catch(error => console.log(error.response))
             teamAPI.findAllTacticsByTeam(currentTeamId)
@@ -320,9 +357,10 @@ const FormationPage = (props) => {
      */
     useEffect(() => {
         let tab = [];
-        console.log("useEffect PlayerSelected :")
-        console.log(tacticSelected)
+ //       console.log("useEffect PlayerSelected :")
+ //       console.log(tacticSelected)
         if (tacticSelected !== undefined && tacticSelected !== null) {
+
             tacticSelected.pos1 !== null && tacticSelected.pos1 !== undefined ? tab.push(players.filter(player => tacticSelected.pos1.id === player.id)[0]) : tab.push(null)
             tacticSelected.pos2 !== null && tacticSelected.pos2 !== undefined ? tab.push(players.filter(player => tacticSelected.pos2.id === player.id)[0]) : tab.push(null)
             tacticSelected.pos3 !== null && tacticSelected.pos3 !== undefined ? tab.push(players.filter(player => tacticSelected.pos3.id === player.id)[0]) : tab.push(null)
@@ -337,17 +375,16 @@ const FormationPage = (props) => {
 
 
         }
-        //     else { tab = [null,null,null,null,null,null,null,null,null,null,null]}
         setPlayersSelected(tab);
-    }, [refreshKey, tacticSelected])
+    }, [refreshPlayerSelected, tacticSelected])
 
     /**
      * chargement du tableau des joueur libres soumis à la modification du tableau de joueurs selectionnés
      */
     useEffect(() => {
         let tab = players;
-        console.log("playerSelected: ");
-        console.log(playersSelected);
+       // console.log("playerSelected: ");
+       // console.log(playersSelected);
         {
             playersSelected.map(playerS => (
                 playerS !== null && playerS !== undefined ?
@@ -360,7 +397,7 @@ const FormationPage = (props) => {
         //console.log("tab: ");
         //console.log(tab);
         setPlayersFree(tab)
-    }, [playersSelected])
+    }, [players, playersSelected])
 
     const MyPreview = () => {
         const { display, itemType, item, style } = usePreview();
@@ -368,13 +405,30 @@ const FormationPage = (props) => {
             return null;
         }
         if (item.player) {
-            return <div className="item-list__item" style={style}>
-                <p>
-                    {item.player.user.lastName + " " + item.player.user.firstName}
-                </p>
+            //return <div className="item-list__item" style={style}>
+            return <div className="playerCardSloted" style={style}>
+                <div>
+                    <p className="nameCard">{item.player.user.firstName +" "+ item.player.user.lastName}</p>
+                    <div className="card-img-top" >
+                        {pictures64.map((picture, index) => (
+                            picture[item.player.id] ?
+                                <div key={index} className='picture-profil'>
+                                    {picture[item.player.id] && (
+                                        <img src={`data:image/jpeg;base64,${picture[item.player.id]}`} alt="" />
+                                    )}
+                                </div>
+                            : <div className="user-picture"></div>
+                        ))}
+                    </div>
+                </div>
             </div>;
         } else {
-            return <div></div>
+            return <div className="playerCardSloted" style={style}>
+                <div>
+                    <p className="noNameCard">Non Assigné</p>
+                </div>
+                <div className="emptyPics"></div>
+            </div>;
         }
     };
 
@@ -382,6 +436,7 @@ const FormationPage = (props) => {
         backends: [
             {
                 backend: HTML5Backend,
+                options : { enableTouchEvents: true}
             },
             {
                 backend: TouchBackend,
@@ -396,32 +451,14 @@ const FormationPage = (props) => {
 
     return (
         <div className="FormationPage wrapper_container">
-            {/*<div className="flexBox">
-                <h1>Formation Tactique</h1>
-                <h2>
-                    {currentTeamId === "" ? "Pas d'équipe à charge" : team.label + ' ' + team.category}
-                </h2>
-            </div>*/}
+
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <div className="flexBox">
                     <div id="tacticBox">
-                        {/*<h3>{tacticSelected.type}</h3>*/}
-                        {/*<select name="newTacticChoice" id="">
-                                <option value=""> créer une tactique </option>
-                                {tacticTypeList.map((tacticType, index) => (
-                                        <option key={index} value={tacticType}>{tacticType}</option>
-                                    )
-                                )}
-                            </select>
-                            <select name="tactic" id="" onChange={handleChange}>
-                                <option value=""> tactiques existante </option>
-                                {tacticsList.map((tactic, index) => (
-                                    <option key={tactic.id} value={index}>{tactic.type}</option>
-                                ))}
-                            </select>*/}
+
                         <label htmlFor="tacticSelect">Selectionner une tactique :</label>
                         <select name="tactic" id="tacticSelect" onChange={handleChange}>
-                            <option value=""> make a choice </option>
+                            <option value=""> Selectionner une tactique </option>
                             <optgroup label="Création :">
                                 {tacticTypeList.map((tacticType, index) => (
                                     <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
@@ -439,9 +476,22 @@ const FormationPage = (props) => {
                         <button id="delete" onClick={() => deleteTactic(tacticSelected.id)}>delete</button>
 
                         <div id="soccerField">
-                            {playersSelected &&
+                            {tacticSelected && playersSelected &&
                                 playersSelected.map((player, index) => (
                                     <SlotSelection
+                                        key={index}
+                                        id={"pos" + (index + 1)}
+                                        num = {index+1}
+                                        tactic = {tacticTypeList.filter((tactic) => tactic[0] === tacticSelected.type)[0]}
+                                        className="fieldPos"
+                                        >
+                                            <PlayerCard
+                                                player={player !== undefined ? player : null}
+                                                posOrigin={"pos" + (index + 1)}
+                                                className="playerCardSloted"
+                                            />
+                                    </SlotSelection>
+                                    /*<SlotSelection
                                         key={index}
                                         id={"pos" + (index + 1)}
                                         num = {index+1}
@@ -451,27 +501,30 @@ const FormationPage = (props) => {
                                             <PlayerCard
                                                 player={player !== undefined ? player : null}
                                                 posOrigin={"pos" + (index + 1)}
+                                                className="playerCardSloted"
                                             />}
-                                    />
-                                    /*<SlotSelection key={index} id={"pos"+index+"Id"} className="fieldPos">
-                                        {playersSelected[index] && <PlayerCard player={player}/>}
-                                    </SlotSelection> */
+                                    />*/
                                 ))
                             }
                         </div>
                     </div>
                     <FreePlayersList id="playersList" className="playerList" >
-                        {tacticSelected === null ?
-                            <p> Veuillez selectionner une tactique</p>
-                            : (playersFree.length === 0) &&
-                            <p> Il n'y a pas de joueur disponible </p>
-                        }
                         {(players.length < 11) &&
-                            <p>Une équipe doit possèder 11 joueurs minimum.</p>
+                            <p>
+                                Une équipe doit posseder au moins 11 joueurs pour définir une tactique.
+                                <Link to="/players" className="btn btn-link">
+                                    Aller selectionner des joueurs pour votre équipe.
+                                </Link>
+                            </p>
                         }
                         {playersFree.map(playerFree => (
-                            <PlayerCard key={playerFree.id} player={playerFree} className="playerCard" posOrigin={null} />
-                        ))
+                            <PlayerCard
+                                key={playerFree.id}
+                                player={playerFree}
+                                className="playerCard"
+                                posOrigin={null}
+                            />
+                            ))
                         }
                     </FreePlayersList>
                 </div>
