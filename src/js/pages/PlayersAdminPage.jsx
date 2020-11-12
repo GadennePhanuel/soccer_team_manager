@@ -171,7 +171,7 @@ const PlayersAdminPage = (props) => {
             <h1>Joueurs inscrits</h1>
             {(loading2 && role === 'ROLE_ADMIN') && (
                 <div className="invit-loader">
-                    <Loader type="ThreeDots" height="20" width="508" color="Grey" />
+                    <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
                 </div>
             )}
             {(role === 'ROLE_ADMIN' && !loading2) &&
@@ -206,7 +206,7 @@ const PlayersAdminPage = (props) => {
             }
             {loading && (
                 <div className="cardsLoader">
-                    <Loader type="Circles" height="200" width="200" color="Grey" />
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
                 </div>
             )}
             {!loading && (

@@ -87,7 +87,7 @@ const MyPlayersCoachPage = (props) => {
         <div className="wrapper_container MyPlayersCoachPage">
             {loading && (
                 <h1>
-                    <Loader type="ThreeDots" height="20" width="508" color="Grey" />
+                    <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
                 </h1>
             )}
             {!loading && (
@@ -98,7 +98,7 @@ const MyPlayersCoachPage = (props) => {
 
             {loading && (
                 <div className="cardsLoader">
-                    <Loader type="Circles" height="200" width="200" color="Grey" />
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
                 </div>
             )}
             {!loading && (
