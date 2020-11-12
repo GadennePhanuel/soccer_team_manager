@@ -10,21 +10,21 @@
 
 
     #btn-invit{
-        margin-bottom: 40px;
+        margin-bottom: 25px;
     }
 
 
     #div-search {
         width: 100%;
         margin-bottom: 0;
-        #search {
+        .search {
             width: 100%;
         }
     }
 
     #form-invit{
         margin-top: -23px;
-        margin-bottom: 40px;
+        margin-bottom: 10px;
         form{
             display: flex;
             align-items: center;
@@ -72,11 +72,24 @@
             vertical-align: middle;
         }
     }
-    .btn_players{
+    #btn_players{
         margin-bottom: 10px;
         &:focus{
             background-color: $third-color;
             box-shadow: none;
         }
+    }
+    .no-player{
+        color: red;
+    }
+    .cardsLoader{
+        position: absolute;
+        margin-left: 50px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .invit-loader{
+        margin-bottom: 30px;
     }
 }
