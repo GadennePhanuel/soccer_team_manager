@@ -76,4 +76,17 @@
             }
         }
     }
+    .invalidDate{
+        p{
+            margin-bottom: 5px;
+        }
+    }
+    .note{
+        color: red;
+        font-size: 80%;
+        font-style: italic;
+        p{
+            margin-bottom: 0;
+        }
+    }
 }
