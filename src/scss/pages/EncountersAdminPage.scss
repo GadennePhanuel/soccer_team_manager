@@ -4,11 +4,15 @@
 .EncountersAdminPage{
     @include component-size(flex, column, center, flex-start);
     #div-search {
-        align-items: flex-start;
+        //align-items: flex-start;
         width: 97%;
 
         #search {
             width: 30%;
+        }
+
+        #statusMatch{    
+            width:18%;
         }
     }
     table{
