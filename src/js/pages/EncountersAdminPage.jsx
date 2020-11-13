@@ -293,7 +293,7 @@ const EncountersAdminPage = (props) => {
                     </thead>
                     <tbody>
                         {
-                            (encounters !== null && role === 'ROLE_ADMIN') ? (
+                            (encounters.length > 0 && role === 'ROLE_ADMIN') ? (
                                 filteredEncounters.map(encounter => (
                                     <tr key={encounter.id}>
                                         <td>
@@ -366,7 +366,7 @@ const EncountersAdminPage = (props) => {
                                             }
                                         </td>
 
-                                        {(encounters !== null && role === 'ROLE_ADMIN') &&
+                                        {(encounters.length > 0 && role === 'ROLE_ADMIN') &&
                                             <td>
                                                 <button
                                                     onClick={() => handleEdit(encounter.id)}
@@ -431,7 +431,7 @@ const EncountersAdminPage = (props) => {
                     </thead>
                     <tbody>
                         {
-                            (encounters !== null && role === 'ROLE_ADMIN') ?
+                            (oldEncounters.length > 0 && role === 'ROLE_ADMIN') ?
                                 (oldFilteredEncounters.map(encounter => (
                                     <tr key={encounter.id}>
 
