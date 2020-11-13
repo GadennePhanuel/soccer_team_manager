@@ -205,7 +205,7 @@ const PlayersAdminPage = (props) => {
                 </div>
             }
             {loading && (
-                <div className="cardsLoader">
+                <div className="bigLoader">
                     <Loader type="Circles" height="200" width="200" color="LightGray" />
                 </div>
             )}
