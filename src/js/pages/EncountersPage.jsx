@@ -129,7 +129,7 @@ const EncountersPage = (props) => {
                         setOldEncounters(oldEncountersArray)
 
                     })
-                    //.then(response =>setEncounters(response.data['hydra:member']))
+                    
                     .catch(error => console.log(error.response));
 
             }
@@ -355,10 +355,6 @@ const EncountersPage = (props) => {
                     </div>
                 </div>
             }
-            {/* <select id="match-select">
-                <option value="0">Match à venir </option>
-                <option value="1">Match passés</option> 
-            </select> */}
             <Select
                 onChange={handleArray}
                 name="statusMatch"

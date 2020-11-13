@@ -4,7 +4,6 @@ import usersAPI from '../services/usersAPI';
 import encounterAPI from "../services/encounterAPI";
 import dateFormat from 'dateformat';
 import Select from "../components/forms/Select";
-import { setHours } from "date-fns";
 import "../../scss/pages/EncountersAdminPage.scss";
 
 
@@ -92,9 +91,6 @@ const EncountersAdminPage = (props) => {
     useEffect(() => {
         encounterAPI.findAllEncounters()
             .then(response => {
-                //
-                //setEncounters(response)
-                //console.log(response)
                             var encountersArray = [];
                             var oldEncountersArray = [];
                             response.forEach(function(encounter){ 
@@ -240,17 +236,18 @@ const EncountersAdminPage = (props) => {
     return (
         <div className="wrapper_container EncountersAdminPage">
             <h1>Matchs</h1>
-            <div id="div-search" className="form-group">
-                <input id="search" type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
-                <Select 
-                onChange={handleArray}
-                name = "statusMatch"
-                className={"form-control " + (error && " is-invalid")}
-            >
-                <option  value="0">Match à venir</option>
-                <option  value="1">Match passés</option>
-                </Select>
             
+            <div id="div-search" className="form-group">
+                <Select 
+                    onChange={handleArray}
+                    name = "statusMatch"
+                    className={"form-control " + (error && " is-invalid")}
+                >
+                    <option  value="0">Match à venir</option>
+                    <option  value="1">Match passés</option>
+                </Select>
+                <input id="search" type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
+
             </div>
 
             <table id="incoming-match"className="table table-hover">
@@ -375,7 +372,7 @@ const EncountersAdminPage = (props) => {
                                 </tr>
                             )
                             )) : <tr>
-                                <td>Aucun match trouvé pour cette équipe</td>
+                                <td>Aucun match trouvé</td>
                             </tr>
                     }
 
@@ -395,7 +392,6 @@ const EncountersAdminPage = (props) => {
                     </tr>
                 </thead>
                 <tbody>    
-                    <tr><td>{console.log(oldEncounters)}</td></tr>
                     {
                     (encounters !== null && role === 'ROLE_ADMIN') ?
                     (oldFilteredEncounters.map(encounter => (  
