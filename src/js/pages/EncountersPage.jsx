@@ -129,7 +129,7 @@ const EncountersPage = (props) => {
                         setOldEncounters(oldEncountersArray)
 
                     })
-                    
+
                     .catch(error => console.log(error.response));
 
             }
@@ -379,7 +379,7 @@ const EncountersPage = (props) => {
                 </thead>
                 <tbody>
                     {
-                        (currentTeamId !== "" && encounters !== null && role === 'ROLE_COACH') ? (
+                        (currentTeamId !== "" && encounters.length > 0 && role === 'ROLE_COACH') ? (
                             encounters.map(encounter => (
                                 <tr key={encounter.id}>
                                     <td>{team.label}</td>
@@ -501,7 +501,7 @@ const EncountersPage = (props) => {
                 </thead>
                 <tbody>
                     {
-                        (currentTeamId !== "" && encounters !== null && role === 'ROLE_COACH') ? (
+                        (currentTeamId !== "" && oldEncounters.length > 0 && role === 'ROLE_COACH') ? (
                             oldEncounters.map(encounter => (
                                 <tr key={encounter.id}>
                                     <td>{team.label}</td>
