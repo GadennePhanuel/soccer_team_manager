@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import MultiBackend, { DndProvider, TouchTransition } from "react-dnd-multi-backend";
-import HTML5toTouch from "react-dnd-multi-backend/dist/esm/HTML5toTouch";
+//import HTML5toTouch from "react-dnd-multi-backend/dist/esm/HTML5toTouch";
 import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import teamAPI from "../services/teamAPI";
@@ -82,6 +82,12 @@ const FormationPage = (props) => {
         //     console.log(player)
         const [, drag] = useDrag({
             item: { type: 'playerCard', player },
+            /*dragPreview: {
+
+            },
+            previewOptions:{
+                preview:<MyPreview/>
+            },*/
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (dropResult && dropResult.name != null) {
@@ -124,6 +130,7 @@ const FormationPage = (props) => {
         });
 
         return (
+            //dragPreview ici ?
             <div ref={drag} className={className}>
                 {player !== null ?
                     <div>
@@ -436,11 +443,11 @@ const FormationPage = (props) => {
         backends: [
             {
                 backend: HTML5Backend,
-                options : { enableTouchEvents: true}
+               // options : { enableTouchEvents: true}
             },
             {
                 backend: TouchBackend,
-                options: { enableMouseEvents: true },
+                options: { enableMouseEvents: true},
                 preview: true,
                 transition: TouchTransition
             }
@@ -472,7 +479,13 @@ const FormationPage = (props) => {
                             </optgroup>
                         </select>
 
-                        <button id="save" onClick={() => saveTactic(tacticSelected)}>Save</button>
+                        <button
+                            id="save"
+                            onClick={() => saveTactic(tacticSelected)}
+                          //  disabled
+                        >
+                            Save
+                        </button>
                         <button id="delete" onClick={() => deleteTactic(tacticSelected.id)}>delete</button>
 
                         <div id="soccerField">
