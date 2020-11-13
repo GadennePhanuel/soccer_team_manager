@@ -51,7 +51,7 @@ const RegisterUserPage = (props) => {
       //TODO : flash error -> token invalide ! 
       props.history.push('/login')
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
 
@@ -79,9 +79,9 @@ const RegisterUserPage = (props) => {
       const response = await UserAPI.registerUser(users);
       //création Coach
       try {
-        if(users.roles[0] === "ROLE_COACH"){
+        if (users.roles[0] === "ROLE_COACH") {
           await UserAPI.registerCoach(response, token)
-        }else if (users.roles[0] === "ROLE_PLAYER"){
+        } else if (users.roles[0] === "ROLE_PLAYER") {
           await UserAPI.registerPlayer(response, token)
         }
 
@@ -114,7 +114,7 @@ const RegisterUserPage = (props) => {
 
   return (
     <>
-      { (users.roles[0] === "ROLE_COACH") ? <h1>Inscription Nouveau Coach</h1> : <h1>Inscription Nouveau Joueur</h1> }
+      { (users.roles[0] === "ROLE_COACH") ? <h1>Inscription Nouveau Coach</h1> : <h1>Inscription Nouveau Joueur</h1>}
       <form onSubmit={handleSubmit}>
         <Field
           name="firstName"

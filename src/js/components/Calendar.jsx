@@ -100,14 +100,10 @@ const Calendar = ({ parentCallBack, eventsT = [], eventsE = [], customId = "" })
                                 ))
                             )}
                         </div>
-
-
-
                     </div>
                 );
                 day = addDays(day, 1);
             }
-
             rows.push(
                 <div className="row" key={day}> {days} </div>
             );
