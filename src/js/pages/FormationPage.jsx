@@ -34,10 +34,11 @@ const FormationPage = (props) => {
     //console.log(team)
     const [players, setPlayers] = useState([])
     const [pictures64, setPictures64] = useState([])
+    const [change, setChange] = useState()
 
     //console.log(players)
     const [tacticsList, setTacticsList] = useState([])
-    //console.log(tacticsList)
+  //  console.log(tacticsList)
 
     /**
      *
@@ -46,6 +47,7 @@ const FormationPage = (props) => {
      *  [typeTactic,[x,y,identifiantPost],...]
      *  ...
      *  ]
+     *  x et y sont exprimés en pourcentage
      */
     const tacticTypeList = [
         [ "5-3-2", [50,90,"gardien"], [15,60,"Arrière lateral gauche"], [28,73,"Defenseur central gauche"], [50,76,"Defenseur central"], [72,73, "Defenseur central droit"], [85,60, "Arrière lateral droit"], [25,42,"Milieu gauche"], [50,50,"Milieu central"], [75,42,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
@@ -60,7 +62,7 @@ const FormationPage = (props) => {
    //   console.log(tacticsList)
 
     const [tacticSelected, setTacticSelected] = useState()
-//    console.log(tacticSelected)
+    console.log(tacticSelected)
 
     const [playersSelected, setPlayersSelected] = useState([])
     // console.log("playerSelected: ")
@@ -94,32 +96,36 @@ const FormationPage = (props) => {
                     let posTarget = dropResult.name;
    //                 console.log(posTarget)
                     //    console.log(tacticSelected[posId].id)
-                    if(tacticSelected) {
-                        if (posOrigin === "free") {
+                    if(tacticSelected) { //si une tactic est selectionné
+                        if (posOrigin === "free") { // si le drag vient d'un player libre
 
                             tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0];
                             //    console.log(tacticSelected[posId]);
-                        } else {
-                            if (posTarget !== "free") {
+                        } else { // sinon si le drag vient d'un player dans une tactic
+                            if (posTarget !== "free") { // si il est drag vers un autre poste tactique
                                 //                        console.log(posTarget)
                                 //                       console.log(tacticSelected)
-                                let switchedPlayer = null
+                                let switchedPlayer = null // var de transition entre les deux postes de tactique
                                 if (tacticSelected[posTarget] !== undefined && tacticSelected[posTarget] !== null) {
+                                    //si la case tactique drop n'est pas vide, on stocke le player dans var transition
                                     switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]
                                 }
                                 //  console.log(switchedPlayer)
-                                if (player !== null) {
+                                if (player !== null) { //si la case drag contient bien un player
                                     tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
-                                } else {
+                                } else { // sinon on place null dans la case drop
                                     tacticSelected[posTarget] = null
                                 }
+                                // on place la case switché dans la case d'origine
                                 tacticSelected[posOrigin] = switchedPlayer
-                            } else {
+                            } else { // si il est drag vers liste FreePlayer, on libere la case d'origine
                                 tacticSelected[posOrigin] = null;
                             }
                         }
+                        //retenue de la modification de la tactique selectionnée
                         setTacticSelected(tacticSelected);
                         //   console.log(tacticSelected)
+                        //refresh de la liste PlayerSelected qui utilise lle contenu de la tacticSelectionnée
                         setRefreshPlayerSelected(refreshPlayerSelected + 1)
                     }
                 }
@@ -179,7 +185,7 @@ const FormationPage = (props) => {
         //travailler en %
         //gérer decalage sur Y eventuel due position relative
         //gerer dimenssion dynamique des slots.
-        //large slot 50px, large terrain 512
+        //large slot 75px, large terrain 512
         // x = pourcentage de position - la moitié de la largeur de slot convertit en pourcent
         const x = tactic[num][0] - (slotWidth*100/fieldWitdh/2)
         // y = pourcentage de position - la moitié de la largeur de slot convertit en pourcent avec gestion decalage relatif
@@ -244,24 +250,18 @@ const FormationPage = (props) => {
         console.log(playersSelected)
         if (tactic !== undefined && playersSelected.length > 0) {
             tactic.team = "/api/teams/" + team.id;
-            tactic.pos1 !== null && tacticSelected.pos1 !== undefined ? tactic.pos1 = "/api/players/" + tactic.pos1.id : tactic.pos1 = null;
-            tactic.pos2 !== null && tacticSelected.pos2 !== undefined ? tactic.pos2 = "/api/players/" + tactic.pos2.id : tactic.pos2 = null;
-            tactic.pos3 !== null && tacticSelected.pos3 !== undefined ? tactic.pos3 = "/api/players/" + tactic.pos3.id : tactic.pos3 = null;
-            tactic.pos4 !== null && tacticSelected.pos4 !== undefined ? tactic.pos4 = "/api/players/" + tactic.pos4.id : tactic.pos4 = null;
-            tactic.pos5 !== null && tacticSelected.pos5 !== undefined ? tactic.pos5 = "/api/players/" + tactic.pos5.id : tactic.pos5 = null;
-            tactic.pos6 !== null && tacticSelected.pos6 !== undefined ? tactic.pos6 = "/api/players/" + tactic.pos6.id : tactic.pos6 = null;
-            tactic.pos7 !== null && tacticSelected.pos7 !== undefined ? tactic.pos7 = "/api/players/" + tactic.pos7.id : tactic.pos7 = null;
-            tactic.pos8 !== null && tacticSelected.pos8 !== undefined ? tactic.pos8 = "/api/players/" + tactic.pos8.id : tactic.pos8 = null;
-            tactic.pos9 !== null && tacticSelected.pos9 !== undefined ? tactic.pos9 = "/api/players/" + tactic.pos9.id : tactic.pos9 = null;
-            tactic.pos10 !== null && tacticSelected.pos10 !== undefined ? tactic.pos10 = "/api/players/" + tactic.pos10.id : tactic.pos10 = null;
-            tactic.pos11 !== null && tacticSelected.pos11 !== undefined ? tactic.pos11 = "/api/players/" + tactic.pos11.id : tactic.pos11 = null;
-    //        console.log(tactic)
+            for(let i=1; i<=11; i++){
+                let post = "pos"+i;
+                tactic[post] !== null && tacticSelected[post] !== undefined ?
+                    tactic[post] = "/api/players/" + tactic[post].id
+                : tactic[post] = null;
+            }
 
             if (tactic.id !== undefined) {
                 tacticAPI.putTactic(tactic.id, tactic.team, tactic.type, tactic.pos1, tactic.pos2, tactic.pos3, tactic.pos4, tactic.pos5, tactic.pos6, tactic.pos7, tactic.pos8, tactic.pos9, tactic.pos10, tactic.pos11,)
                     .then(response => {
                         console.log("MaJ tactic success " + tactic.id)
-                        setRefreshKey2(refreshKey2 + 1)
+                       // setRefreshTeam(refreshTeam + 1)
                     })
                     .catch(error => console.log(error.response))
             }
@@ -273,54 +273,36 @@ const FormationPage = (props) => {
                         tacticsList.push(response.data)
                         setTacticsList(tacticsList)
                         setTacticSelected(response.data)
-                        setRefreshPlayerSelected(refreshPlayerSelected + 1)
+                        setRefreshTeam(refreshTeam + 1)
+                       // setRefreshPlayerSelected(refreshPlayerSelected + 1)
                     }
                     )
                     .catch(error => console.log(error.response))
             }
         }
-    //todo gerer erreur si pas de tactique selectionné et pas de joueurassigné //do const erreur
+        document.getElementById("save").blur();
     }
-
-    /* //todo rendre dynamique le placement des fieldpos fonction de la tactic selectionnée
-    const positions = {
-        pos0 : [230,422],
-        pos1 : [60,250],
-        pos2 : [130,310],
-        pos3 : [230,325],
-        pos4 : [330,310],
-        pos5 : [400,250],
-        pos6 : [110,150],
-        pos7 : [230,187],
-        pos8 : [352,150],
-        pos9 : [150,50],
-        pos10 : [310,50]
-    }*/
 
     const handleChange = (event) => {
         let value = event.currentTarget.value;
         value = value.split('/');
         switch (value[0]) {
-            case "load": setTacticSelected(tacticsList[value[1]]);
+            case "load":
+                console.log("select handleChange load")
+                setTacticSelected(tacticsList[value[1]]);
                 break;
             case "new":
+                console.log("select handleChange new")
                 let newTactic = {}
                 newTactic.type = value[1];
-                newTactic.pos1 = null;
-                newTactic.pos2 = null;
-                newTactic.pos3 = null;
-                newTactic.pos4 = null;
-                newTactic.pos5 = null;
-                newTactic.pos6 = null;
-                newTactic.pos7 = null;
-                newTactic.pos8 = null;
-                newTactic.pos9 = null;
-                newTactic.pos10 = null;
-                newTactic.pos11 = null;
+                for(let i=1; i<=11; i++){
+                    let post = "pos"+i;
+                    newTactic[post] = null;
+                }
                 setTacticSelected(newTactic);
                 break;
         }
-
+        setRefreshPlayerSelected(refreshPlayerSelected +1);
     }
 
     /*function purgeUnteamed(){ //todo
@@ -330,9 +312,9 @@ const FormationPage = (props) => {
     }*/
 
     const [refreshPlayerSelected, setRefreshPlayerSelected] = useState([0])
-    const [refreshKey2, setRefreshKey2] = useState([0])
+    const [refreshTeam, setRefreshTeam] = useState([0])
     /**
-    * ajax recup des l'equipe selectionnée, et des tactics de cette equipe
+    * ajax recup de l'equipe selectionnée, et des tactiques de cette equipe
     */
     useEffect(() => {
         setPictures64([])
@@ -341,9 +323,7 @@ const FormationPage = (props) => {
                 .then(response => {
                     setTeam(response.data)
                     setPlayers(response.data.players)
-
                     response.data.players.forEach(player => {
-
                         if (player.picture) {
                             playerAPI.fetchProfilePicture(player.picture)
                                 .then(response => {
@@ -354,51 +334,74 @@ const FormationPage = (props) => {
                 })
                 .catch(error => console.log(error.response))
             teamAPI.findAllTacticsByTeam(currentTeamId)
-                .then(response => { setTacticsList(response) })
+                .then(response => {
+                        setTacticsList(response)
+                })
                 .catch(error => console.log(error.response))
         }
-    }, [refreshKey2, currentTeamId])
+    }, [refreshTeam, currentTeamId])
 
     /**
-     * chargement du tableau des joueur selectionnés soumis à la sellection d'une tactique
+     * chargement du tableau des joueurs selectionnés soumis à la selection d'une tactique
      */
     useEffect(() => {
-        let tab = [];
+        console.log("test1");
+        console.log("tacticSelected")
+        console.log(tacticSelected)
+        console.log("players")
+        console.log(players)
+        setChange(false);
+        let tabSelection = [];
  //       console.log("useEffect PlayerSelected :")
  //       console.log(tacticSelected)
         if (tacticSelected !== undefined && tacticSelected !== null) {
-
-            tacticSelected.pos1 !== null && tacticSelected.pos1 !== undefined ? tab.push(players.filter(player => tacticSelected.pos1.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos2 !== null && tacticSelected.pos2 !== undefined ? tab.push(players.filter(player => tacticSelected.pos2.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos3 !== null && tacticSelected.pos3 !== undefined ? tab.push(players.filter(player => tacticSelected.pos3.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos4 !== null && tacticSelected.pos4 !== undefined ? tab.push(players.filter(player => tacticSelected.pos4.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos5 !== null && tacticSelected.pos5 !== undefined ? tab.push(players.filter(player => tacticSelected.pos5.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos6 !== null && tacticSelected.pos6 !== undefined ? tab.push(players.filter(player => tacticSelected.pos6.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos7 !== null && tacticSelected.pos7 !== undefined ? tab.push(players.filter(player => tacticSelected.pos7.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos8 !== null && tacticSelected.pos8 !== undefined ? tab.push(players.filter(player => tacticSelected.pos8.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos9 !== null && tacticSelected.pos9 !== undefined ? tab.push(players.filter(player => tacticSelected.pos9.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos10 !== null && tacticSelected.pos10 !== undefined ? tab.push(players.filter(player => tacticSelected.pos10.id === player.id)[0]) : tab.push(null)
-            tacticSelected.pos11 !== null && tacticSelected.pos11 !== undefined ? tab.push(players.filter(player => tacticSelected.pos11.id === player.id)[0]) : tab.push(null)
-
-
+//todo
+            for(let i=1; i<=11; i++){
+                let post = "pos"+i;
+                if(tacticSelected[post] !== null && tacticSelected[post] !== undefined){
+                    let thePlayer = players.filter(player => tacticSelected[post].id === player.id)[0]
+                    console.log(thePlayer);
+                    //todo problème undefined but why? ou tacticSelected? 
+                    if(thePlayer === null || thePlayer === undefined){
+                        tacticSelected[post] = null;
+                        setChange(true);
+                        tabSelection.push(null)
+                        console.log("B"+i);
+                    }
+                    else {
+                        console.log("A"+i);
+                        tabSelection.push(thePlayer)
+                    }
+                }
+                else {tabSelection.push(null)}
+            }
         }
-        setPlayersSelected(tab);
-    }, [refreshPlayerSelected, tacticSelected])
+        setPlayersSelected(tabSelection);
+    }, [refreshPlayerSelected])
 
     /**
-     * chargement du tableau des joueur libres soumis à la modification du tableau de joueurs selectionnés
+     * useEffect appelé pour corrigé en bdd, une tactic dont un des joueurs postés, n'est plus dans l'équipe.
+     */
+    useEffect(() =>{
+        console.log("test2");
+        if(change === true ){
+            saveTactic(tacticSelected)
+            setChange(false)
+        }
+    },[change])
+
+    /**
+     * chargement du tableau des joueurs libres soumis à la modification du tableau de joueurs selectionnés
      */
     useEffect(() => {
         let tab = players;
        // console.log("playerSelected: ");
        // console.log(playersSelected);
-        {
-            playersSelected.map(playerS => (
+        {playersSelected.map(playerS => (
                 playerS !== null && playerS !== undefined ?
                     tab = tab.filter(player => player.id !== playerS.id)
                     : tab
-            )
-            )
+            ))
         }
 
         //console.log("tab: ");
@@ -504,19 +507,6 @@ const FormationPage = (props) => {
                                                 className="playerCardSloted"
                                             />
                                     </SlotSelection>
-                                    /*<SlotSelection
-                                        key={index}
-                                        id={"pos" + (index + 1)}
-                                        num = {index+1}
-                                        tactic = {tacticTypeList.filter((tactic) => tactic[0] === tacticSelected.type)[0]}
-                                        className="fieldPos"
-                                        child={
-                                            <PlayerCard
-                                                player={player !== undefined ? player : null}
-                                                posOrigin={"pos" + (index + 1)}
-                                                className="playerCardSloted"
-                                            />}
-                                    />*/
                                 ))
                             }
                         </div>
