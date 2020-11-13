@@ -143,6 +143,10 @@ const EncountersAdminPage = (props) => {
         changeHidden('btn-canceled-', encounterId)
         changeHidden('btn-put-', encounterId)
         setError("")
+        var btnEdits = document.getElementsByClassName('edit')
+        for (var i = 0; i < btnEdits.length; i++) {
+            btnEdits[i].disabled = false
+        }
     }
 
     const handleEdit = (encounterId) => {
@@ -166,12 +170,17 @@ const EncountersAdminPage = (props) => {
                 categoryOpposingTeam: document.getElementById('input-categoryOpposingTeam-' + encounterId).value
             })
         }
+        var btnEdits = document.getElementsByClassName('edit')
+        for (var i = 0; i < btnEdits.length; i++) {
+            btnEdits[i].disabled = true
+        }
     }
 
     const handlePutEncounter = id => {
         setLoading2(true)
+        document.getElementById("div-loader-" + id).hidden = false
         setCurrentId(id)
-        console.log(putEncounter)
+
         let today = new Date()
         today.setHours(0, 0, 0, 0)
 
@@ -185,6 +194,7 @@ const EncountersAdminPage = (props) => {
                 .then(response => {
                     console.log(response)
                     setLoading2(false)
+                    document.getElementById("div-loader-" + id).hidden = true
                     setRefreshKey(refreshKey + 1)
                 })
                 .catch(error => {
@@ -202,6 +212,7 @@ const EncountersAdminPage = (props) => {
                     setLoading2(false)
                     document.getElementById("btn-put-" + id).hidden = false
                     document.getElementById("btn-canceled-" + id).hidden = false
+                    document.getElementById("div-loader-" + id).hidden = true
                 })
         } else {
             console.log("Vous ne pouvez modifier la date à une date inférieur à celle du jour")
@@ -369,11 +380,11 @@ const EncountersAdminPage = (props) => {
                                                     className="btn btn-sm btn-danger">
                                                     Supprimer
                                                 </button>
-                                                {loading2 && (
-                                                    <div className="miniLoader">
+                                                <div hidden className="miniLoader" id={"div-loader-" + encounter.id}>
+                                                    {loading2 && (
                                                         <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
-                                                    </div>
-                                                )}
+                                                    )}
+                                                </div>
                                                 {!loading2 && (
                                                     <button
                                                         hidden
