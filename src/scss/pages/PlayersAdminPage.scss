@@ -10,22 +10,21 @@
 
 
     #btn-invit{
-        margin-bottom: 40px;
+        margin-bottom: 25px;
     }
 
 
     #div-search {
-        align-items: flex-start;
         width: 100%;
-
-        #search {
-            width: 40%;
+        margin-bottom: 0;
+        .search {
+            width: 100%;
         }
     }
 
     #form-invit{
         margin-top: -23px;
-        margin-bottom: 40px;
+        margin-bottom: 10px;
         form{
             display: flex;
             align-items: center;
@@ -63,9 +62,34 @@
       }
     }
 
+    .tables_container{
+        width: 90%;
+    }
+
     table{
+        width: 100%;
         td{
             vertical-align: middle;
         }
+    }
+    #btn_players{
+        margin-bottom: 10px;
+        &:focus{
+            background-color: $third-color;
+            box-shadow: none;
+        }
+    }
+    .no-player{
+        color: red;
+    }
+    .cardsLoader{
+        position: absolute;
+        margin-left: 50px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .invit-loader{
+        margin-bottom: 30px;
     }
 }

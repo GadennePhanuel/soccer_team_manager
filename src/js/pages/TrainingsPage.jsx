@@ -145,10 +145,6 @@ const TrainingsPage = () => {
                     .catch(error => {
                         console.log(error.response)
                     })
-
-
-
-
                 break;
             }
         }

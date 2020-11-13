@@ -4,7 +4,6 @@ import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
 import usersAPI from "../services/usersAPI";
 import "../../scss/layout/SideNav.scss";
-import playerAPI from '../services/playerAPI';
 
 const SideNav = (props) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -16,35 +15,30 @@ const SideNav = (props) => {
     props.history.push("/login");
   };
 
-  const [player, setPlayer] = useState({})
+  const [playerId, setPlayerId] = useState({})
   const [roles, setRoles] = useState('')
   const [club, setClub] = useState('');
   const [userId, setUserId] = useState('');
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    setLoading(true)
     if (isAuthenticated) {
       setRoles(usersAPI.checkRole());
       setClub(usersAPI.checkClub());
       setUserId(usersAPI.findUserId())
     }
-
     if (roles === 'ROLE_PLAYER') {
       //requete pour récupéré el player en question
-      playerAPI.findAllPlayers()
-        .then(response => {
-          response.forEach(player => {
-            if (player.user.id === userId) {
-              setPlayer(player)
-            }
-          })
-        })
+      setPlayerId(usersAPI.findPlayerId())
     }
+    setLoading(false)
   }, [isAuthenticated, roles, userId])
 
 
   return (
     <>
-      {isAuthenticated && (
+      {(isAuthenticated && !loading) && (
         <nav className="SideNav">
 
           <div className="SideNav-items">
@@ -95,10 +89,10 @@ const SideNav = (props) => {
                 <NavLink to="/dashboardPlayer" className="home">
                 </NavLink>
 
-                <NavLink to={"/player/" + player.id + "/stats"} className="stats">
+                <NavLink to={"/player/" + playerId + "/stats"} className="stats">
                 </NavLink>
 
-                <NavLink to={"/player/" + player.id + "/planning"} className="planningPlayer" >
+                <NavLink to={"/player/" + playerId + "/planning"} className="planningPlayer" >
                 </NavLink>
               </>
             )}

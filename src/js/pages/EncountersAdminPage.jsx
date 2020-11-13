@@ -3,6 +3,7 @@ import authAPI from '../services/authAPI';
 import usersAPI from '../services/usersAPI';
 import encounterAPI from "../services/encounterAPI";
 import dateFormat from 'dateformat';
+import Select from "../components/forms/Select";
 import "../../scss/pages/EncountersAdminPage.scss";
 
 
@@ -26,6 +27,7 @@ const EncountersAdminPage = (props) => {
 
     const [currentId, setCurrentId] = useState("");
     const [encounters, setEncounters] = useState([]);
+    const [oldEncounters, setOldEncounters] = useState([]);
     const [refreshKey, setRefreshKey] = useState(0)
     const [search, setSearch] = useState("")
 
@@ -57,12 +59,24 @@ const EncountersAdminPage = (props) => {
 
     )
 
+    const oldFilteredEncounters = oldEncounters.filter(e =>
+        e.team.label.toLowerCase().includes(search.toLowerCase()) ||
+        e.team.category.toLowerCase().includes(search.toLowerCase())
+)
+
 
     const changeHidden = (btnName, id) => {
         return document.getElementById(btnName + id).hidden === true ?
             document.getElementById(btnName + id).hidden = false
             :
             document.getElementById(btnName + id).hidden = true
+    }
+
+    const changeHiddenForm = (btnName) => {
+        return document.getElementById(btnName).hidden === true ?
+            document.getElementById(btnName).hidden = false
+            :
+            document.getElementById(btnName).hidden = true
     }
 
     function formattedDate(d) {
@@ -77,7 +91,30 @@ const EncountersAdminPage = (props) => {
     useEffect(() => {
         encounterAPI.findAllEncounters()
             .then(response => {
-                setEncounters(response)
+                            var encountersArray = [];
+                            var oldEncountersArray = [];
+                            response.forEach(function(encounter){ 
+                               let day = new Date() 
+                               let today = day.setHours(0,0,0,0)
+                            
+                               let encounterD = new Date(encounter.date)
+                               let encounterDay = encounterD.setHours(0,0,0,0)
+
+
+                               if(today <= encounterDay){
+                                    
+                                    encountersArray.push(encounter)
+
+                               }else{
+
+                                    oldEncountersArray.push(encounter)
+                               }
+ 
+                            })
+                            setEncounters(encountersArray)
+                            setOldEncounters(oldEncountersArray)
+;
+                            
             })
             .catch(error => console.log(error.response));
 
@@ -130,6 +167,14 @@ const EncountersAdminPage = (props) => {
 
     const handlePutEncounter = id => {
         setCurrentId(id)
+
+        let today = new Date()
+        today.setHours(0,0,0,0)
+
+        let encounterD = new Date(putEncounter.date);
+        let encounterDay = encounterD.setHours(0,0,0,0)
+
+        if(today <= encounterDay){
         //Modifie les données du match
         encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date, putEncounter.labelOpposingTeam, putEncounter.categoryOpposingTeam)
             //met à jour le tableau
@@ -150,6 +195,25 @@ const EncountersAdminPage = (props) => {
                     setError(apiErrors);
                 }
             })
+        }else{
+            console.log("Vous ne pouvez modifier la date à une date inférieur à celle du jour")
+        }
+    }
+
+    const handleArray = () => {
+
+        let e = document.getElementById("statusMatch")
+        let match = e.options[e.selectedIndex].value;
+        
+            if(parseInt(match) === 0){
+                changeHiddenForm("incoming-match")
+                changeHiddenForm("past-match")
+                
+            }else if (parseInt(match) === 1) {
+                changeHiddenForm("incoming-match")
+                changeHiddenForm("past-match")
+                
+            }
     }
 
 
@@ -172,11 +236,21 @@ const EncountersAdminPage = (props) => {
     return (
         <div className="wrapper_container EncountersAdminPage">
             <h1>Matchs</h1>
+            
             <div id="div-search" className="form-group">
+                <Select 
+                    onChange={handleArray}
+                    name = "statusMatch"
+                    className={"form-control " + (error && " is-invalid")}
+                >
+                    <option  value="0">Match à venir</option>
+                    <option  value="1">Match passés</option>
+                </Select>
                 <input id="search" type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher" />
+
             </div>
 
-            <table className="table table-hover">
+            <table id="incoming-match"className="table table-hover">
                 <thead>
                     <tr className="thead-color">
                         <th scope="col">Notre Equipe</th>
@@ -298,13 +372,102 @@ const EncountersAdminPage = (props) => {
                                 </tr>
                             )
                             )) : <tr>
-                                <td>Aucun match trouvé pour cette équipe</td>
+                                <td>Aucun match trouvé</td>
                             </tr>
                     }
 
                 </tbody>
             </table>
-
+            <table id="past-match" className="table table-hover" hidden>
+                <thead>
+                    <tr className="thead-color">
+                        <th scope="col">Notre Equipe</th>
+                        <th scope="col">Categorie</th>
+                        <th scope="col">Adversaire</th>
+                        <th scope="col">Categorie Adverse</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Tactique</th>
+                        <th scope="col">Score</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>    
+                    {
+                    (encounters !== null && role === 'ROLE_ADMIN') ?
+                    (oldFilteredEncounters.map(encounter => (  
+                        <tr key={encounter.id}>
+                            
+                            <td>{encounter.team.label}</td>
+                            <td>{encounter.team.category}</td>
+                            <td>
+                                <p id={"labelOpposingTeam-" + encounter.id}>
+                                    {encounter.labelOpposingTeam}
+                                </p>
+                                <input
+                                    hidden
+                                    type ="text"
+                                    id={"input-labelOpposingTeam-" + encounter.id}
+                                    name="labelOpposingTeam"
+                                    label="Nom de l'équipe adverse"
+                                    placeholder="Nom d'équipe..."
+                                    onChange={handleChange}
+                                    defaultValue={encounter.labelOpposingTeam}
+                                    error={error.labelOpposingTeam}
+                                />
+                                {(error && encounter.id === currentId) && <p className= "error">{error.labelOpposingTeam}</p>}
+                            </td>                            
+                            <td>
+                                <p id={"categoryOpposingTeam-" + encounter.id}>
+                                    {encounter.categoryOpposingTeam}
+                                </p>
+                                <input
+                                    hidden
+                                    type="text"
+                                    id={"input-categoryOpposingTeam-" + encounter.id}
+                                    name="categoryOpposingTeam"
+                                    label="Catégorie"
+                                    placeholder="Catégorie..."
+                                    onChange={handleChange}
+                                    defaultValue={encounter.categoryOpposingTeam}
+                                    error={error.categoryOpposingTeam}
+                                    
+                                />
+                                {(error && encounter.id === currentId) && <p className= "error">{error.categoryOpposingTeam}</p>}
+                            </td>
+                            <td>
+                                <p id={"date-" + encounter.id}>
+                                    {formattedDate( new Date (encounter.date))}
+                                </p>
+                               <input
+                                    hidden
+                                    type="date"
+                                    id={"input-date-" + encounter.id}
+                                    name="date"
+                                    label="date"
+                                    placeholder="date du match"
+                                    onChange={handleChange}
+                                    defaultValue= {dateFormat(encounter.date, "yyyy-mm-dd")}
+                                    error={error.date}
+                                
+                                />
+                                {(error && encounter.id === currentId) && <p className= "error">{error.date}</p>}
+                            </td>
+                            <td>
+                                {
+                                    encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
+                                }
+                            </td>
+                            <td>{(encounter.home && encounter.visitor) ? encounter.home + "-" + encounter.visitor : "Pas de score attribué" }</td>
+                    
+                        </tr>
+                        )
+                        )):                        
+                            <tr>
+                                <td>Aucun match trouvé </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
         </div>
 
 

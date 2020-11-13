@@ -55,4 +55,14 @@
             vertical-align: middle;
         }
     }
+    .cardsLoader{
+        position: absolute;
+        margin-left: 50px;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .invit-loader{
+        margin-bottom: 30px;
+    }
 }

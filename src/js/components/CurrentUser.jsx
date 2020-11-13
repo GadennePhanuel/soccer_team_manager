@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import AuthContext from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
 import usersAPI from '../services/usersAPI';
 import Select from '../components/forms/Select';
 import teamAPI from '../services/teamAPI';
@@ -10,7 +9,6 @@ import TeamContext from '../contexts/TeamContext';
 const CurrentUser = (props) => {
     const { isAuthenticated } = useContext(AuthContext);
 
-
     const [user, setUser] = useState({
         firstName: '',
         lastName: '',
@@ -18,7 +16,6 @@ const CurrentUser = (props) => {
     })
 
     const [teams, setTeams] = useState([])
-
 
     const token = window.localStorage.getItem("authToken");
     useEffect(() => {
@@ -43,16 +40,13 @@ const CurrentUser = (props) => {
                         }
                     })
                     .catch(error => console.log(error.response))
-
             }
-
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token])
 
 
     const { setCurrentTeamId } = useContext(TeamContext)
-
 
     const handleChange = (event) => {
         event.preventDefault()
@@ -64,16 +58,11 @@ const CurrentUser = (props) => {
 
     }
 
-
-
-
-
     return (
         <>
             {(isAuthenticated === true && user.role === 'ROLE_COACH') && (
                 <div className="CurrentUser">
                     <div className="currentUser">
-                        <Link to="/profil">{user.firstName} {user.lastName}</Link>
                         <Select
                             name="team"
                             onChange={handleChange}
