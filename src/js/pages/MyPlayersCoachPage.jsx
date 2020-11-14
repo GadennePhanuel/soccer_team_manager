@@ -17,6 +17,7 @@ const MyPlayersCoachPage = (props) => {
     const [ages, setAges] = useState([])
 
     const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
 
     function getAge(dateString) {
         var today = new Date();
@@ -31,6 +32,7 @@ const MyPlayersCoachPage = (props) => {
 
     useEffect(() => {
         setLoading(true)
+        setLoading2(true)
         setPictures64([])
         setAges([])
         //on récupére la team courante
@@ -40,18 +42,18 @@ const MyPlayersCoachPage = (props) => {
                     setTeam(response.data)
                     setPlayers(response.data.players)
 
+                    setLoading2(true)
                     response.data.players.forEach(player => {
-
                         if (player.picture) {
+                            setLoading2(true)
                             playerAPI.fetchProfilePicture(player.picture)
                                 .then(response => {
                                     setPictures64(pictures64 => [...pictures64, { [player.id]: response.data.data }])
+                                    setLoading2(false)
                                 })
                         }
-
                         //conversion de la date de naissance en age et stockage dans un tableau key=>value
                         setAges(ages => [...ages, { [player.id]: getAge(player.user.birthday) }])
-
                     })
                     setLoading(false)
                 })
@@ -105,8 +107,12 @@ const MyPlayersCoachPage = (props) => {
                 <div className="cardsDiv">
                     {players.map(player => (
                         <div className="card" key={player.id}>
-
-                            {player.picture && (
+                            {(player.picture && loading2) && (
+                                <div className="cardLoader">
+                                    <Loader type="Puff" height="140" width="140" color="LightGray" />
+                                </div>
+                            )}
+                            {(player.picture && !loading2) && (
                                 <div className="card-img-top" >
                                     {pictures64.map((picture, index) => (
                                         picture[player.id] && (
