@@ -16,8 +16,10 @@ const TrainingsPage = () => {
     const [trainings, setTrainings] = useState([])
     const [players, setPlayers] = useState([])
     const [playersMisseds, setPlayersMisseds] = useState([])
+    const [refreshKey, setRefershKey] = useState(1)
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
+    const [loading3, setLoading3] = useState(false)
 
     useEffect(() => {
         setLoading(true)
@@ -36,7 +38,7 @@ const TrainingsPage = () => {
 
 
         }
-    }, [currentTeamId])
+    }, [currentTeamId, refreshKey])
 
 
     const [show, setShow] = useState(false)
@@ -185,8 +187,8 @@ const TrainingsPage = () => {
                     //vider les message d'erreur eventuels
                     setErrors('');
                     //fermer la fenetre modal
-                    setLoading2(false)
                     hideModal()
+                    setRefershKey(refreshKey + 1)
                 })
                 .catch(error => {
                     //si echec ---> affichage des violations dans le formulaire
@@ -198,6 +200,7 @@ const TrainingsPage = () => {
                         });
                     }
                     setErrors(apiErrors);
+                    setLoading2(false)
                 })
         } else {    //si newer == false ---->requete en PUT  pour modif training existant au jour selectionné
             trainingsAPI.putTraining(currentTrainingId, training)
@@ -215,7 +218,6 @@ const TrainingsPage = () => {
                     //vider les message d'erreur eventuels
                     setErrors('');
                     //fermer la fenetre modal
-                    setLoading2(false)
                     hideModal()
                 })
                 .catch(error => {
@@ -228,6 +230,7 @@ const TrainingsPage = () => {
                         });
                     }
                     setErrors(apiErrors);
+                    setLoading2(false)
                 })
         }
 
@@ -241,6 +244,7 @@ const TrainingsPage = () => {
     }
 
     const handleDelete = (trainingId) => {
+        setLoading2(true)
         //copie du tableau trainings
         const originalTrainings = [...trainings]
         //retirer du tableau trainings le training selectionné
@@ -260,7 +264,7 @@ const TrainingsPage = () => {
 
 
     const handleAbsence = (playerId, trainingId) => {
-
+        setLoading3(true)
         //on veut créer un trainingMisseds
         trainingMissedsAPI.createTrainingMissed(trainingId, playerId)
             .then(response => {
@@ -271,6 +275,7 @@ const TrainingsPage = () => {
                         response.data['hydra:member'].forEach((playersMissedsItem) => {
                             setPlayers(players.filter((playerItem) => playerItem.id !== playersMissedsItem.player.id))
                         })
+                        setLoading3(false)
                     })
                     .catch(error => {
                         console.log(error.response)
@@ -282,13 +287,12 @@ const TrainingsPage = () => {
     }
 
     const handlePresent = (trainingMissedId, trainingId) => {
+        setLoading3(true)
         trainingMissedsAPI.delTrainingMissedId(trainingMissedId)
             .then(response => {
                 playerAPI.findPlayersOfTeamId(currentTeamId)
                     .then(response => {
                         let playerTmp = response.data['hydra:member']
-
-
                         //on peux charger la liste des absents de cette entrainement
                         trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainingId)
                             .then(response => {
@@ -309,6 +313,7 @@ const TrainingsPage = () => {
                                     })
                                 })
                                 setPlayers(copyPlayers)
+                                setLoading3(false)
                             })
                             .catch(error => {
                                 console.log(error.response)
@@ -317,7 +322,6 @@ const TrainingsPage = () => {
                     .catch(error => {
                         console.log(error.response)
                     })
-
             })
             .catch(error => {
                 console.log(error.response)
@@ -356,8 +360,8 @@ const TrainingsPage = () => {
                 title={titleModal}
             >
                 {loading2 && (
-                    <div className="bigLoader">
-                        <Loader type="Circles" height="100" width="100" color="LightGray" />
+                    <div className="LoaderModal">
+                        <Loader type="Grid" height="100" width="100" color="LightGray" />
                     </div>
                 )}
                 {/* si la date selectionnée est inférieur a la date du jour */}
@@ -418,18 +422,31 @@ const TrainingsPage = () => {
                     <div className="absence-div">
                         <button type="button" className="btn btn-secondary btn-absence" onClick={handleManagement}>Gérer les absences</button>
                         <div className="col_abs_pres" id="abs_pres" hidden>
-                            <div className="present">
-                                <h5>Présent</h5>
-                                {players.map((player, index) => (
-                                    <button key={index} type="button" onClick={() => handleAbsence(player.id, currentTrainingId)}>{player.user.lastName + ' ' + player.user.firstName}</button>
-                                ))}
-                            </div>
-                            <div className="absent">
-                                <h5>Absents</h5>
-                                {playersMisseds.map((playerMissed, index) => (
-                                    <button key={index} type="button" onClick={() => handlePresent(playerMissed.id, currentTrainingId)}> {playerMissed.player.user.lastName + ' ' + playerMissed.player.user.firstName} </button>
-                                ))}
-                            </div>
+                            {loading3 && (
+                                <div className="LoaderModal">
+                                    <Loader type="Puff" width="100" height="100" color="LightGray" />
+                                </div>
+                            )}
+                            {!loading3 && (
+                                <div className="present">
+                                    <h5>Présent</h5>
+                                    {players.map((player, index) => (
+                                        <button key={index} type="button" onClick={() => handleAbsence(player.id, currentTrainingId)} className="btn-abs-pres">
+                                            {player.user.lastName + ' ' + player.user.firstName}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            {!loading3 && (
+                                <div className="absent">
+                                    <h5>Absents</h5>
+                                    {playersMisseds.map((playerMissed, index) => (
+                                        <button key={index} type="button" onClick={() => handlePresent(playerMissed.id, currentTrainingId)} className="btn-abs-pres">
+                                            {playerMissed.player.user.lastName + ' ' + playerMissed.player.user.firstName}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

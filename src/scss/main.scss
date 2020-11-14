@@ -32,3 +32,13 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+.miniLoader{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.LoaderModal{
+    display: flex;
+    justify-content: center;
+}
