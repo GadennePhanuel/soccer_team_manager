@@ -19,6 +19,13 @@ import { usePreview } from 'react-dnd-preview/dist/cjs/usePreview';
 import {Link} from "react-router-dom";
 import playerAPI from "../services/playerAPI";
 
+/**
+ * //todo
+ * faire un tableau de retenu des modification sur les tactic, afin de pouvoir rrevenir a l'état initiale si utilisateeur annule les modifications
+ * correction bug double preview lorsque l'on arrive sur la page en mode non tactile
+ * améliorer graphisme des cartes et slot.
+ */
+
 const FormationPage = (props) => {
 
     authAPI.setup();
@@ -29,15 +36,46 @@ const FormationPage = (props) => {
     } else if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
     }
+
     const { currentTeamId } = useContext(TeamContext)
+
+    /**
+     * Object: Team
+     * team selected
+     */
     const [team, setTeam] = useState({})
 
+    /**
+     * Collection: Players
+     * players of the selected team
+     */
     const [players, setPlayers] = useState([])
 
+    /**
+     * pictures's players
+     */
     const [pictures64, setPictures64] = useState([])
+
+    /**
+     * if a tactic object need persistance correction
+     */
     const [change, setChange] = useState()
 
+    /**
+     * each tactic of the selected team
+     */
     const [tacticsList, setTacticsList] = useState([])
+
+    /**
+     * each selected tacticModified, for return initiale state if canceled
+     * //todo
+     */
+    const [tacticModifiedList, setTacticModifiedList] = useState([])
+
+    /**
+     * the selected tactic
+     */
+    const [tacticSelected, setTacticSelected] = useState()
 
     /** TABLEAU DES POSITIONS SELON LE TYPE DE TACTIC
      *
@@ -58,10 +96,15 @@ const FormationPage = (props) => {
         [ "4-5-1", [50,90,"gardien"], [15,68,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,68, "Defenseur central droit"], [25,55, "Milieu defensif"], [75,55,"Milieu defensif"], [15,35,"Milieu gauche"], [50,37,"Milieu Offensif"], [85,35,"Milieu droit"], [50,15,"Avant centre"]]
     ]
 
-    const [tacticSelected, setTacticSelected] = useState()
-
+    /**
+     * Array Player
+     * Player placed in selectedTactic
+     */
     const [playersSelected, setPlayersSelected] = useState([])
 
+    /**
+     * Player list are no in the selectedTactic
+     */
     const [playersFree, setPlayersFree] = useState([])
 
     /**
