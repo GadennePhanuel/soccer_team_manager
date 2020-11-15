@@ -4,14 +4,73 @@
 .FormationPage {
   @include component-size(flex, column, center, flex-start);
 
-  .flexBox {
+  /*@media (orientation: landscape) {
+    body {
+      flex-direction: row;
+    }
+  }
+  @media (orientation: portrait) {
+    body {
+      flex-direction: column;
+    }
+  }*/
+
+  @media screen and (max-width: 900px) {
+    .flexBox {
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      min-width:600px;
+      margin-top:8px;
+    }
+
+    .playerList {
+      display: flex;
+      flex-direction: row;
+      border: solid 1px black;
+      overflow:auto;
+      width:600px;
+      padding-top:50px;
+      margin:10px;
+      margin-top:25px;
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    .flexBox {
+      display:flex;
+      flex-direction: row;
+      justify-content:space-between;
+      align-items: center;
+      min-width:600px;
+      margin-top:8px;
+    }
+
+    .playerList {
+      border: solid 1px black;
+      min-height:512px;
+      max-height:512px;
+      min-width:200px;
+      max-width:200px;
+      overflow:auto;
+      padding-top:50px;
+      margin:10px;
+      margin-top:25px;
+    }
+  }
+
+  /*.flexBox {
     display:flex;
     flex-direction: row;
     justify-content:space-between;
     align-items: center;
+  }*/
+
+  .flexCard {
+    display: flex;
   }
 
-  .playerList {
+  /*.playerList {
     border: solid 1px black;
     min-height:512px;
     max-height:512px;
@@ -21,7 +80,7 @@
     padding-top:50px;
     margin:10px;
     margin-top:25px;
-  }
+  }*/
 
   #soccerField {
     border: solid 1px black;
@@ -46,8 +105,10 @@
     border: solid 1px black;
     position:relative;
     background-color: $fifth-color-lighten;
+    border-radius: 10px;
   //  background-color:grey;
     width:150px;
+ //   height:100px;
     margin:4px;
     margin-left:8px;
     text-align: center;
@@ -151,4 +212,33 @@
     margin-bottom: 10px;
   }
 
+  span{
+    display: inline-block;
+    width: 15px;
+    height: 25px;
+    margin-bottom: -6px;
+    margin-left: 3px;
+  }
+  .redCard{
+    background: url('../img/redCard.png') center center no-repeat;
+  }
+  .yellowCard{
+    background: url('../img/yellowCard.png') center center no-repeat;
+  }
+  .passAssist{
+    background: url('../img/passAssist.png') center center no-repeat;
+    background-size: 100%;
+  }
+  .goal{
+    background: url('../img/goal_2.png') center center no-repeat;
+    background-size: 100%;
+  }
+
+  .noSaved {
+    background-color: #fd7e14;
+  }
+
+  .tacticMenu {
+    display:inline;
+  }
 }

@@ -24,6 +24,11 @@ import playerAPI from "../services/playerAPI";
  * faire un tableau de retenu des modification sur les tactic, afin de pouvoir rrevenir a l'état initiale si utilisateeur annule les modifications
  * correction bug double preview lorsque l'on arrive sur la page en mode non tactile
  * améliorer graphisme des cartes et slot.
+ * clarifier les nom de poste
+ * ajout stat dans playerCard
+ * fonction trie croissant par stat sur FreeList
+ * code couleur dans le selecte si une tactic est modifié et non sauvegardé
+ * encare explicatif des poste? et coonseil type player à y placer?
  */
 
 const FormationPage = (props) => {
@@ -56,6 +61,19 @@ const FormationPage = (props) => {
      */
     const [pictures64, setPictures64] = useState([])
 
+    const [ages, setAges] = useState([])
+
+    function getAge(dateString) {
+        var today = new Date();
+        var birthDate = new Date(dateString);
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
+
     /**
      * if a tactic object need persistance correction
      */
@@ -65,17 +83,23 @@ const FormationPage = (props) => {
      * each tactic of the selected team
      */
     const [tacticsList, setTacticsList] = useState([])
+    /*console.log("tacticsList : ")
+    console.log(tacticsList)*/
 
     /**
      * each selected tacticModified, for return initiale state if canceled
      * //todo
      */
     const [tacticModifiedList, setTacticModifiedList] = useState([])
+    /*console.log("tacticModifiedList")
+    console.log(tacticModifiedList)*/
 
     /**
      * the selected tactic
      */
     const [tacticSelected, setTacticSelected] = useState()
+    /*console.log("tacticSelected")
+    console.log(tacticSelected)*/
 
     /** TABLEAU DES POSITIONS SELON LE TYPE DE TACTIC
      *
@@ -127,6 +151,7 @@ const FormationPage = (props) => {
             end: (item, monitor) => {
                 const dropResult = monitor.getDropResult();
                 if (dropResult && dropResult.name != null) {
+                    //si un drop existe, gestion de modification de la  tactic selectionnée
                     let posTarget = dropResult.name;
                     if(tacticSelected) { //si une tactic est selectionné
                         if (posOrigin === "free") { // si le drag vient d'un player libre
@@ -151,8 +176,21 @@ const FormationPage = (props) => {
                                 tacticSelected[posOrigin] = null;
                             }
                         }
-                        //retenue de la modification de la tactique selectionnée
+                        //recup du tableau des tactic modifiée sans la tactic modif actuelle
+                        let tabModifiedList = tacticModifiedList.filter(tactic => tacticSelected.id !== tactic.id)
+
+                        /*if(tabModifiedList[tacticSelected.id] !== undefined){
+
+                        }*/
+                        //ajout de la tactic modif actuelle au tableau des tactic modifiés
+                        tabModifiedList.push(tacticSelected);
+
+                        setTacticModifiedList(tabModifiedList)
+                     //   console.log("endDrop: tacticModifiedList : ")
+                     //   console.log(tacticModifiedList)
                         setTacticSelected(tacticSelected);
+                     //   console.log("endDrop : tacticsList : ")
+                     //   console.log(tacticsList)
                         setRefreshPlayerSelected(refreshPlayerSelected + 1)
                     }
                 }
@@ -168,26 +206,49 @@ const FormationPage = (props) => {
                 {player !== null ?
                     <div>
                         <p className="nameCard">{player.user.firstName} {player.user.lastName}</p>
-                        {player.picture ?
-                            <div className="card-img-top" >
-                                {pictures64.map((picture, index) => (
-                                    picture[player.id] && (
-                                        <div key={index} className='picture-profil'>
-                                            {picture[player.id] && (
-                                                <img src={`data:image/jpeg;base64,${picture[player.id]}`} alt="" />
+                        <div className="flexCard">
+                            {/*<span className="player-stats">
+                                <p>{player.totalRedCard} <span className="redCard"></span></p>
+                                <p>{player.totalYellowCard} <span className="yellowCard"></span></p>
+                                <p>{player.totalPassAssist} <span className="passAssist"></span></p>
+                                <p>{player.totalGoal} <span className="goal"></span></p>
+                            </span>*/}
+                            {player.picture ?
+                                <span className="card-img-top" >
+                                    {pictures64.map((picture, index) => (
+                                        picture[player.id] && (
+                                            <div key={index} className='picture-profil'>
+                                                {picture[player.id] && (
+                                                    <img src={`data:image/jpeg;base64,${picture[player.id]}`} alt="" />
+                                                )}
+                                            </div>
+                                        )
+                                    ))}
+                                </span>
+                                : <div className="user-picture"></div>
+                            }
+                           {/* <span className="player-infos">
+                                {ages.map((age, index) => (
+                                    age[player.id] && (
+                                        <p key={index}>
+                                            {age[player.id] && (
+                                                {age[player.id]}ans
                                             )}
-                                        </div>
+                                                {age[player.id]}ans
+                                        </p>
                                     )
                                 ))}
-                            </div>
-                            : <div className="user-picture"></div>
-                        }
+                                    <p>{player.height}cm</p>
+                                    <p>{player.weight}kg</p>
+                            </span>*/}
+                        </div>
                     </div>
                     : <div className="playerCardSloted emptyCard"> Non Assigné </div>
                 }
             </div>
         )
     }
+
     /**
      * Composant SlotSelection les zone de drop des joueurs selectionnés
      * @param id
@@ -218,6 +279,7 @@ const FormationPage = (props) => {
         const x = tactic[num][0] - (slotWidth*100/fieldWitdh/2)
         const y = tactic[num][1] - (num-1)*(slotHeight*100/fieldHeight) - (slotHeight*100/fieldHeight/2)
 
+        //todo format slotSelection here
         return (
             <div ref={drop} id={id} className={className} style={{top:y+"%", left:x+"%", width:slotWidth, height:slotHeight}} >
                 <abbr title={tactic[num][2]}>
@@ -259,10 +321,11 @@ const FormationPage = (props) => {
         setTacticsList(tacticsList.filter((tactic) => tactic.id !== tacticId));
 
         tacticAPI.deleteTactic(tacticId)
-            .then(
-                response => console.log("delete tactic success " + tacticId),
+            .then(response => {
+                console.log("delete tactic success " + tacticId)
                 setTacticSelected()
-            )
+                setRefreshPlayerSelected(refreshPlayerSelected + 1)
+            })
             .catch(error => {
                 setTacticsList(originalTacticsList);
             });
@@ -275,20 +338,27 @@ const FormationPage = (props) => {
     const saveTactic = (tactic) => {
         console.log("save :")
         if (tactic !== undefined && playersSelected.length > 0) {
-            let tacticTab = {
-                type:tactic.type,
-                team:team["@id"]
-            }
+            let tacticTab = {type:tactic.type, team:team["@id"]}
             for(let i=1; i<=11; i++){
                 let post = "pos"+i;
-                if(tactic[post] !== null && tacticSelected[post] !== undefined){
+                if(tactic[post] === null){
+                    tacticTab[post] = null
+                }
+                else if(tacticSelected[post] !== undefined){
                     tacticTab[post] = tactic[post]["@id"]
                 }
             }
-            if (tactic.id !== undefined) {
+
+            if (tactic.id !== "new") {
+                console.log("save : put : tactic")
+                console.log(tactic)
                 tacticAPI.putTactic(tactic.id, tacticTab)
                     .then(response => {
-                        document.getElementById("save").blur();
+                        document.getElementById("save").blur()
+                        let newList = tacticsList.filter(oldTact => tactic.id !== oldTact.id)
+                        newList.push(tactic)
+                        setTacticsList(newList)
+                        setTacticModifiedList(tacticModifiedList.filter(tacticModified => tactic.id !== tacticModified.id))
                     })
                     .catch(error => console.log(error.response))
             }
@@ -298,7 +368,7 @@ const FormationPage = (props) => {
                         tacticsList.push(response.data)
                         setTacticsList(tacticsList)
                         setTacticSelected(response.data)
-                        setRefreshTeam(refreshTeam + 1)
+                    //    setRefreshTeam(refreshTeam + 1)
                         document.getElementById("save").blur();
                     })
                     .catch(error => console.log(error.response))
@@ -306,17 +376,78 @@ const FormationPage = (props) => {
         }
     }
 
+    const handleCancel = () => {
+      //  purge tableau des tactics modifées
+        /*console.log("handleCancel : tacticsList")
+        console.log(tacticsList)
+        console.log("handleCancel : tacticSelected")
+        console.log(tacticSelected)*/
+        let newTab = tacticModifiedList.filter(tactic => tacticSelected.id !== tactic.id)
+        if(newTab !== undefined){
+            setTacticModifiedList(newTab)
+        }
+        else {
+            setTacticModifiedList([])
+        }
+
+        //recupère l'etat initiale dans tacicsList
+        setTacticSelected(clone(tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0]));
+
+        setRefreshPlayerSelected(refreshPlayerSelected +1);
+    }
+
+    /**
+     * Clonage des objets quand necessaire
+     * @param a
+     * @returns {any}
+     */
+    function clone(a) {
+        return JSON.parse(JSON.stringify(a));
+    }
+
+    function selectExistingTactic(tacticId){
+        let modifiedTactic = tacticModifiedList.filter(tactic => tacticId === tactic.id)[0]
+         /*console.log("sExisting : modifiedTactic")
+         console.log(modifiedTactic)*/
+        console.log("sExist : tacticId : ")
+        console.log(tacticId)
+        if(modifiedTactic !== undefined){
+            setTacticSelected(clone(modifiedTactic))
+        }else {
+            setTacticSelected(clone(tacticsList.filter(tactic => tacticId === tactic.id)[0]));
+        }
+        /*console.log("tacticList")
+        console.log(tacticsList)
+
+        console.log("selectExistingTactic : tacticSelected : ")
+        console.log(tacticSelected)*/
+    }
+
     const handleChange = (event) => {
+        console.log(tacticModifiedList)
         let value = event.currentTarget.value;
         value = value.split('/');
         switch (value[0]) {
             case "load":
                 console.log("select handleChange load")
-                setTacticSelected(tacticsList[value[1]]);
+                //todo verifier si la tactic selection est présente dans le tableau modifiedList
+                selectExistingTactic(Number(value[1]))
+    /*console.log("tacticSelected")
+    console.log(tacticSelected)*/
                 break;
             case "new":
+                //retrait de la derniere tactic new
+                if(tacticModifiedList && tacticModifiedList.length >0){
+                    let tabModifiedList = tacticModifiedList.filter(tactic => tactic.id !== "new")
+                    setTacticModifiedList(tabModifiedList)
+                    console.log("erer")
+                    console.log(tacticModifiedList)
+                }
+
+
                 console.log("select handleChange new")
                 let newTactic = {}
+                newTactic.id ="new"
                 newTactic.type = value[1];
                 for(let i=1; i<=11; i++){
                     let post = "pos"+i;
@@ -347,6 +478,7 @@ const FormationPage = (props) => {
                                     setPictures64(pictures64 => [...pictures64, { [player.id]: response.data.data }])
                                 })
                         }
+                        setAges(ages => [...ages, { [player.id]: getAge(player.user.birthday) }])
                     })
                 })
                 .catch(error => console.log(error.response))
@@ -367,30 +499,21 @@ const FormationPage = (props) => {
 
             for(let i=1; i<=11; i++){
                 let post = "pos"+i;
+
                 if(tacticSelected[post] !== null && tacticSelected[post] !== undefined){
-                   console.log(players.filter(player => tacticSelected[post].id === player.id)[0])
                     let thePlayer = players.filter(player => tacticSelected[post].id === player.id)[0]
 
                     if(thePlayer === undefined){ //si le player n'est plus dans l'equipe
                         tacticSelected[post] = null;
                         setChange(true);
                         tabSelection.push(null)
-                        console.log("B"+i);
                     }
                     else { // si le player est bien dans l'equipe
-                        console.log("A"+i);
                         tabSelection.push(thePlayer)
                     }
                 }
                 else {tabSelection.push(null)}
             }
-        }
-        console.log("tabSelection : ")
-        for(let i=0 ; i<=tabSelection.length; i++){
-            if(tabSelection[i]){
-                console.log(" player select "+ i + " : "+tabSelection[i].user.firstName + " "+tabSelection[i].user.lastName)
-            }
-
         }
         
         setPlayersSelected(tabSelection);
@@ -400,11 +523,9 @@ const FormationPage = (props) => {
      * useEffect appelé pour corrigé en bdd, une tactic dont un des joueurs postés, n'est plus dans l'équipe.
      */
     useEffect(() =>{
-        console.log("useEffect : change");
         if(change === true ){
-            console.log("change is true")
             saveTactic(tacticSelected)
-            setChange(false)
+          //  setChange(false)
         }
     },[change])
 
@@ -479,7 +600,6 @@ const FormationPage = (props) => {
                 <div className="flexBox">
                     <div id="tacticBox">
 
-                        <label htmlFor="tacticSelect">Selectionner une tactique :</label>
                         <select name="tactic" id="tacticSelect" onChange={handleChange}>
                             <option value=""> Selectionner une tactique </option>
                             <optgroup label="Création :">
@@ -490,20 +610,35 @@ const FormationPage = (props) => {
                             </optgroup>
                             <optgroup label="Existantes :">
                                 {tacticsList.map((tactic, index) => (
-                                    <option key={tactic.id} value={"load/" + index}>{tactic.id + " / " + tactic.type}</option>
+                                    tacticModifiedList.filter(tacticModified => tactic.id === tacticModified.id)[0] !== undefined ?
+                                        <option key={tactic.id} className="noSaved" value={"load/" + tactic.id}> {tactic.id + " / " + tactic.type + " no saved"}</option>
+                                    :   <option key={tactic.id} id={"optionLoad" + tactic.id} value={"load/" + tactic.id} > {tactic.id + " / " + tactic.type}</option>
                                 ))}
                             </optgroup>
                         </select>
-
-                        <button
-                            id="save"
-                            onClick={() => saveTactic(tacticSelected)}
-                          //  disabled
-                        >
-                            Save
-                        </button>
-                        <button id="delete" onClick={() => deleteTactic(tacticSelected.id)}>delete</button>
-
+                        {tacticSelected &&
+                            tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
+                                <button
+                                    className="tacticmenu"
+                                    id="save"
+                                    onClick={() => saveTactic(tacticSelected)}
+                                >
+                                    Save
+                                </button>
+                        }
+                        {tacticSelected && tacticSelected.id !== "new" &&
+                            tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
+                                <button className="tacticmenu" id="cancel" onClick={() => handleCancel()}>
+                                    Annuler
+                                </button>
+                        }
+                        {tacticSelected &&
+                            tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
+                                <button className="tacticmenu" id="delete"
+                                    onClick={() => deleteTactic(tacticSelected.id)}>
+                                    delete
+                                </button>
+                        }
                         <div id="soccerField">
                             {tacticSelected && playersSelected &&
                                 playersSelected.map((player, index) => (
@@ -521,28 +656,35 @@ const FormationPage = (props) => {
                                             />
                                     </SlotSelection>
                                 ))
-                            }
+                                }
                         </div>
                     </div>
-                    <FreePlayersList id="playersList" className="playerList" >
+                    <div id="playersBox">
+                        <p>
+                            Il y a {players.length} joueur{players.length>1?"s":""}  dans l'équipe.
+                        </p>
                         {(players.length < 11) &&
                             <p>
-                                Une équipe doit posseder au moins 11 joueurs pour définir une tactique.
+                                Il faut au moins 11 joueurs pour définir une tactique.
                                 <Link to="/players" className="btn btn-link">
-                                    Aller selectionner des joueurs pour votre équipe.
+                                    Ajouter des joueurs à votre équipe.
                                 </Link>
                             </p>
                         }
-                        {playersFree.map(playerFree => (
-                            <PlayerCard
-                                key={playerFree.id}
-                                player={playerFree}
-                                className="playerCard"
-                                posOrigin={null}
-                            />
-                            ))
-                        }
-                    </FreePlayersList>
+                        <FreePlayersList id="playersList" className="playerList" >
+
+                            {playersFree.map(playerFree => (
+                                <PlayerCard
+                                    key={playerFree.id}
+                                    player={playerFree}
+                                    className="playerCard"
+                                    posOrigin={null}
+                                />
+                                ))
+                            }
+                        </FreePlayersList>
+                    </div>
+
                 </div>
                 <MyPreview />
             </DndProvider>
