@@ -7,6 +7,7 @@ import trainingMissedsAPI from '../services/trainingMissedsAPI';
 import trainingsAPI from '../services/trainingsAPI';
 import usersAPI from '../services/usersAPI';
 import '../../scss/pages/PlanningPlayer.scss'
+import Loader from 'react-loader-spinner';
 
 const PlanningPlayer = (props) => {
     const { isAuthenticated } = useContext(AuthContext);
@@ -18,8 +19,14 @@ const PlanningPlayer = (props) => {
 
     const [trainings, setTrainings] = useState([])
     const [encounters, setEncounters] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
+    const [loading3, setLoading3] = useState(false)
+    const [loading4, setLoading4] = useState(false)
 
     useEffect(() => {
+        setLoading(true)
+        setLoading2(true)
         if (isAuthenticated) {
             setTeamId(usersAPI.findPlayerIdTeamId())
         }
@@ -29,6 +36,7 @@ const PlanningPlayer = (props) => {
             encounterAPI.findEncountersById(teamId)
                 .then(response => {
                     setEncounters(response.data['hydra:member'])
+                    setLoading(false)
                 })
                 .catch(error => {
                     console.log(error.response)
@@ -38,6 +46,7 @@ const PlanningPlayer = (props) => {
             trainingsAPI.findTrainingsById(teamId)
                 .then(response => {
                     setTrainings(response.data['hydra:member'])
+                    setLoading2(false)
                 })
                 .catch(error => {
                     console.log(error.response)
@@ -73,6 +82,7 @@ const PlanningPlayer = (props) => {
 
 
     function checkTrainingOfDayClick(day) {
+        setLoading3(true)
         day = new Date(day.toLocaleDateString("en-US"))
         day.setHours(0, 0, 0, 0)
         var today = new Date()
@@ -108,8 +118,10 @@ const PlanningPlayer = (props) => {
                         setCurrentTrainingPlannedId(trainingsTmp[i].id)
                     }
                 }
+                setLoading3(false)
             })
             .catch(error => {
+                setLoading3(false)
                 console.log(error.response)
             })
 
@@ -125,11 +137,11 @@ const PlanningPlayer = (props) => {
                 break
             }
         }
-
     }
 
 
     const handleChangeAbsence = (event) => {
+        setLoading4(true)
         let value = event.currentTarget.value
         if (value && typeof value === "string") {
             if (value === "true") {
@@ -138,12 +150,13 @@ const PlanningPlayer = (props) => {
                 trainingMissedsAPI.delTrainingMissedId(currentTrainingMissedId)
                     .then(response => {
                         console.log(response.data)
-
+                        setLoading4(false)
                         checkTrainingOfDayClick(currentDate)
 
                     })
                     .catch(error => {
                         setAbsence(true)
+                        setLoading4(false)
                         console.log(error.response)
                     })
             }
@@ -152,10 +165,12 @@ const PlanningPlayer = (props) => {
                 //envoie requete en BDD pour créer le trainingMissed du player connecté
                 trainingMissedsAPI.createTrainingMissed(currentTrainingPlannedId, id)
                     .then(response => {
+                        setLoading4(false)
                         checkTrainingOfDayClick(currentDate)
                     })
                     .catch(error => {
                         console.log(error.response)
+                        setLoading4(false)
                         setAbsence(false)
                     })
             }
@@ -166,6 +181,7 @@ const PlanningPlayer = (props) => {
 
     //définir le comportement au click sur un date du calendrier
     const onDateClick = (day) => {
+        setLoading3(true)
         setCurrentDate(day)
         setTitleModal('Détail du ' + day.toLocaleDateString('fr-FR'))
         setEncounterPlanned(false)
@@ -185,24 +201,35 @@ const PlanningPlayer = (props) => {
 
     return (
         <div className="wrapper_container PlanningPlayer">
-            <Calendar
-                customId="calendar_mt30"
-                parentCallBack={onDateClick}
-                eventsT={trainings}
-                eventsE={encounters}
-            ></Calendar>
-
+            {(loading || loading2) && (
+                <div className="bigLoader">
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
+                </div>
+            )}
+            {(!loading && !loading2) && (
+                <Calendar
+                    customId="calendar_mt30"
+                    parentCallBack={onDateClick}
+                    eventsT={trainings}
+                    eventsE={encounters}
+                ></Calendar>
+            )}
             <Modal
                 show={show}
                 handleClose={hideModal}
                 title={titleModal}
             >
-                {(!trainingPlanned && !encounterPlanned) && (
+                {loading3 && (
+                    <div className="LoaderModal">
+                        <Loader type="Grid" height="100" width="100" color="LightGray" />
+                    </div>
+                )}
+                {(!trainingPlanned && !encounterPlanned && !loading3) && (
                     <div>
                         Aucun événements prévus...
                     </div>
                 )}
-                {trainingPlanned && (
+                {(trainingPlanned && !loading3) && (
                     <div>
                         <h5>Entrainement</h5>
                         <p>{training.team.label + ' ' + training.team.category + ' : ' + training.label}</p>
@@ -212,15 +239,21 @@ const PlanningPlayer = (props) => {
                                 {!dateNotValid && (
                                     <div>
                                         <p>Présence :</p>
-                                        <div>
-                                            <input type="radio" name="injured" id="Oui" value={true} checked={absence === false} onChange={handleChangeAbsence} />
-                                            <label htmlFor="Oui">Oui</label>
-                                        </div>
-                                        <div>
-                                            <input type="radio" name="injured" id="Non" value={false} checked={absence === true} onChange={handleChangeAbsence} />
-                                            <label htmlFor="Non">Non</label>
-                                        </div>
-
+                                        {!loading4 && (
+                                            <div>
+                                                <input type="radio" name="injured" id="Oui" value={true} checked={absence === false} onChange={handleChangeAbsence} />
+                                                <label htmlFor="Oui">Oui</label>
+                                            </div>
+                                        )}
+                                        {!loading4 && (
+                                            <div>
+                                                <input type="radio" name="injured" id="Non" value={false} checked={absence === true} onChange={handleChangeAbsence} />
+                                                <label htmlFor="Non">Non</label>
+                                            </div>
+                                        )}
+                                        {loading4 && (
+                                            <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
+                                        )}
                                     </div>
                                 )}
                                 {dateNotValid && (
@@ -233,7 +266,7 @@ const PlanningPlayer = (props) => {
                         </div>
                     </div>
                 )}
-                {encounterPlanned && (
+                {(encounterPlanned && !loading3) && (
                     <div>
                         <h5>Match</h5>
                         <p>Adversaire: {encounter.labelOpposingTeam + ' ' + encounter.categoryOpposingTeam}</p>
