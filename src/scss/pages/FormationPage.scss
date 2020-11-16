@@ -4,14 +4,76 @@
 .FormationPage {
   @include component-size(flex, column, center, flex-start);
 
-  .flexBox {
+  /*@media (orientation: landscape) {
+    body {
+      flex-direction: row;
+    }
+  }
+  @media (orientation: portrait) {
+    body {
+      flex-direction: column;
+    }
+  }*/
+
+  @media screen and (max-width: 900px) {
+    .flexBox {
+      display:flex;
+      flex-direction: column;
+      align-items: center;
+      min-width:600px;
+      margin-top:8px;
+    }
+
+    .playerList {
+      display: flex;
+      flex-direction: row;
+      border: solid 1px black;
+      overflow:auto;
+      width:600px;
+      height:20%;
+      padding-top:40px;
+      margin:10px;
+      margin-top:25px;
+    }
+  }
+
+  @media screen and (min-width: 900px) {
+    .flexBox {
+      display:flex;
+      flex-direction: row;
+      justify-content:space-between;
+      align-items: center;
+      min-width:600px;
+      margin-top:8px;
+    }
+
+    .playerList {
+      border: solid 1px black;
+      min-height:512px;
+      max-height:512px;
+      min-width:250px;
+      max-width:250px;
+      overflow:auto;
+      padding-top:50px;
+      margin:10px;
+      margin-top:25px;
+    }
+  }
+
+  /*.flexBox {
     display:flex;
     flex-direction: row;
     justify-content:space-between;
     align-items: center;
+  }*/
+
+  .flexCard {
+    display: flex;
+    align-content: space-between;
+    padding-top:2px;
   }
 
-  .playerList {
+  /*.playerList {
     border: solid 1px black;
     min-height:512px;
     max-height:512px;
@@ -21,12 +83,12 @@
     padding-top:50px;
     margin:10px;
     margin-top:25px;
-  }
+  }*/
 
   #soccerField {
     border: solid 1px black;
     width:512px;
-    height:512px;
+    height:685px;
     background: url("../img/soccer-field.png")center center no-repeat;
     //background-size: 40%;
   }
@@ -35,45 +97,117 @@
     position:relative;
     border: solid 1px black;
     background-color:rgba(0,0,0,0.5);
-    width:50px;
-    height:50px;
+    font-size:10px;
+    width:75px;
+    height:75px;
   }
+  .fieldPos p {
+    position:sticky;
+    background-color: $fifth-color-lighten;
+    color:#ebecf1;
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  /**
+    PLAYERCARD
+   */
+
   .playerCard {
+  //  display:flex;
+  //  flex-direction: column;
     border: solid 1px black;
     position:relative;
-    background-color:grey;
-    width:150px;
+    background-color: $fifth-color-lighten;
+    border-radius: 10px;
+  //  background-color:grey;
+    width:200px;
+    min-width:200px;
+    height:100px;
     margin:4px;
     margin-left:8px;
+    text-align: center;
+    color:#ebecf1;
   }
+
+  .player-stats p {
+    display:flex;
+    flex-direction: row;
+  }
+
+  .emptyPics {
+    z-index:1;
+    position:absolute;
+    background-color: rgba(0,0,0,0.5);
+    top:0px;
+    left:0px;
+    width:75px;
+    height:75px;
+  }
+
+  /**
+    PLAYERCARD SLOTED
+   */
 
   .playerCardSloted {
+    //  border: solid 1px black;
+  //  display:flex;
+  //  flex-direction: column;
+    text-align: center;
+    color:$base-color;
+    width:75px;
+    height:75px;
+  }
+
+  .playerCardSloted div {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .playerCardSloted .player-stats {
+    display:none;
+  }
+
+  .playerCardSloted .nameCard {
+  //  position:sticky;
+    z-index:5;
     font-size:10px;
-    width:50px;
-    height:50px;
+    background-color: $fifth-color-lighten;
+    bottom:0;
+    width:auto;
   }
 
-  .base {
+  .playerCardSloted .noNameCard {
+    z-index:1;
+    font-size:10px;
     position:relative;
-    background-color:teal;
-    width: 140px;
-    height: 140px;
-    top: 5px;
-    left: 5px;
+    background-color: $second-color;
+    opacity: 0.8;
+    top:0px;
+    left:0px;
   }
 
-  .taken {
-    border :solid 5px white;
+  .playerCardSloted .picture-profil {
+  //  position:relative;
+    top:0px;
+    left:0px;
+    width:75px;
+    height:75px;
   }
 
-  /*.case {
-    display: inline-block;
-    margin: 10px;
-    border: solid 1px black;
-    background-color:white;
-    width: 150px;
-    min-height: 150px;
-  }*/
+  .playerCardSloted .user-picture {
+    z-index:1;
+  //  position:relative;
+    top:0px;
+    left:0px;
+    width:75px;
+    height:75px;
+  }
+
+  .emptyCard {
+    width:75px;
+    height:75px;
+  }
 
   .hovered {
     width: 50px;
@@ -82,12 +216,68 @@
     border: white dashed;
   }
 
-    .item-list__item{
-      border: solid 1px black;
-      position: relative;
-      background-color: rgb(56, 236, 39);
-      width: 150px;
-      margin: 4px;
-      margin-left: 8px;
+  /*.item-list__item{
+    border: solid 1px black;
+    position: relative;
+    background-color: rgb(56, 236, 39);
+    width: 50px;
+    height: 50px;
+  }*/
+
+  .picture-profil{
+    width:50px;
+    height:50px;
+    border-radius: 50%;
+    background-size: contain;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+  }
+
+  .picture-profil img {
+    width:100%
+  }
+
+  .user-picture{
+    height: 50px;
+    width:50px;
+    background: url("../img/user.png") center center no-repeat;
+    background-size: contain;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+  }
+
+  span{
+    display: inline-block;
+    width: 15px;
+    height: 25px;
+    margin-bottom: -6px;
+    margin-left: 3px;
+  }
+  .redCard{
+    //ajout ratio
+    margin:2px;
+    background: url('../img/redCard.png') center center no-repeat;
+  }
+  .yellowCard{
+    margin:2px;
+    background: url('../img/yellowCard.png') center center no-repeat;
+  }
+  .passAssist{
+    background: url('../img/passAssist.png') center center no-repeat;
+    background-size: 100%;
+  }
+  .goal{
+    background: url('../img/goal_2.png') center center no-repeat;
+    background-size: 100%;
+  }
+
+  .noSaved {
+    background-color: #fd7e14;
+  }
+
+  .tacticMenu {
+    display:inline;
   }
 }
