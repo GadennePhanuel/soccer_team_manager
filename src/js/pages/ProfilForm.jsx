@@ -5,6 +5,7 @@ import dateFormat from 'dateformat';
 import authAPI from '../services/authAPI';
 import '../../scss/pages/ProfilForm.scss';
 import playerAPI from '../services/playerAPI';
+import Loader from 'react-loader-spinner';
 
 
 const ProfilForm = (props) => {
@@ -55,11 +56,18 @@ const ProfilForm = (props) => {
         injured: Boolean
     })
 
+    const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
+    const [loading3, setLoading3] = useState(false)
+    const [loading4, setLoading4] = useState(false)
+    const [loading5, setLoading5] = useState(false)
+    const [loading6, setLoading6] = useState(false)
 
     /**
      *  REQUETE HTPP AU DEMARAGE POUR CHARGER L OBJET USER COMPLET DE LA PERSONNE CONNECTEE 
      */
     const fetchUser = async id => {
+        setLoading(true)
         try {
             const response = await usersAPI.getUserbyId(id)
             const email = response.data.email;
@@ -71,6 +79,7 @@ const ProfilForm = (props) => {
             const passwordConfirm = "";
 
             setUser({ email, lastName, firstName, birthday, phone, password, passwordConfirm })
+            setLoading(false)
         } catch (error) {
             console.log(error.response)
         }
@@ -80,6 +89,7 @@ const ProfilForm = (props) => {
      *  REQUETE HTPP AU DEMARAGE POUR CHARGER LE PLAYER ET SA PHOTO DE PROFIL
      */
     const fetchPlayer = async id => {
+        setLoading2(true)
         await playerAPI.fetchPlayerWithoutId()
             .then(response => {
                 const players = response.data["hydra:member"]
@@ -98,16 +108,18 @@ const ProfilForm = (props) => {
                          * 
                          */
                         if(playerItem.picture !== null && playerItem.picture !== "" && playerItem.picture){
+                            setLoading3(true)
                             playerAPI.fetchProfilePicture(playerItem.picture)
                                 .then(response => {
                                                           
                                     setBlobPicture(response.data.data)
-                                    
+                                    setLoading3(false)
                                 })
                                 .catch(error => {
                                     console.log(error.response)  
                                 })
                         }
+                        setLoading2(false)
                         return
                     }
                 })
@@ -125,10 +137,11 @@ const ProfilForm = (props) => {
      *  
      * */ 
     useEffect(() => {
+        setLoading(true)
         fetchUser(userId);
         if (role === 'ROLE_PLAYER') {
+            setLoading2(true)
             fetchPlayer(userId);
-
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -169,6 +182,7 @@ const ProfilForm = (props) => {
      * MODIFICATION DE L USER --> FORMULAIRE NUMERO 1
      */
     const handleSubmit = async (event) => {
+        setLoading4(true)
         event.preventDefault();
 
         const apiErrors = {};
@@ -183,10 +197,9 @@ const ProfilForm = (props) => {
             await usersAPI.putUserProfil(userId, user)
 
             //TODO : faire un Flash Success
-
+            fetchUser(userId)
             setErrors('')
-            //redirection vers dashboard
-            props.history.replace('/dashboardAdmin')
+            setLoading4(false)
 
         } catch (error) {
             const { violations } = error.response.data;
@@ -197,6 +210,7 @@ const ProfilForm = (props) => {
                 });
                 setErrors(apiErrors);
             }
+            setLoading4(false)
         }
     }
 
@@ -216,6 +230,7 @@ const ProfilForm = (props) => {
 
     const handleSubmitPicture = (event) => {
         event.preventDefault();
+        setLoading5(true)
         setErrorsPlayer("");
 
         playerAPI.uploadNewPicture(bodyFormData)
@@ -223,6 +238,7 @@ const ProfilForm = (props) => {
                     //handle success
                     fetchPlayer(userId);
                     setErrorsPlayer('')
+                    setLoading5(false)
                 })
                 .catch(error => {
                     //handle error
@@ -234,6 +250,7 @@ const ProfilForm = (props) => {
                                         "picture": violations
                                     });
                     }
+                    setLoading5(false)
             });
     }
 
@@ -244,6 +261,7 @@ const ProfilForm = (props) => {
      * MODIFICATION PLAYER - FORMULAIRE 3
      */
     const handleSubmitPlayer = (event) => {
+        setLoading6(true)
         event.preventDefault();
 
         playerAPI.setPlayer(player)
@@ -251,6 +269,7 @@ const ProfilForm = (props) => {
                 console.log(response.data)
                 //TODO flash success
                 setErrorsPlayer('')
+                setLoading6(false)
             })
             .catch(error => {
                 console.log(error.response.data.violations)
@@ -262,7 +281,7 @@ const ProfilForm = (props) => {
                     });
                 }
                 setErrorsPlayer(apiErrors);
-                console.log(player);
+                setLoading6(false)
             })
     }
 
@@ -270,6 +289,12 @@ const ProfilForm = (props) => {
     return (
         <div className="ProfilForm wrapper_container">
             <h1>Votre profil</h1>
+            {(loading || loading2 || loading3) && (
+                <div className="bigLoader">
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
+                </div>
+            )}
+            {(!loading && !loading2 && !loading3) &&(
             <div className="form-section">
                 <form onSubmit={handleSubmit}>
                     <div className="input-form">
@@ -334,9 +359,14 @@ const ProfilForm = (props) => {
                         ></Field>
                     </div>
                     <div className="form-group submit-btn">
-                        <button type="submit" className="btn btn-success ">
+                        {!loading4 && (
+                            <button type="submit" className="btn btn-success ">
                             Confirmation
-                    </button>
+                            </button>
+                        )}
+                        {loading4 && (
+                            <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
+                        )}
                     </div>
                 </form>
                 {(role !== 'ROLE_PLAYER') && (
@@ -364,9 +394,16 @@ const ProfilForm = (props) => {
 
                             </div>
                             <div className="form-group submit-btn">
-                                <button className="btn btn-success">
-                                    Enregistrer
-                                </button>
+                                {!loading5 && (
+                                    <button className="btn btn-success">
+                                        Enregistrer
+                                    </button>
+                                )}
+                                {loading5 && (
+                                    <div className="LoaderModal">
+                                        <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
+                                    </div>
+                                )}
                             </div>
                             {errorsPlayer.picture && <p className="invalid-feedback-custom">{errorsPlayer.picture}</p>}
                         </form>
@@ -411,9 +448,16 @@ const ProfilForm = (props) => {
                                 </div>
                             </div>
                             <div className="form-group submit-btn">
-                                <button className="btn btn-success">
-                                    Enregistrer
-                                </button>
+                                {!loading6 && (
+                                    <button className="btn btn-success">
+                                        Enregistrer
+                                    </button>
+                                )}
+                                {loading6 && (
+                                    <div className="LoaderModal">
+                                        <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
+                                    </div>
+                                )}
                             </div>
                         </form>
 
@@ -421,6 +465,7 @@ const ProfilForm = (props) => {
                     </div>
                 )}
             </div>
+            )}
         </div>
     );
 }
