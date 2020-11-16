@@ -215,7 +215,10 @@ const EncountersAdminPage = (props) => {
                     document.getElementById("div-loader-" + id).hidden = true
                 })
         } else {
-            console.log("Vous ne pouvez modifier la date à une date inférieur à celle du jour")
+            const apiErrors = [''];
+            apiErrors["date"] = "Vous ne pouvez modifier un match à une date inférieur à celle du jour";
+            setError(apiErrors);
+            setLoading2(false)
         }
     }
 

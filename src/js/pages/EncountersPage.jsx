@@ -160,6 +160,7 @@ const EncountersPage = (props) => {
                         labelOpposingTeam: "",
                         categoryOpposingTeam: ""
                     })
+                    setLoading3(false)
                     setRefreshKey(refreshKey + 1)
                     setErrorForm('')
                 })
@@ -286,7 +287,11 @@ const EncountersPage = (props) => {
                     document.getElementById("div-loader-" + id).hidden = true
                 })
         } else {
-            console.log("Vous ne pouvez modifier la date à une date inférieur à celle du jour")
+            const apiErrors = [''];
+            apiErrors["date"] = "Vous ne pouvez modifier un match à une date inférieur à celle du jour";
+            setError(apiErrors);
+            setLoading2(false)
+ 
         }
     }
 

@@ -18,6 +18,9 @@
     }
     table{
         width:97%;
+        input{
+            max-width: 150px;
+        }
         .edit, .confirm{
             margin-right:5px;
         }
