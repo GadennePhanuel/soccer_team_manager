@@ -21,14 +21,10 @@ import playerAPI from "../services/playerAPI";
 
 /**
  * //todo
- * faire un tableau de retenu des modification sur les tactic, afin de pouvoir rrevenir a l'état initiale si utilisateeur annule les modifications
  * correction bug double preview lorsque l'on arrive sur la page en mode non tactile
  * améliorer graphisme des cartes et slot.
- * clarifier les nom de poste
  * ajout stat dans playerCard
  * fonction trie croissant par stat sur FreeList
- * code couleur dans le selecte si une tactic est modifié et non sauvegardé
- * encare explicatif des poste? et coonseil type player à y placer?
  */
 
 const FormationPage = (props) => {
@@ -111,13 +107,13 @@ const FormationPage = (props) => {
      *  x et y sont exprimés en %
      */
     const tacticTypeList = [
-        [ "5-3-2", [50,90,"gardien"], [15,60,"Arrière lateral gauche"], [28,73,"Defenseur central gauche"], [50,76,"Defenseur central"], [72,73, "Defenseur central droit"], [85,60, "Arrière lateral droit"], [25,42,"Milieu gauche"], [50,50,"Milieu central"], [75,42,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
-        [ "5-4-1", [50,90,"gardien"], [15,60,"Arrière lateral gauche"], [28,73,"Defenseur central gauche"], [50,76,"Defenseur central"], [72,73, "Defenseur central droit"], [85,60, "Arrière lateral droit"], [15,36,"Milieu gauche"], [36,45,"Milieu central"], [64,45,"Milieu central"], [85,36,"Milier droit"], [50,15,"Avant centre"]],
-        [ "3-5-2", [50,90,"gardien"], [22,70,"Defenseur central"], [50,77,"Defenseur central"], [78,70,"Defenseur central"], [15,35, "Milieu gauche"], [32,45, "Milieu central"], [50,55,"Milieu central"], [68,45,"Milieu central"], [85,35,"Milieu droit"], [28,20,"Avant centre"], [72,20,"Avant centre"]],
-        [ "4-4-2-losange", [50,90,"gardien"], [15,65,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,65, "Defenseur central droit"], [50,62, "Milieu defensif"], [25,47,"Milieu gauche"], [50,35,"Milieu central"], [75,47,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
-        [ "4-4-2-carre", [50,90,"gardien"], [15,65,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,65, "Defenseur central droit"], [15,40, "Milieu gauche"], [35,53,"Milieu central"], [65,53,"Milieu central"], [85,40,"Milieu droit"], [27,20,"Avant centre gauche"], [73,20,"Avant centre droit"]],
-        [ "4-3-3", [50,90,"gardien"], [15,65,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,65, "Defenseur central droit"], [25,47, "Milieu gauche"], [50,50,"Milieu central"], [75,47,"Milieu droit"], [15,25,"Aillier gauche"], [85,25,"Aillier droit"], [50,15,"Avant centre"]],
-        [ "4-5-1", [50,90,"gardien"], [15,68,"Arrière lateral gauche"], [35,75,"Defenseur central"], [65,75,"Defenseur central"], [85,68, "Defenseur central droit"], [25,55, "Milieu defensif"], [75,55,"Milieu defensif"], [15,35,"Milieu gauche"], [50,37,"Milieu Offensif"], [85,35,"Milieu droit"], [50,15,"Avant centre"]]
+        [ "5-3-2", [50,90,"gardien"], [15,60,"Arrière gauche"], [28,73,"Defense gauche"], [50,76,"Defense centre"], [72,73, "Defense droit"], [85,60, "Arrière droit"], [25,42,"Milieu gauche"], [50,50,"Milieu central"], [75,42,"Milieu droit"], [27,20,"Avant gauche"], [73,20,"Avant droit"]],
+        [ "5-4-1", [50,90,"gardien"], [15,60,"Arrière gauche"], [28,73,"Defense gauche"], [50,76,"Defense centre"], [72,73, "Defense droit"], [85,60, "Arrière droit"], [15,36,"Milieu gauche"], [36,45,"Milieu central"], [64,45,"Milieu central"], [85,36,"Milier droit"], [50,15,"Avant centre"]],
+        [ "3-5-2", [50,90,"gardien"], [22,70,"Defenseur central"], [50,77,"Defense central"], [78,70,"Defense central"], [15,35, "Milieu gauche"], [32,45, "Milieu central"], [50,55,"Milieu central"], [68,45,"Milieu central"], [85,35,"Milieu droit"], [28,20,"Avant centre"], [72,20,"Avant centre"]],
+        [ "4-4-2-losange", [50,90,"gardien"], [15,65,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,65, "Arrière droit"], [50,62, "Milieu defensif"], [25,47,"Milieu gauche"], [50,35,"Milieu central"], [75,47,"Milieu droit"], [27,20,"Avant gauche"], [73,20,"Avant droit"]],
+        [ "4-4-2-carre", [50,90,"gardien"], [15,65,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,65, "Arrière droit"], [15,40, "Milieu gauche"], [35,53,"Milieu central"], [65,53,"Milieu central"], [85,40,"Milieu droit"], [27,20,"Avant gauche"], [73,20,"Avant droit"]],
+        [ "4-3-3", [50,90,"gardien"], [15,65,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,65, "Arrière droit"], [25,47, "Milieu gauche"], [50,50,"Milieu central"], [75,47,"Milieu droit"], [15,25,"Aillier gauche"], [85,25,"Aillier droit"], [50,15,"Avant centre"]],
+        [ "4-5-1", [50,90,"gardien"], [15,68,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,68, "Arrière droit"], [25,55, "Milieu defensif"], [75,55,"Milieu defensif"], [15,35,"Milieu gauche"], [50,37,"Milieu Offensif"], [85,35,"Milieu droit"], [50,15,"Avant centre"]]
     ]
 
     /**
@@ -205,17 +201,16 @@ const FormationPage = (props) => {
             <div ref={drag} className={className}>
                 {player !== null ?
                     <div>
-                        <p className="nameCard">{player.user.firstName} {player.user.lastName}</p>
                         <div className="flexCard">
-                            {/*<span className="player-stats">
-                                <p>{player.totalRedCard} <span className="redCard"></span></p>
-                                <p>{player.totalYellowCard} <span className="yellowCard"></span></p>
-                                <p>{player.totalPassAssist} <span className="passAssist"></span></p>
-                                <p>{player.totalGoal} <span className="goal"></span></p>
-                            </span>*/}
+                            <p className="nameCard">
+                                {player.user.firstName} {player.user.lastName} </p>
+                                <span className="player-stats">
+                                    <span className="redCard">{player.totalRedCard}</span>
+                                    <span className="yellowCard">{player.totalYellowCard}</span>
+                                </span>
                             {player.picture ?
-                                <span className="card-img-top" >
-                                    {pictures64.map((picture, index) => (
+                             //   <span className="card-img-top" >
+                                    pictures64.map((picture, index) => (
                                         picture[player.id] && (
                                             <div key={index} className='picture-profil'>
                                                 {picture[player.id] && (
@@ -223,24 +218,14 @@ const FormationPage = (props) => {
                                                 )}
                                             </div>
                                         )
-                                    ))}
-                                </span>
+                                    ))
+                            //    </span>
                                 : <div className="user-picture"></div>
                             }
-                           {/* <span className="player-infos">
-                                {ages.map((age, index) => (
-                                    age[player.id] && (
-                                        <p key={index}>
-                                            {age[player.id] && (
-                                                {age[player.id]}ans
-                                            )}
-                                                {age[player.id]}ans
-                                        </p>
-                                    )
-                                ))}
-                                    <p>{player.height}cm</p>
-                                    <p>{player.weight}kg</p>
-                            </span>*/}
+                            <span className="player-stats">
+                                <p><span>{player.totalPassAssist}</span> <span className="passAssist"> </span></p>
+                                <p><span>{player.totalGoal} </span><span className="goal"> </span></p>
+                            </span>
                         </div>
                     </div>
                     : <div className="playerCardSloted emptyCard"> Non Assigné </div>
@@ -283,6 +268,7 @@ const FormationPage = (props) => {
         return (
             <div ref={drop} id={id} className={className} style={{top:y+"%", left:x+"%", width:slotWidth, height:slotHeight}} >
                 <abbr title={tactic[num][2]}>
+                    <p>{tactic[num][2]}</p>
                     {children}
                 </abbr>
             </div>
