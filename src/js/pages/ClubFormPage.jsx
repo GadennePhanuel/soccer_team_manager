@@ -8,6 +8,7 @@ import AuthAPI from '../services/authAPI';
 import clubAPI from '../services/clubAPI';
 import usersAPI from '../services/usersAPI';
 import '../../scss/pages/ClubFormPage.scss';
+import Loader from 'react-loader-spinner';
 
 const ClubFormPage = (props) => {
     authAPI.setup();
@@ -23,6 +24,9 @@ const ClubFormPage = (props) => {
     });
 
     const [editing, setEditing] = useState(false);
+
+    const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
 
     const handleChange = (event) => {
         const value = event.currentTarget.value;
@@ -41,11 +45,13 @@ const ClubFormPage = (props) => {
      * @param {} id
      */
     const fetchClub = async id => {
+        setLoading(true)
         //si on est sur la modif de son club, requete HTTP pour récupérer le club en question
         try {
             const data = await clubAPI.findClub(id)
             const { label } = data;
             setClub({ label })
+            setLoading(false)
         } catch (error) {
             console.log(error.response)
         }
@@ -60,14 +66,13 @@ const ClubFormPage = (props) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        setLoading2(true)
         try {
             if (editing) {
                 await clubAPI.putClub(id, club)
 
                 //TODO : falsh success
-                //redirection sur le dashboardAdmin
-                props.history.replace('/dashboardAdmin');
+                setLoading2(false)
             } else {
                 const response = await clubAPI.postClub(club)
                 const clubId = response.data.id
@@ -97,22 +102,36 @@ const ClubFormPage = (props) => {
     return (
         <div className="ClubFormPage wrapper_container">
             {(!editing && <h1>Création de votre club</h1>) || <h1>Modification du club</h1>}
-            <form onSubmit={handleSubmit} className='formClub'>
-                <Field
-                    name="label"
-                    label="Nom du club"
-                    value={club.label}
-                    placeholder="Nom du club..."
-                    error={errors.label}
-                    onChange={handleChange}
-                >
-                </Field>
-                <div >
-                    <button type="submit" className="btn btn-primary">
-                        Enregistrer
-                    </button>
+            {loading && (
+                <div className="bigLoader">
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
                 </div>
-            </form>
+            )}
+            {!loading && (
+                <form onSubmit={handleSubmit} className='formClub'>
+                    <Field
+                        name="label"
+                        label="Nom du club"
+                        value={club.label}
+                        placeholder="Nom du club..."
+                        error={errors.label}
+                        onChange={handleChange}
+                    >
+                    </Field>
+                    <div >
+                        {!loading2 && (
+                            <button type="submit" className="btn btn-primary">
+                                Enregistrer
+                            </button>
+                        )}
+                        {loading2 && (
+                            <div className="LoaderModal">
+                                <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
+                            </div>
+                        )}
+                    </div>
+                </form>
+            )}
         </div>
     );
 }
