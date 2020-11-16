@@ -202,29 +202,33 @@ const FormationPage = (props) => {
                 {player !== null ?
                     <div>
                         <div className="flexCard">
-                            <p className="nameCard">{player.user.firstName} {player.user.lastName} </p>
-                            <span className="player-stats">
-                                <span className="redCard">{player.totalRedCard}</span>
-                                <span className="yellowCard">{player.totalYellowCard}</span>
-                            </span>
-                            {player.picture ?
-                             //   <span className="card-img-top" >
-                                    pictures64.map((picture, index) => (
-                                        picture[player.id] && (
-                                            <div key={index} className='picture-profil'>
-                                                {picture[player.id] && (
-                                                    <img src={`data:image/jpeg;base64,${picture[player.id]}`} alt="" />
-                                                )}
-                                            </div>
-                                        )
-                                    ))
-                            //    </span>
+                            <div className="infos-player">
+                                {player.picture ?
+                                //   <span className="card-img-top" >
+                                pictures64.map((picture, index) => (
+                                    picture[player.id] && (
+                                        <div key={index} className='picture-profil'>
+                                            {picture[player.id] && (
+                                                <img src={`data:image/jpeg;base64,${picture[player.id]}`} alt="" />
+                                            )}
+                                        </div>
+                                    )
+                                ))
+                                //    </span>
                                 : <div className="user-picture"></div>
-                            }
-                            <span className="player-stats">
-                                <p><span>{player.totalPassAssist}</span> <span className="passAssist"> </span></p>
-                                <p><span>{player.totalGoal} </span><span className="goal"> </span></p>
-                            </span>
+                                }
+                                <p className="nameCard">{player.user.firstName} {player.user.lastName} </p>
+                            </div>
+                            <div className="stats-container">
+                                <span className="player-stats">
+                                    <span className="redCard">{player.totalRedCard}</span>
+                                    <span className="yellowCard">{player.totalYellowCard}</span>
+                                </span>
+                                 <span className="player-stats">
+                                    <p><span>{player.totalPassAssist}</span> <span className="passAssist"> </span></p>
+                                    <p><span>{player.totalGoal} </span><span className="goal"> </span></p>
+                                </span>
+                            </div>
                         </div>
                     </div>
                     : <div className="playerCardSloted emptyCard"> Non Assigné </div>
@@ -259,7 +263,7 @@ const FormationPage = (props) => {
         const fieldWitdh = 512;
         const fieldHeight = 685;
         const slotWidth = 75;
-        const slotHeight = 75;
+        const slotHeight = 90;
         const x = tactic[num][0] - (slotWidth*100/fieldWitdh/2)
         const y = tactic[num][1] - (num-1)*(slotHeight*100/fieldHeight) - (slotHeight*100/fieldHeight/2)
 
@@ -535,24 +539,22 @@ const FormationPage = (props) => {
             return null;
         }
         if (item.player) {
-            return <div className="playerCardSloted" style={style}>
+            return <div className="playerCardDragged" style={style}>
                 <div>
+                    {pictures64.map((picture, index) => (
+                        picture[item.player.id] ?
+                            <div key={index} className='picture-profil'>
+                                {picture[item.player.id] && (
+                                    <img src={`data:image/jpeg;base64,${picture[item.player.id]}`} alt="" />
+                                )}
+                            </div>
+                        : <div className="user-picture"></div>
+                    ))}
                     <p className="nameCard">{item.player.user.firstName +" "+ item.player.user.lastName}</p>
-                    <div className="card-img-top" >
-                        {pictures64.map((picture, index) => (
-                            picture[item.player.id] ?
-                                <div key={index} className='picture-profil'>
-                                    {picture[item.player.id] && (
-                                        <img src={`data:image/jpeg;base64,${picture[item.player.id]}`} alt="" />
-                                    )}
-                                </div>
-                            : <div className="user-picture"></div>
-                        ))}
-                    </div>
                 </div>
             </div>;
         } else {
-            return <div className="playerCardSloted" style={style}>
+            return <div className="playerCardSloted emptyCard" style={style}>
                 <div>
                     <p className="noNameCard">Non Assigné</p>
                 </div>
