@@ -145,49 +145,54 @@ const FormationPage = (props) => {
                 preview:<MyPreview/>
             },*/
             end: (item, monitor) => {
-                const dropResult = monitor.getDropResult();
-                if (dropResult && dropResult.name != null) {
-                    //si un drop existe, gestion de modification de la  tactic selectionnée
-                    let posTarget = dropResult.name;
-                    if(tacticSelected) { //si une tactic est selectionné
-                        if (posOrigin === "free") { // si le drag vient d'un player libre
-                            tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0];
-                        } else { // sinon si le drag vient d'un player dans une tactic
-                            if (posTarget !== "free") { // si il est drag vers un autre poste tactique
-                                let switchedPlayer = null // var de transition entre les deux postes de tactique
+                if(tacticSelected) { //si une tactic est selectionné
+                    const dropResult = monitor.getDropResult();
+                    if (dropResult && dropResult.name != null) {
+                        //si un drop existe, gestion de modification de la  tactic selectionnée
+                        let posTarget = dropResult.name;
+                        if(posOrigin !== posTarget ) {
+                            if(!(player === null && posTarget === "free")){
+                                if (posOrigin === "free") { // si le drag vient d'un player libre
+                                    tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0];
+                                } else { // sinon si le drag vient d'un player dans une tactic
+                                    if (posTarget !== "free") { // si il est drag vers un autre poste tactique
+                                        let switchedPlayer = null // var de transition entre les deux postes de tactique
 
-                                if (tacticSelected[posTarget] !== undefined && tacticSelected[posTarget] !== null) {
-                                    //si la case tactique drop n'est pas vide, on stocke le player dans var transition
-                                    switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]
-                                }
+                                        if (tacticSelected[posTarget] !== undefined && tacticSelected[posTarget] !== null) {
+                                            //si la case tactique drop n'est pas vide, on stocke le player dans var transition
+                                            switchedPlayer = players.filter(p => p.id === tacticSelected[posTarget].id)[0]
+                                        }
 
-                                if (player !== null) { //si la case drag contient bien un player
-                                    tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
-                                } else { // sinon on place null dans la case drop
-                                    tacticSelected[posTarget] = null
+                                        if (player !== null) { //si la case drag contient bien un player
+                                            tacticSelected[posTarget] = players.filter(p => p.id === player.id)[0]
+                                        } else { // sinon on place null dans la case drop
+                                            tacticSelected[posTarget] = null
+                                        }
+                                        // on place la case switché dans la case d'origine
+                                        tacticSelected[posOrigin] = switchedPlayer
+                                    } else { // si il est drag vers liste FreePlayer, on libere la case d'origine
+                                        tacticSelected[posOrigin] = null;
+                                    }
                                 }
-                                // on place la case switché dans la case d'origine
-                                tacticSelected[posOrigin] = switchedPlayer
-                            } else { // si il est drag vers liste FreePlayer, on libere la case d'origine
-                                tacticSelected[posOrigin] = null;
+                                //recup du tableau des tactic modifiée sans la tactic modif actuelle
+                                let tabModifiedList = tacticModifiedList.filter(tactic => tacticSelected.id !== tactic.id)
+
+                                /*if(tabModifiedList[tacticSelected.id] !== undefined){
+
+                                }*/
+                                //ajout de la tactic modif actuelle au tableau des tactic modifiés
+                                tabModifiedList.push(tacticSelected);
+
+                                setTacticModifiedList(tabModifiedList)
+                                //   console.log("endDrop: tacticModifiedList : ")
+                                //   console.log(tacticModifiedList)
+                                setTacticSelected(tacticSelected);
+                                //   console.log("endDrop : tacticsList : ")
+                                //   console.log(tacticsList)
+                                setRefreshPlayerSelected(refreshPlayerSelected + 1)
                             }
+
                         }
-                        //recup du tableau des tactic modifiée sans la tactic modif actuelle
-                        let tabModifiedList = tacticModifiedList.filter(tactic => tacticSelected.id !== tactic.id)
-
-                        /*if(tabModifiedList[tacticSelected.id] !== undefined){
-
-                        }*/
-                        //ajout de la tactic modif actuelle au tableau des tactic modifiés
-                        tabModifiedList.push(tacticSelected);
-
-                        setTacticModifiedList(tabModifiedList)
-                     //   console.log("endDrop: tacticModifiedList : ")
-                     //   console.log(tacticModifiedList)
-                        setTacticSelected(tacticSelected);
-                     //   console.log("endDrop : tacticsList : ")
-                     //   console.log(tacticsList)
-                        setRefreshPlayerSelected(refreshPlayerSelected + 1)
                     }
                 }
             },
@@ -263,7 +268,7 @@ const FormationPage = (props) => {
         const fieldWitdh = 512;
         const fieldHeight = 685;
         const slotWidth = 75;
-        const slotHeight = 90;
+        const slotHeight = 80;
         const x = tactic[num][0] - (slotWidth*100/fieldWitdh/2)
         const y = tactic[num][1] - (num-1)*(slotHeight*100/fieldHeight) - (slotHeight*100/fieldHeight/2)
 
@@ -429,8 +434,6 @@ const FormationPage = (props) => {
                 if(tacticModifiedList && tacticModifiedList.length >0){
                     let tabModifiedList = tacticModifiedList.filter(tactic => tactic.id !== "new")
                     setTacticModifiedList(tabModifiedList)
-                    console.log("erer")
-                    console.log(tacticModifiedList)
                 }
 
 
@@ -474,6 +477,8 @@ const FormationPage = (props) => {
             teamAPI.findAllTacticsByTeam(currentTeamId)
                 .then(response => {
                         setTacticsList(response)
+                        setTacticSelected()
+                    document.getElementById("selectInit").setAttribute("selected", "selected")
                 })
                 .catch(error => console.log(error.response))
         }
@@ -540,8 +545,8 @@ const FormationPage = (props) => {
         }
         if (item.player) {
             return <div className="playerCardDragged" style={style}>
-                <div>
-                    {pictures64.map((picture, index) => (
+
+                    {/*{pictures64.map((picture, index) => (
                         picture[item.player.id] ?
                             <div key={index} className='picture-profil'>
                                 {picture[item.player.id] && (
@@ -549,16 +554,14 @@ const FormationPage = (props) => {
                                 )}
                             </div>
                         : <div className="user-picture"></div>
-                    ))}
+                    ))}*/}
                     <p className="nameCard">{item.player.user.firstName +" "+ item.player.user.lastName}</p>
-                </div>
+
             </div>;
         } else {
-            return <div className="playerCardSloted emptyCard" style={style}>
-                <div>
+            return <div className="playerCardDragged" style={style}>
                     <p className="noNameCard">Non Assigné</p>
-                </div>
-                <div className="emptyPics"></div>
+                {/*<div className="emptyPics"></div>*/}
             </div>;
         }
     };
@@ -587,7 +590,7 @@ const FormationPage = (props) => {
                     <div id="tacticBox">
 
                         <select name="tactic" id="tacticSelect" onChange={handleChange}>
-                            <option value=""> Selectionner une tactique </option>
+                            <option id="selectInit" value=""> Selectionner une tactique </option>
                             <optgroup label="Création :">
                                 {tacticTypeList.map((tacticType, index) => (
                                     <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
@@ -664,7 +667,7 @@ const FormationPage = (props) => {
                                     key={playerFree.id}
                                     player={playerFree}
                                     className="playerCard"
-                                    posOrigin={null}
+                                    posOrigin="free"
                                 />
                                 ))
                             }

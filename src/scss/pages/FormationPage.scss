@@ -70,7 +70,7 @@
   .flexCard {
     display: flex;
    // align-items: center;
-    height:75px;
+    height:64px;
    // padding:0%;
   }
 
@@ -161,8 +161,8 @@
   //  flex-direction: column;
     text-align: center;
     color:$base-color;
-    width:75px;
-    height:75px;
+    /*width:75px;
+    height:75px;*/
   }
 
   .playerCardSloted .infos-player{
@@ -197,9 +197,13 @@
   .playerCardSloted .infos-player .picture-profil {
   //  position:relative;
    // top:0px;
+    max-width:66%;
+    height:auto;
+    margin-left:auto;
+    margin-right:auto;
 
-    max-height:78%;
-    width:auto;
+    /*max-height:78%;
+    width:auto;*/
   }
 
   .playerCardSloted .infos-player .user-picture {
@@ -251,15 +255,26 @@
   }
 
   .playerCardDragged {
-    border: solid 1px black;
-    border-radius: 25%;
- //   background-color: rgba(0,0,0,0.7);
+
   }
 
   .playerCardDragged .nameCard {
+    border: solid 1px black;
+    border-radius: 25%;
+    background-color: rgba(200,200,200,0.7);
     width:100%;
-    margin-top:4px;
-    margin-left:4px;
+    margin:auto;
+   // margin-left:4px;
+  }
+
+  .playerCardDragged .noNameCard {
+    border: solid 1px black;
+    border-radius: 25%;
+    background-color: rgba(0,0,0,0.7);
+    width:100%;
+    margin:auto;
+    color:white;
+    // margin-left:4px;
   }
 
   .playerCardDragged .picture-profil {
