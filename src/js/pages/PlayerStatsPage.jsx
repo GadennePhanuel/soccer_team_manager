@@ -83,43 +83,48 @@ const PlayerStatsPage = (props) => {
                 setAge(getAge(response.data.user.birthday))
 
                 //récupération des trainings de son équipe
-                trainingsAPI.findTrainingsById(response.data.team.id)
-                    .then(response => {
-                        //obtention de d'un tableau contenant tous les entrainements de son équipe
-                        setTrainings(response.data['hydra:member'])
+                if (response.data.team) {
+                    trainingsAPI.findTrainingsById(response.data.team.id)
+                        .then(response => {
+                            //obtention de d'un tableau contenant tous les entrainements de son équipe
+                            setTrainings(response.data['hydra:member'])
 
-                        //chaque entrainement du tableau à son propre tableau des absents
-                        response.data['hydra:member'].forEach(training => {
-                            training.trainingMisseds.forEach(trainingMissedItem => {
-                                if (trainingMissedItem.player.id === parseInt(id, 10)) {
-                                    setTrainingMisseds(trainingMisseds => [...trainingMisseds, training])
-                                }
+                            //chaque entrainement du tableau à son propre tableau des absents
+                            response.data['hydra:member'].forEach(training => {
+                                training.trainingMisseds.forEach(trainingMissedItem => {
+                                    if (trainingMissedItem.player.id === parseInt(id, 10)) {
+                                        setTrainingMisseds(trainingMisseds => [...trainingMisseds, training])
+                                    }
+                                })
                             })
+                            setLoading3(false)
                         })
-                        setLoading3(false)
-                    })
-                    .catch(error => {
-                        console.log(error.response)
-                    })
+                        .catch(error => {
+                            console.log(error.response)
+                        })
 
-                //récupération des rencontres de son équipes
-                encounterAPI.findEncountersById(response.data.team.id)
-                    .then(response => {
-                        setEncounters(response.data['hydra:member'])
+                    //récupération des rencontres de son équipes
+                    encounterAPI.findEncountersById(response.data.team.id)
+                        .then(response => {
+                            setEncounters(response.data['hydra:member'])
 
-                        //on parcours les rencontres et on crée un 2éme tableau contenant celles où le player à participer
-                        response.data['hydra:member'].forEach(encounter => {
-                            encounter.stats.forEach(stat => {
-                                if (stat.player.id === parseInt(id, 10)) {
-                                    setSelections(selections => [...selections, encounter])
-                                }
+                            //on parcours les rencontres et on crée un 2éme tableau contenant celles où le player à participer
+                            response.data['hydra:member'].forEach(encounter => {
+                                encounter.stats.forEach(stat => {
+                                    if (stat.player.id === parseInt(id, 10)) {
+                                        setSelections(selections => [...selections, encounter])
+                                    }
+                                })
                             })
+                            setLoading4(false)
                         })
-                        setLoading4(false)
-                    })
-                    .catch(error => {
-                        console.log(error.response)
-                    })
+                        .catch(error => {
+                            console.log(error.response)
+                        })
+                } else {
+                    setLoading3(false)
+                    setLoading4(false)
+                }
 
                 setLoading(false)
 

@@ -60,6 +60,9 @@ const MyPlayersCoachPage = (props) => {
                 .catch(error => {
                     console.log(error.response)
                 })
+        } else {
+            setLoading(false)
+            setLoading2(false)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentTeamId])

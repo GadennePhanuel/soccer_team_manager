@@ -135,8 +135,8 @@ const EncountersPage = (props) => {
                 })
 
                 .catch(error => console.log(error.response));
-
-
+        } else {
+            setLoading(false)
         }
     }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -291,7 +291,7 @@ const EncountersPage = (props) => {
             apiErrors["date"] = "Vous ne pouvez modifier un match à une date inférieur à celle du jour";
             setError(apiErrors);
             setLoading2(false)
- 
+
         }
     }
 
