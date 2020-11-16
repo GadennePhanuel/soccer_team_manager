@@ -263,7 +263,7 @@ const FormationPage = (props) => {
         const fieldWitdh = 512;
         const fieldHeight = 685;
         const slotWidth = 75;
-        const slotHeight = 90;
+        const slotHeight = 80;
         const x = tactic[num][0] - (slotWidth*100/fieldWitdh/2)
         const y = tactic[num][1] - (num-1)*(slotHeight*100/fieldHeight) - (slotHeight*100/fieldHeight/2)
 
@@ -429,8 +429,6 @@ const FormationPage = (props) => {
                 if(tacticModifiedList && tacticModifiedList.length >0){
                     let tabModifiedList = tacticModifiedList.filter(tactic => tactic.id !== "new")
                     setTacticModifiedList(tabModifiedList)
-                    console.log("erer")
-                    console.log(tacticModifiedList)
                 }
 
 
@@ -474,6 +472,8 @@ const FormationPage = (props) => {
             teamAPI.findAllTacticsByTeam(currentTeamId)
                 .then(response => {
                         setTacticsList(response)
+                        setTacticSelected()
+                    document.getElementById("selectInit").setAttribute("selected", "selected")
                 })
                 .catch(error => console.log(error.response))
         }
@@ -587,7 +587,7 @@ const FormationPage = (props) => {
                     <div id="tacticBox">
 
                         <select name="tactic" id="tacticSelect" onChange={handleChange}>
-                            <option value=""> Selectionner une tactique </option>
+                            <option id="selectInit" value=""> Selectionner une tactique </option>
                             <optgroup label="Création :">
                                 {tacticTypeList.map((tacticType, index) => (
                                     <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
