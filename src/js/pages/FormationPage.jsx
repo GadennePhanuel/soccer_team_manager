@@ -202,12 +202,11 @@ const FormationPage = (props) => {
                 {player !== null ?
                     <div>
                         <div className="flexCard">
-                            <p className="nameCard">
-                                {player.user.firstName} {player.user.lastName} </p>
-                                <span className="player-stats">
-                                    <span className="redCard">{player.totalRedCard}</span>
-                                    <span className="yellowCard">{player.totalYellowCard}</span>
-                                </span>
+                            <p className="nameCard">{player.user.firstName} {player.user.lastName} </p>
+                            <span className="player-stats">
+                                <span className="redCard">{player.totalRedCard}</span>
+                                <span className="yellowCard">{player.totalYellowCard}</span>
+                            </span>
                             {player.picture ?
                              //   <span className="card-img-top" >
                                     pictures64.map((picture, index) => (
@@ -581,7 +580,6 @@ const FormationPage = (props) => {
 
     return (
         <div className="FormationPage wrapper_container">
-
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <div className="flexBox">
                     <div id="tacticBox">
