@@ -48,7 +48,6 @@ const MailPage = (props) => {
         setLoading(true)
         setLoading2(true)
         setLoading3(true)
-        setLoading4(true)
 
         coachAPI.findAllCoach()
             .then(data => {
@@ -72,6 +71,7 @@ const MailPage = (props) => {
             .catch(error => console.log(error.response));
 
         if (role !== 'ROLE_ADMIN') {
+            setLoading4(true)
             adminAPI.findAdmin()
                 .then(data => {
                     setAdmins(data)
@@ -199,13 +199,12 @@ const MailPage = (props) => {
         //envoie des données saisies vers le BACK pour traitement et envoie du mail
         mailAPI.sendMail(email)
             .then(response => {
-                //TODO : FLASH SUCCES  && on vide les champs du formulaire
+                //TODO : FLASH SUCCES  && on vide les champs sujet et message du formulaire
                 setEmail({
                     ...email,
                     subject: "",
                     message: ""
                 })
-
                 setLoading5(false)
             })
             .catch(error => {
