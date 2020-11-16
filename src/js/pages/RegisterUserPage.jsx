@@ -4,6 +4,7 @@ import authAPI from '../services/authAPI';
 import jwt_decode from "jwt-decode";
 import UserAPI from "../services/usersAPI";
 import { Link } from 'react-router-dom';
+import Loader from 'react-loader-spinner';
 
 const RegisterUserPage = (props) => {
   const { token } = props.match.params;
@@ -29,6 +30,8 @@ const RegisterUserPage = (props) => {
     passwordConfirm: "",
   });
 
+  const [loading, setLoading] = useState(false)
+
   //à l'arrivée sur la page -> série de controle
   //1. je logout si jamais il y a déja un token de stocké dans le localstorage (cas où un autre utilisateur s'est connecté à l'appil précédemment avec le meme ordi/tablette )
   if (window.localStorage.getItem("authToken")) {
@@ -40,6 +43,12 @@ const RegisterUserPage = (props) => {
   useEffect(() => {
     try {
       const decoded = jwt_decode(token);
+
+      if (decoded.firstName !== '') {  //cas où quelqu'un essaye de se co à cette page avec un token valide récupérer à quelqu'un d'existant....
+        console.log("token invalide")
+        //TODO : flash error -> token invalide ! 
+        props.history.push('/login')
+      }
       setUsers({
         ...users,
         'club': '/api/clubs/' + decoded.club,
@@ -66,11 +75,13 @@ const RegisterUserPage = (props) => {
   */
   const handleSubmit = async (event) => {
     event.preventDefault()
+    setLoading(true)
     const apiErrors = {};
     if (users.password !== users.passwordConfirm) {
       apiErrors.passwordConfirm =
         "Votre confimation de mot de passe n'est pas conforme";
       setErrors(apiErrors);
+      setLoading(false)
       return;
     }
 
@@ -81,8 +92,10 @@ const RegisterUserPage = (props) => {
       try {
         if (users.roles[0] === "ROLE_COACH") {
           await UserAPI.registerCoach(response, token)
+          setLoading(false)
         } else if (users.roles[0] === "ROLE_PLAYER") {
           await UserAPI.registerPlayer(response, token)
+          setLoading(false)
         }
 
         //TODO : faire un petit FLASH de success
@@ -92,8 +105,9 @@ const RegisterUserPage = (props) => {
         props.history.push("/login");
       } catch (error) {
         alert(
-          "Erreur interne, compte utilisateur créé mais non assigné en tant que ROLE_COACH. contactez administrateur du site"
+          "Erreur interne, compte utilisateur créé mais non assigné en tant que ROLE_COACH ou ROLE_PLAYER. contactez administrateur du site"
         );
+        setLoading(false)
       }
     } catch (error) {
       const { violations } = error.response.data;
@@ -108,6 +122,7 @@ const RegisterUserPage = (props) => {
           apiErrors[violation.propertyPath] = violation.message;
         });
         setErrors(apiErrors);
+        setLoading(false)
       }
     }
   }
@@ -168,9 +183,14 @@ const RegisterUserPage = (props) => {
         ></Field>
 
         <div className="form-group">
-          <button type="submit" className="btn btn-success">
-            Confirmation
-          </button>
+          {!loading && (
+            <button type="submit" className="btn btn-success">
+              Confirmation
+            </button>
+          )}
+          {loading && (
+            <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
+          )}
           <Link to="/login" className="btn btn-link">
             J'ai déjà un compte
           </Link>
