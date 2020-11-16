@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Loader from "react-loader-spinner";
 import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
 import UserAPI from "../services/usersAPI";
@@ -25,6 +26,8 @@ const RegisterAdminPage = ({ history }) => {
     passwordConfirm: "",
   });
 
+  const [loading, setLoading] = useState(false)
+
   //gestion des changements des inputs dans le formulaire
   const handleChange = (event) => {
     const { name, value } = event.currentTarget;
@@ -36,12 +39,13 @@ const RegisterAdminPage = ({ history }) => {
    */
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+    setLoading(true)
     const apiErrors = {};
     if (users.password !== users.passwordConfirm) {
       apiErrors.passwordConfirm =
         "Votre confimation de mot de passe n'est pas conforme";
       setErrors(apiErrors);
+      setLoading(false)
       return;
     }
 
@@ -57,11 +61,13 @@ const RegisterAdminPage = ({ history }) => {
 
         //on efface les messages d'erreur et on renvoi sur la page de login
         setErrors("");
+        setLoading(false)
         history.replace("/login");
       } catch (error) {
         alert(
           "Erreur interne, compte utilisateur créé mais non assigné en tant que ROLE_ADMIN. contactez administrateur du site"
         );
+        setLoading(false)
       }
     } catch (error) {
       const { violations } = error.response.data;
@@ -71,6 +77,7 @@ const RegisterAdminPage = ({ history }) => {
           apiErrors[violation.propertyPath] = violation.message;
         });
         setErrors(apiErrors);
+        setLoading(false)
       }
     }
   };
@@ -140,9 +147,14 @@ const RegisterAdminPage = ({ history }) => {
         ></Field>
 
         <div className="form-group">
-          <button type="submit" className="btn btn-success">
-            Confirmation
-          </button>
+          {!loading && (
+            <button type="submit" className="btn btn-success">
+              Confirmation
+            </button>
+          )}
+          {loading && (
+            <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
+          )}
           <Link to="/login" className="btn btn-link">
             J'ai déjà un compte
           </Link>

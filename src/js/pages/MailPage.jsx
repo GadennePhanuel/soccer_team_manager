@@ -9,6 +9,7 @@ import teamAPI from '../services/teamAPI';
 import "../../scss/pages/MailPage.scss";
 import adminAPI from '../services/adminAPI';
 import mailAPI from '../services/mailAPI';
+import Loader from 'react-loader-spinner';
 
 const MailPage = (props) => {
     authAPI.setup();
@@ -37,22 +38,45 @@ const MailPage = (props) => {
     const [teams, setTeams] = useState([]);
     const [admins, setAdmins] = useState([]);
 
+    const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
+    const [loading3, setLoading3] = useState(false)
+    const [loading4, setLoading4] = useState(false)
+    const [loading5, setLoading5] = useState(false)
+
     useEffect(() => {
+        setLoading(true)
+        setLoading2(true)
+        setLoading3(true)
+
         coachAPI.findAllCoach()
-            .then(data => setCoachs(data))
+            .then(data => {
+                setCoachs(data)
+                setLoading(false)
+            })
             .catch(error => console.log(error.response));
 
         playerAPI.findAllPlayers()
-            .then(data => setPlayers(data))
+            .then(data => {
+                setPlayers(data)
+                setLoading2(false)
+            })
             .catch(error => console.log(error.response));
 
         teamAPI.findAllTeams()
-            .then(data => setTeams(data))
+            .then(data => {
+                setTeams(data)
+                setLoading3(false)
+            })
             .catch(error => console.log(error.response));
 
         if (role !== 'ROLE_ADMIN') {
+            setLoading4(true)
             adminAPI.findAdmin()
-                .then(data => setAdmins(data))
+                .then(data => {
+                    setAdmins(data)
+                    setLoading4(false)
+                })
                 .catch(error => console.log(error.response))
         }
     }, [role])
@@ -146,24 +170,27 @@ const MailPage = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-
+        setLoading5(true)
         const apiErrors = {};
         if (email.receivers.length === 0) {
             apiErrors.receivers =
                 "Veuillez sélectionner au moins un destinataire";
             setErrors(apiErrors);
+            setLoading5(false)
             return;
         }
         if (email.subject.length === 0) {
             apiErrors.subject =
                 "Veuillez préciser le sujet de votre email";
             setErrors(apiErrors);
+            setLoading5(false)
             return;
         }
         if (email.message.length === 0) {
             apiErrors.message =
                 "Veuillez saisir un message...";
             setErrors(apiErrors);
+            setLoading5(false)
             return;
         }
 
@@ -172,14 +199,19 @@ const MailPage = (props) => {
         //envoie des données saisies vers le BACK pour traitement et envoie du mail
         mailAPI.sendMail(email)
             .then(response => {
-                //TODO : FLASH SUCCES  & REDIRECTION ??
-                props.history.replace('/dashboardCoach')
+                //TODO : FLASH SUCCES  && on vide les champs sujet et message du formulaire
+                setEmail({
+                    ...email,
+                    subject: "",
+                    message: ""
+                })
+                setLoading5(false)
             })
             .catch(error => {
                 console.log(error.response)
                 if (error.response.status === 500) {
                     console.log("une ou plusieur adresses destinataires fausses ou inactive, impossible d'envoyer le message...")
-                    //TODO: message d'erreur, une ou plusieurs adresses destinataires fausses ou inactive, message non envoyé !
+                    //TODO : FLASH ERROR 
                 }
                 if (error.response.data.violations) {
                     if (error.response.data.violations.receivers) {
@@ -193,6 +225,7 @@ const MailPage = (props) => {
                         setErrors(apiErrors);
                     }
                 }
+                setLoading5(false)
             })
 
         //TODO : flash success
@@ -203,65 +236,72 @@ const MailPage = (props) => {
 
     return (
         <div className="MailPage wrapper_container">
-            <div>
-                <h1>Messagerie</h1>
-                <div className="SelectList">
-                    {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
-                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
-                            Admins
-                        </button>
-                    }
-                    <button onClick={handleSelect} className="btn btn-primary btnSelectList">
-                        Coachs
-                    </button>
-                    <button onClick={handleSelect} className="btn btn-primary btnSelectList">
-                        Joueurs
-                    </button>
-                    <button onClick={handleSelect} className="btn btn-primary btnSelectList">
-                        Equipes
-                    </button>
-                </div>
+            {(loading || loading2 || loading3 || loading4) && (
                 <div>
-                    {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
-                        <div className="btnSelectItem" id="Admins" hidden>
-                            {admins.map((admin) => (
-                                <div key={admin.id}>
-                                    <button onClick={() => handleAdd(admin.user.email)} id={admin.user.email}>
-                                        {admin.user.lastName} {admin.user.firstName}
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
+                </div>
+            )}
+            {(!loading && !loading2 && !loading3 && !loading4) && (
+                <div>
+                    <h1>Messagerie</h1>
+                    <div className="SelectList">
+                        {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
+                            <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                                Admins
+                        </button>
+                        }
+                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                            Coachs
+                    </button>
+                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                            Joueurs
+                    </button>
+                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                            Equipes
+                    </button>
+                    </div>
+                    <div>
+                        {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
+                            <div className="btnSelectItem" id="Admins" hidden>
+                                {admins.map((admin) => (
+                                    <div key={admin.id}>
+                                        <button onClick={() => handleAdd(admin.user.email)} id={admin.user.email}>
+                                            {admin.user.lastName} {admin.user.firstName}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        }
+                        <div className="btnSelectItem" id="Coachs" hidden>
+                            {coachs.map((coach) => (
+                                <div key={coach.id}>
+                                    <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email}>
+                                        {coach.user.lastName} {coach.user.firstName}
                                     </button>
                                 </div>
                             ))}
                         </div>
-                    }
-                    <div className="btnSelectItem" id="Coachs" hidden>
-                        {coachs.map((coach) => (
-                            <div key={coach.id}>
-                                <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email}>
-                                    {coach.user.lastName} {coach.user.firstName}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="btnSelectItem" id="Joueurs" hidden>
-                        {players.map((player) => (
-                            <div key={player.id}>
-                                <button onClick={() => handleAdd(player.user.email)} id={player.user.email}>
-                                    {player.user.lastName} {player.user.firstName}
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="btnSelectItem" id="Equipes" hidden>
-                        {teams.map((team) => (
-                            <div key={team.id}>
-                                <button onClick={() => handleAddTeam(team)} id={team.label + team.category}>
-                                    {team.label} {team.category}
-                                </button>
-                            </div>
-                        ))}
+                        <div className="btnSelectItem" id="Joueurs" hidden>
+                            {players.map((player) => (
+                                <div key={player.id}>
+                                    <button onClick={() => handleAdd(player.user.email)} id={player.user.email}>
+                                        {player.user.lastName} {player.user.firstName}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="btnSelectItem" id="Equipes" hidden>
+                            {teams.map((team) => (
+                                <div key={team.id}>
+                                    <button onClick={() => handleAddTeam(team)} id={team.label + team.category}>
+                                        {team.label} {team.category}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
             <div>
                 <form onSubmit={handleSubmit}>
                     <Textarea
@@ -292,8 +332,15 @@ const MailPage = (props) => {
                             cols="100"
                         ></Textarea>
                     </div>
-                    <button id="sendMail">
-                    </button>
+                    {!loading5 && (
+                        <button id="sendMail">
+                        </button>
+                    )}
+                    {loading5 && (
+                        <div className="LoaderModal">
+                            <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
+                        </div>
+                    )}
                 </form>
             </div>
         </div>

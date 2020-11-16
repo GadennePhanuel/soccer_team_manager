@@ -8,6 +8,7 @@ import '../../scss/pages/TrainingsPage.scss';
 import trainingsAPI from '../services/trainingsAPI';
 import playerAPI from "../services/playerAPI";
 import trainingMissedsAPI from "../services/trainingMissedsAPI"
+import Loader from "react-loader-spinner";
 
 const TrainingsPage = () => {
     const { currentTeamId } = useContext(TeamContext)
@@ -15,8 +16,13 @@ const TrainingsPage = () => {
     const [trainings, setTrainings] = useState([])
     const [players, setPlayers] = useState([])
     const [playersMisseds, setPlayersMisseds] = useState([])
+    const [refreshKey, setRefershKey] = useState(1)
+    const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
+    const [loading3, setLoading3] = useState(false)
 
     useEffect(() => {
+        setLoading(true)
         //au chargement de la page on récupére l'id de la currentTeam selectionné
         if (currentTeamId !== '') {
             // on charge tous les entrainements la concernant
@@ -24,14 +30,17 @@ const TrainingsPage = () => {
             trainingsAPI.findTrainingsById(currentTeamId)
                 .then(response => {
                     setTrainings(response.data['hydra:member'])
+                    setLoading(false)
                 })
                 .catch(error => {
                     console.log(error.response)
                 })
 
 
+        } else {
+            setLoading(false)
         }
-    }, [currentTeamId])
+    }, [currentTeamId, refreshKey])
 
 
     const [show, setShow] = useState(false)
@@ -67,6 +76,7 @@ const TrainingsPage = () => {
     const [dateNotValid, setDateNotValid] = useState(true)
 
     const onDateClick = (day) => {
+        setLoading2(true)
         //par defaut dateNotValid = true
         setDateNotValid(true)
 
@@ -100,6 +110,7 @@ const TrainingsPage = () => {
             var trainingDate = new Date(trainings[i].date)
             trainingDate.setHours(0, 0, 0, 0)
             if (trainingDate.toLocaleDateString('fr-FR') === day.toLocaleDateString('fr-FR')) {
+                setLoading2(true)
                 setTraining({
                     ...training,
                     team: "/api/teams/" + currentTeamId,
@@ -137,6 +148,7 @@ const TrainingsPage = () => {
                                     })
                                 })
                                 setPlayers(copyPlayers)
+                                setLoading2(false)
                             })
                             .catch(error => {
                                 console.log(error.response)
@@ -147,6 +159,7 @@ const TrainingsPage = () => {
                     })
                 break;
             }
+            setLoading2(false)
         }
         showModal()
         if (day >= today) {
@@ -166,6 +179,7 @@ const TrainingsPage = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
+        setLoading2(true)
         //si newer == true ---> requete en POST pour création d'un nouveau training
         if (newer === true) {
             trainingsAPI.createTrainings(training)
@@ -176,6 +190,7 @@ const TrainingsPage = () => {
                     setErrors('');
                     //fermer la fenetre modal
                     hideModal()
+                    setRefershKey(refreshKey + 1)
                 })
                 .catch(error => {
                     //si echec ---> affichage des violations dans le formulaire
@@ -187,6 +202,7 @@ const TrainingsPage = () => {
                         });
                     }
                     setErrors(apiErrors);
+                    setLoading2(false)
                 })
         } else {    //si newer == false ---->requete en PUT  pour modif training existant au jour selectionné
             trainingsAPI.putTraining(currentTrainingId, training)
@@ -216,6 +232,7 @@ const TrainingsPage = () => {
                         });
                     }
                     setErrors(apiErrors);
+                    setLoading2(false)
                 })
         }
 
@@ -229,6 +246,7 @@ const TrainingsPage = () => {
     }
 
     const handleDelete = (trainingId) => {
+        setLoading2(true)
         //copie du tableau trainings
         const originalTrainings = [...trainings]
         //retirer du tableau trainings le training selectionné
@@ -248,7 +266,7 @@ const TrainingsPage = () => {
 
 
     const handleAbsence = (playerId, trainingId) => {
-
+        setLoading3(true)
         //on veut créer un trainingMisseds
         trainingMissedsAPI.createTrainingMissed(trainingId, playerId)
             .then(response => {
@@ -259,6 +277,7 @@ const TrainingsPage = () => {
                         response.data['hydra:member'].forEach((playersMissedsItem) => {
                             setPlayers(players.filter((playerItem) => playerItem.id !== playersMissedsItem.player.id))
                         })
+                        setLoading3(false)
                     })
                     .catch(error => {
                         console.log(error.response)
@@ -270,13 +289,12 @@ const TrainingsPage = () => {
     }
 
     const handlePresent = (trainingMissedId, trainingId) => {
+        setLoading3(true)
         trainingMissedsAPI.delTrainingMissedId(trainingMissedId)
             .then(response => {
                 playerAPI.findPlayersOfTeamId(currentTeamId)
                     .then(response => {
                         let playerTmp = response.data['hydra:member']
-
-
                         //on peux charger la liste des absents de cette entrainement
                         trainingMissedsAPI.findTrainingMissedsOfTrainingId(trainingId)
                             .then(response => {
@@ -297,6 +315,7 @@ const TrainingsPage = () => {
                                     })
                                 })
                                 setPlayers(copyPlayers)
+                                setLoading3(false)
                             })
                             .catch(error => {
                                 console.log(error.response)
@@ -305,7 +324,6 @@ const TrainingsPage = () => {
                     .catch(error => {
                         console.log(error.response)
                     })
-
             })
             .catch(error => {
                 console.log(error.response)
@@ -324,19 +342,32 @@ const TrainingsPage = () => {
 
     return (
         <div className="wrapper_container TrainingsPage">
-            <Calendar
-                parentCallBack={onDateClick}
-                eventsT={trainings}
-            >
-            </Calendar>
+            {loading && (
+                <div className="bigLoader">
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
+                </div>
+            )}
+            {!loading && (
+
+                <Calendar
+                    parentCallBack={onDateClick}
+                    eventsT={trainings}
+                >
+                </Calendar>
+            )}
 
             <Modal
                 show={show}
                 handleClose={hideModal}
                 title={titleModal}
             >
+                {loading2 && (
+                    <div className="LoaderModal">
+                        <Loader type="Grid" height="100" width="100" color="LightGray" />
+                    </div>
+                )}
                 {/* si la date selectionnée est inférieur a la date du jour */}
-                {(dateNotValid && !newer) && (
+                {(dateNotValid && !newer && !loading2) && (
                     <div>
                         <div>
                             <h5>{training.label}</h5>
@@ -350,7 +381,7 @@ const TrainingsPage = () => {
                         </div>
                     </div>
                 )}
-                {dateNotValid && (
+                {(dateNotValid && !loading2) && (
                     <div className='note'>
                         <p>Note : Vous ne pouvez pas créer ou modifier un événement à une date ultérieur a aujourd'hui</p>
                     </div>
@@ -358,7 +389,7 @@ const TrainingsPage = () => {
 
 
                 {/* si la date selectionné est supérieur ou egale a la date du jour */}
-                {!dateNotValid && (
+                {(!dateNotValid && !loading2) && (
 
                     <form onSubmit={handleSubmit} id="formTraining">
                         <Field
@@ -389,22 +420,35 @@ const TrainingsPage = () => {
                         </div>
                     </form>
                 )}
-                {(!newer && !dateNotValid) && (
+                {(!newer && !dateNotValid && !loading2) && (
                     <div className="absence-div">
                         <button type="button" className="btn btn-secondary btn-absence" onClick={handleManagement}>Gérer les absences</button>
                         <div className="col_abs_pres" id="abs_pres" hidden>
-                            <div className="present">
-                                <h5>Présent</h5>
-                                {players.map((player, index) => (
-                                    <button key={index} type="button" onClick={() => handleAbsence(player.id, currentTrainingId)}>{player.user.lastName + ' ' + player.user.firstName}</button>
-                                ))}
-                            </div>
-                            <div className="absent">
-                                <h5>Absents</h5>
-                                {playersMisseds.map((playerMissed, index) => (
-                                    <button key={index} type="button" onClick={() => handlePresent(playerMissed.id, currentTrainingId)}> {playerMissed.player.user.lastName + ' ' + playerMissed.player.user.firstName} </button>
-                                ))}
-                            </div>
+                            {loading3 && (
+                                <div className="LoaderModal">
+                                    <Loader type="Puff" width="100" height="100" color="LightGray" />
+                                </div>
+                            )}
+                            {!loading3 && (
+                                <div className="present">
+                                    <h5>Présent</h5>
+                                    {players.map((player, index) => (
+                                        <button key={index} type="button" onClick={() => handleAbsence(player.id, currentTrainingId)} className="btn-abs-pres">
+                                            {player.user.lastName + ' ' + player.user.firstName}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                            {!loading3 && (
+                                <div className="absent">
+                                    <h5>Absents</h5>
+                                    {playersMisseds.map((playerMissed, index) => (
+                                        <button key={index} type="button" onClick={() => handlePresent(playerMissed.id, currentTrainingId)} className="btn-abs-pres">
+                                            {playerMissed.player.user.lastName + ' ' + playerMissed.player.user.firstName}
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
