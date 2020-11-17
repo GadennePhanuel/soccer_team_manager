@@ -99,9 +99,13 @@
     border: solid 1px black;
     background-color:rgba(0,0,0,0.5);
     font-size:10px;
+    transform: translate( x, y);
    // width:75px;
    // height:75px;
   }
+
+  transform: translate(x, y);
+
   .fieldPos p {
     position:sticky;
     background-color: $fifth-color-lighten;

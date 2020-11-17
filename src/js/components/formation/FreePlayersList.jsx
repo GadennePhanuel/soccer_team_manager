@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
 
-const FreePlayersList = ({id, className, children}) => {
+const FreePlayersList = ({ id, className, children }) => {
     const [, drop] = useDrop({
         accept: "playerCard",
-
+        drop: () => ({ name: "free" })
     });
 
     return (
