@@ -218,6 +218,7 @@ const FormationPage = (props) => {
     }
 
     const [refreshPlayerSelected, setRefreshPlayerSelected] = useState([0])
+
     /**
     * ajax recup de l'equipe selectionnée, et des tactiques de cette equipe
     */
@@ -300,6 +301,11 @@ const FormationPage = (props) => {
         setPlayersFree(tabFreePlayer)
     }, [players, playersSelected])
 
+    /**
+     * element a afficher lors d'un drag
+     * @returns {JSX.Element|null}
+     * @constructor
+     */
     const MyPreview = () => {
         const { display, itemType, item, style } = usePreview();
         if (!display) {
@@ -331,7 +337,6 @@ const FormationPage = (props) => {
             }
         ]
     };
-
 
 
     return (
