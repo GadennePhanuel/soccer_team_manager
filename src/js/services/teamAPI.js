@@ -29,7 +29,6 @@ function deleteCoachOnTeam(id) {
 }
 
 function putTeam(teamId, teamLabel, teamCoach) {
-    console.log("test-Axios");
     return Axios
         .put(TEAMS_API + "/" + teamId,
             {
@@ -41,7 +40,7 @@ function putTeam(teamId, teamLabel, teamCoach) {
 }
 
 function findAllTacticsByTeam(id){
-    return Axios.get("http://localhost:8000/api/teams/"+id+"/tactics")
+    return Axios.get(TEAMS_API + "/" +id+"/tactics")
         .then(response => response.data['hydra:member'])
 }
 

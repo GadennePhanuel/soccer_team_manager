@@ -8,34 +8,101 @@
     margin: 5px 5px 20px 5px;
   }
 
-  #createTeam {
-    width : 70%;
-    #select-container{
-      display:flex;
-      flex-direction: row;
+  .tables_container{
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
 
-      .select-box{
-        width : 50%;
-        
+    #div-search {
+    width: 100%;
+    margin-bottom: 0;
+    .search {
+      width: 100%;
+      }
+    }
+   }
+
+  table{
+    width : 97%;
+    input {
+      max-width: 150px;
+    }
+    .edit, .confirm{
+      margin-right:5px;
+    }
+    .btn-sm {
+      margin-bottom:5px;
+    }
+    .error {
+      width: 100%;
+      margin-top:0.25rem;
+      font-size:80%;
+      color : #E74C3C;
+    }
+  }
+
+
+
+  #createTeam {
+    width: 45%;
+    margin-left: auto;
+    margin-right: auto;
+
+    .wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #showFormDiv {
+      margin-top : 25px;
+      margin-bottom: 40px;
+    }
+
+    #form-create {
+      //margin-top: -23px;
+      margin-bottom: 40px;
+
+      fieldset {
+        border: 2px solid $fifth-color;
+        padding-left: 10px;
+        padding-right: 20px;
+
+        legend {
+          width: 30%;
+          margin-left: 5px;
+          text-align: left;
+        }
+
+        #sendDiv {
+          margin-top: 30px;
+
+          #btn-submitCreate, #btn-cancelCreate {
+            margin-bottom: 8px;
+          }
+
+          #btn-cancelCreate {
+            margin-left: 5px;
+          }
+        }
       }
     }
   }
- 
+/*
   #select-box-1{
     margin-right: 50px;
   }
 
-  .btn-create{
-    margin-top: 30px;
-    margin-bottom: 35px;
-    background-color: $second-color;
-    border-color: #2c3e50;
-    color: $base-color;
+
   }
 
   #teamsBox {
     display:flex;
-    flex-direction: row;
+    flex-direction: column;
   }
+
+
+
+  */
 
 }
