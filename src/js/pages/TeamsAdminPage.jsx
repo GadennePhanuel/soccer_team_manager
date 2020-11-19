@@ -150,7 +150,11 @@ const TeamsAdminPage = (props) => {
             .then(response => {
                 console.log(response.data)
                 teams.filter(team => id === team.id)[0].label = editTeam.label
-                teams.filter(team => id === team.id)[0].coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]
+                if(editTeam.coach !== "non assigné"){
+                    teams.filter(team => id === team.id)[0].coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]
+                }
+                else {teams.filter(team => id === team.id)[0].coach = "non assigné"}
+
                 setEditTeam({label:"", category:"", coach:""})
                 setErrors({label:""})
                 setLoading3(false)
@@ -249,6 +253,13 @@ const TeamsAdminPage = (props) => {
                 <form id="form-create" className='formTeam' onSubmit={handleSubmit} hidden>
                     <fieldset>
                         <legend>Création d'équipe</legend>
+                        {loadingNew && (
+                            <div className="cardLoader">
+                                <Loader type="Circles" height="200" width="200" color="LightGray" />
+                            </div>
+                            )}
+                        {!loadingNew && (
+                            <>
                         <Field
                             name="label"
                             label="Nom d'équipe"
@@ -296,14 +307,6 @@ const TeamsAdminPage = (props) => {
                                 />
                             </div>
                         </div>
-                        {loadingNew && (
-                        //    <div id="sendDiv" className="wrapper">
-                                <div className="bigLoader">
-                                    <Loader className="newLoader" type="Circles" height="100" width="100" color="#192f49" />
-                                </div>
-                        //    </div>
-                        )}
-                        {!loadingNew &&
                         <div id="sendDiv" className="wrapper">
                             <button id="btn-submitCreate" className="btn btn-primary" type="submit">
                                 Envoyer
@@ -313,7 +316,8 @@ const TeamsAdminPage = (props) => {
                                 Annuler
                             </button>
                         </div>
-                        }
+                        </>
+                            )}
                     </fieldset>
                 </form>
             </div>
