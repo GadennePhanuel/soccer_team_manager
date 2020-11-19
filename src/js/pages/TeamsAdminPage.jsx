@@ -24,11 +24,9 @@ const TeamsAdminPage = (props) => {
     }
 
     const [teams, setTeams] = useState([])
-    console.log(teams)
     const [coachs, setCoachs] = useState([])
     const categories = ["Cadet", "Junior", "Senior"]
     const [errors, setErrors] = useState({});
-    console.log(errors.label)
 
     const [newTeam, setNewTeam] = useState({
         label:"",
@@ -45,13 +43,10 @@ const TeamsAdminPage = (props) => {
         coach:""
     });
 
-    const [refreshKey, setRefreshKey] = useState([0])
-
     const [loadingNew, setLoadingNew] = useState(false)
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
     const [loading3, setLoading3] = useState(false)
- //   console.log(loading3)
 
     useEffect(() => {
         setLoading(true)
@@ -71,7 +66,7 @@ const TeamsAdminPage = (props) => {
         coachAPI.findAllCoach()
             .then(data => setCoachs(data))
             .catch(error => console.log(error.response))
-    }, [refreshKey]);
+    }, []);
 
     const handleNewTeamChange = (event) => {
         const { name, value } = event.currentTarget;
@@ -85,8 +80,6 @@ const TeamsAdminPage = (props) => {
 
     const handleSubmit = async (event) => {
         setLoadingNew(true)
-        console.log("creation")
-        console.log(newTeam)
         event.preventDefault();
         if (newTeam.coach && newTeam.coach !== "") {
             newTeam.coach = coachs.filter(coach => Number(newTeam.coach) === coach.id)[0]
@@ -103,7 +96,6 @@ const TeamsAdminPage = (props) => {
                 teams.push(response.data)
                 setErrorsNewTeam({label: "", category: ""})
                 setNewTeam({label:"", category:""})
-        //        setRefreshKey(oldKey => oldKey + 1)
 
                 setLoadingNew(false)
                 document.getElementById('showFormDiv').hidden = false
@@ -123,11 +115,8 @@ const TeamsAdminPage = (props) => {
     }
 
     const handleDelete = id => {
-        //copie du tableau original
-        console.log(editTeam)
         const originalTeams = [...teams];
 
-        //supression de l'affichage du coach selectionné
         setTeams(teams.filter((team) => team.id !== id));
 
         teamAPI.deleteTeam(id)
@@ -139,7 +128,6 @@ const TeamsAdminPage = (props) => {
 
     const handlePutTeam = id => {
         handleCanceled(id)
-        console.log(editTeam)
         setLoading3(id)
         let IRIcoach = null;
         if (editTeam.coach && editTeam.coach !== "non assigné") {
@@ -148,7 +136,6 @@ const TeamsAdminPage = (props) => {
 
         teamAPI.putTeam(id, editTeam.label, IRIcoach)
             .then(response => {
-                console.log(response.data)
                 teams.filter(team => id === team.id)[0].label = editTeam.label
                 if(editTeam.coach !== "non assigné"){
                     teams.filter(team => id === team.id)[0].coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]
@@ -254,12 +241,10 @@ const TeamsAdminPage = (props) => {
                     <fieldset>
                         <legend>Création d'équipe</legend>
                         {loadingNew && (
-                            <div className="cardLoader">
+                            <div className="bigLoader">
                                 <Loader type="Circles" height="200" width="200" color="LightGray" />
                             </div>
-                            )}
-                        {!loadingNew && (
-                            <>
+                        )}
                         <Field
                             name="label"
                             label="Nom d'équipe"
@@ -307,17 +292,17 @@ const TeamsAdminPage = (props) => {
                                 />
                             </div>
                         </div>
-                        <div id="sendDiv" className="wrapper">
-                            <button id="btn-submitCreate" className="btn btn-primary" type="submit">
-                                Envoyer
-                            </button>
-                            <button id="btn-cancelCreate" className="btn btn-danger" type="button"
-                                    onClick={() => handleCancelCreate()}>
-                                Annuler
-                            </button>
-                        </div>
-                        </>
-                            )}
+                        {!loadingNew && (
+                            <div id="sendDiv" className="wrapper">
+                                <button id="btn-submitCreate" className="btn btn-primary" type="submit">
+                                    Envoyer
+                                </button>
+                                <button id="btn-cancelCreate" className="btn btn-danger" type="button"
+                                        onClick={() => handleCancelCreate()}>
+                                    Annuler
+                                </button>
+                            </div>
+                        )}
                     </fieldset>
                 </form>
             </div>

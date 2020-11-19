@@ -1,5 +1,5 @@
 import Axios from "axios"
-import {TACTICS_API, TEAMS_API} from "../../config";
+import {TACTICS_API} from "../../config";
 
 
 function findTactic(id){
