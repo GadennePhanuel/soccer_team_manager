@@ -7,6 +7,7 @@ import Field from "../components/forms/Field";
 import "../../scss/pages/TeamsAdminPage.scss";
 import Select from "../components/forms/Select";
 import Loader from "react-loader-spinner";
+import Modal from "../components/Modal";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -47,6 +48,17 @@ const TeamsAdminPage = (props) => {
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
     const [loading3, setLoading3] = useState(false)
+
+    const [modalType, setModalType] = useState({})
+    const [show, setShow] = useState(false)
+    const showModal = (modalType, idTarget) => {
+        setModalType({type: modalType, target: idTarget})
+        setShow(true)
+    }
+    const hideModal = () => {
+        setShow(false)
+        setModalType('')
+    }
 
     useEffect(() => {
         setLoading(true)
@@ -115,6 +127,7 @@ const TeamsAdminPage = (props) => {
     }
 
     const handleDelete = id => {
+        hideModal()
         const originalTeams = [...teams];
 
         setTeams(teams.filter((team) => team.id !== id));
@@ -127,6 +140,9 @@ const TeamsAdminPage = (props) => {
     };
 
     const handlePutTeam = id => {
+        //retrait modal
+        hideModal()
+        //retrait bouton edit
         handleCanceled(id)
         setLoading3(id)
         let IRIcoach = null;
@@ -225,7 +241,7 @@ const TeamsAdminPage = (props) => {
     return (
         <div className="wrapper_container TeamsAdminPage ">
             <h1>Equipes du club</h1>
-            {(loading2 && role === 'ROLE_ADMIN') && (
+            {loading2 && (
                 <div className="invit-loader">
                     <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
                 </div>
@@ -397,7 +413,7 @@ const TeamsAdminPage = (props) => {
                                     </button>
                                     <button
                                         hidden
-                                        onClick={() => handlePutTeam(team.id)}
+                                        onClick={() => showModal("update",team.id)}
                                         id={"btn-put-" + team.id}
                                         className="btn btn-sm btn-success">
                                         valider
@@ -405,7 +421,7 @@ const TeamsAdminPage = (props) => {
                                 </td>
                                 <td>
                                     <button
-                                        onClick={() => handleDelete(team.id)}
+                                        onClick={() => showModal("delete",team.id)}
                                         id={"btn-delete-" + team.id}
                                         className="btn btn-sm btn-danger">
                                         supprimer
@@ -420,6 +436,35 @@ const TeamsAdminPage = (props) => {
                 </table>
             </div>
             }
+
+            <Modal show={show} handleClose={hideModal} title={modalType.type}>
+
+                {modalType && modalType.type === "delete" && (
+                    <div>
+                        <p>Voulez vous vraiment supprimer cette équipe?</p>
+                        <button type="button" className="btn btn-danger" onClick={() => handleDelete(modalType.target)}>
+                            Supprimer
+                        </button>
+                        <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
+                            Annuler
+                        </button>
+                    </div>
+                )
+                }
+
+                {modalType && modalType.type === "update" && (
+                    <div>
+                        <p>Êtes vous sûr de vouloir modifier cette équipe?</p>
+                        <button type="button" className="btn btn-danger" onClick={() => handlePutTeam(modalType.target)}>
+                            Comfirmer
+                        </button>
+                        <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
+                            Annuler
+                        </button>
+                    </div>
+                )}
+            </Modal>
+
         </div>
     )
 }

@@ -16,6 +16,8 @@ import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview/dist/cjs/usePreview';
 import {Link} from "react-router-dom";
 import playerAPI from "../services/playerAPI";
+import Loader from "react-loader-spinner";
+import Modal from "../components/Modal";
 
 const FormationPage = (props) => {
 
@@ -29,53 +31,15 @@ const FormationPage = (props) => {
     }
 
     const { currentTeamId } = useContext(TeamContext)
-
-    /**
-     * Object: Team
-     * team selected
-     */
     const [team, setTeam] = useState({})
-
-    /**
-     * Collection: Players
-     * players of the selected team
-     */
     const [players, setPlayers] = useState([])
-
-    /**
-     * pictures's players
-     */
     const [pictures64, setPictures64] = useState([])
 
-    /**
-     * if a tactic object need persistance correction
-     */
     const [change, setChange] = useState()
-
-    /**
-     * each tactic of the selected team
-     */
     const [tacticsList, setTacticsList] = useState([])
-
-    /**
-     * each selected tacticModified, for return initiale state if canceled
-     */
     const [tacticModifiedList, setTacticModifiedList] = useState([])
-
-    /**
-     * the selected tactic
-     */
     const [tacticSelected, setTacticSelected] = useState()
 
-    /** TABLEAU DES POSITIONS SELON LE TYPE DE TACTIC
-     *
-     * @type {(string|(number|string)[])[][]}
-     * [
-     *  [typeTactic,[x,y,identifiantPost],...]
-     *  ...
-     *  ]
-     *  x et y sont exprimés en %
-     */
     const tacticTypeList = [
         [ "5-3-2", [50,90,"gardien"], [15,60,"Arrière gauche"], [28,73,"Defense gauche"], [50,76,"Defense centre"], [72,73, "Defense droit"], [85,60, "Arrière droit"], [25,42,"Milieu gauche"], [50,50,"Milieu central"], [75,42,"Milieu droit"], [27,20,"Avant gauche"], [73,20,"Avant droit"]],
         [ "5-4-1", [50,90,"gardien"], [15,60,"Arrière gauche"], [28,73,"Defense gauche"], [50,76,"Defense centre"], [72,73, "Defense droit"], [85,60, "Arrière droit"], [15,36,"Milieu gauche"], [36,45,"Milieu central"], [64,45,"Milieu central"], [85,36,"Aillier droit"], [50,15,"Avant centre"]],
@@ -87,34 +51,44 @@ const FormationPage = (props) => {
         [ "4-2-3-1", [50,90,"gardien"], [15,72,"Defense gauche"], [38,72,"Defense centre"], [61,72,"Defense centre"], [85,72,"Defense droit"], [38,55,"Milieu, defensif"], [61,55,"Milieu defensif"], [15,35,"Aillier gauche"], [50,35,"Aillier centre"], [85,35,"Aillier droit"], [50,15,"Avant centre"]]
     ]
 
-    /**
-     * Array Player
-     * Player placed in selectedTactic
-     */
     const [playersSelected, setPlayersSelected] = useState([])
 
-    /**
-     * Player list are no in the selectedTactic
-     */
     const [playersFree, setPlayersFree] = useState([])
+
+    const [loadingPlayers, setLoadingPlayers] = useState(false)
+    const [loadingTactics, setLoadingTactics] = useState(false)
+
+    const [modalType, setModalType] = useState('')
+    const [show, setShow] = useState(false)
+    const showModal = (modalType) => {
+        setModalType(modalType)
+        setShow(true)
+    }
+    const hideModal = () => {
+        setShow(false)
+        setModalType('')
+    }
 
     /**
      * suppression de tacticId
      * @param tacticId
      */
     const deleteTactic = (tacticId) => {
+        hideModal()
+        setLoadingTactics(true)
         const originalTacticsList = [...tacticsList];
 
         setTacticsList(tacticsList.filter((tactic) => tactic.id !== tacticId));
 
         tacticAPI.deleteTactic(tacticId)
             .then(response => {
-                console.log("delete tactic success " + tacticId)
                 setTacticSelected()
                 setRefreshPlayerSelected(refreshPlayerSelected + 1)
+                setLoadingTactics(false)
             })
             .catch(error => {
                 setTacticsList(originalTacticsList);
+                setLoadingTactics(false)
             });
     }
 
@@ -123,7 +97,8 @@ const FormationPage = (props) => {
      * @param tactic
      */
     const saveTactic = (tactic) => {
-        console.log("save :")
+        show && hideModal()
+        setLoadingTactics(true)
         if (tactic !== undefined && playersSelected.length > 0) {
             let tacticTab = {type:tactic.type, team:team["@id"]}
             for(let i=1; i<=11; i++){
@@ -137,33 +112,41 @@ const FormationPage = (props) => {
             }
 
             if (tactic.id !== "new") {
-                console.log("save : put : tactic")
-                console.log(tactic)
                 tacticAPI.putTactic(tactic.id, tacticTab)
                     .then(response => {
-                        document.getElementById("save").blur()
+                     //   document.getElementById("save").blur()
                         let newList = tacticsList.filter(oldTact => tactic.id !== oldTact.id)
                         newList.push(tactic)
                         setTacticsList(newList)
+                        //etant sauvegarder, on retir la tactic de la liste des tactics modifiées
                         setTacticModifiedList(tacticModifiedList.filter(tacticModified => tactic.id !== tacticModified.id))
+                        setLoadingTactics(false)
                     })
-                    .catch(error => console.log(error.response))
+                    .catch(error => {
+                        console.log(error.response)
+                        setLoadingTactics(false)
+                    })
             }
             else {
                 tacticAPI.postTactic(tacticTab)
                     .then(response => {
+                    //    document.getElementById("save").blur();
                         tacticsList.push(response.data)
                         setTacticsList(tacticsList)
                         setTacticSelected(response.data)
-                        document.getElementById("save").blur();
+                        setLoadingTactics(false)
                     })
-                    .catch(error => console.log(error.response))
+                    .catch(error => {
+                        console.log(error.response)
+                        setLoadingTactics(false)
+                    })
             }
         }
     }
 
     const handleCancel = () => {
       //  purge tableau des tactics modifées
+        setLoadingTactics(true)
         let newTab = tacticModifiedList.filter(tactic => tacticSelected.id !== tactic.id)
         if(newTab !== undefined){
             setTacticModifiedList(newTab)
@@ -171,9 +154,10 @@ const FormationPage = (props) => {
         else {
             setTacticModifiedList([])
         }
-        //recupère l'etat initiale dans tacicsList
+        //recupère l'etat initiale dans tacicsList pour le passer à tacticSelected
         setTacticSelected(clone(tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0]));
         setRefreshPlayerSelected(refreshPlayerSelected +1);
+        setLoadingTactics(false)
     }
 
     /**
@@ -213,16 +197,23 @@ const FormationPage = (props) => {
                 }
                 setTacticSelected(newTactic);
                 break;
+            default:
         }
         setRefreshPlayerSelected(refreshPlayerSelected +1);
     }
 
     const [refreshPlayerSelected, setRefreshPlayerSelected] = useState([0])
 
+
+
+
     /**
     * ajax recup de l'equipe selectionnée, et des tactiques de cette equipe
     */
     useEffect(() => {
+        setLoadingPlayers(true)
+        setLoadingTactics(true)
+
         setPictures64([])
         if (currentTeamId !== '') {
             teamAPI.findTeam(currentTeamId)
@@ -237,13 +228,17 @@ const FormationPage = (props) => {
                                 })
                         }
                     })
+                    setLoadingPlayers(false)
                 })
                 .catch(error => console.log(error.response))
+
             teamAPI.findAllTacticsByTeam(currentTeamId)
                 .then(response => {
-                        setTacticsList(response)
-                        setTacticSelected()
+                    setTacticsList(response)
+                    setLoadingTactics(false)
+                    setTacticSelected()
                     document.getElementById("selectInit").setAttribute("selected", "selected")
+
                 })
                 .catch(error => console.log(error.response))
         }
@@ -292,12 +287,12 @@ const FormationPage = (props) => {
      */
     useEffect(() => {
         let tabFreePlayer = players;
-        {playersSelected.map(playerS => (
+        playersSelected.map(playerS => (
                 playerS !== null && playerS !== undefined ?
                     tabFreePlayer = tabFreePlayer.filter(player => player.id !== playerS.id)
                     : tabFreePlayer
             ))
-        }
+
         setPlayersFree(tabFreePlayer)
     }, [players, playersSelected])
 
@@ -307,7 +302,7 @@ const FormationPage = (props) => {
      * @constructor
      */
     const MyPreview = () => {
-        const { display, itemType, item, style } = usePreview();
+        const { display, item, style } = usePreview();
         if (!display) {
             return null;
         }
@@ -344,48 +339,60 @@ const FormationPage = (props) => {
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <div className="flexBox">
                     <div id="tacticBox">
+                        {loadingTactics  &&
+                            <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
+                        }
+                        {!loadingTactics &&
+                            <div id="tacticMenu">
+                                <select name="tactic" id="tacticSelect" onChange={handleChange}>
+                                    <option id="selectInit" value=""> Selectionner une tactique </option>
+                                    <optgroup label="Création :">
+                                        {tacticTypeList.map((tacticType, index) => (
+                                                <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
+                                            )
+                                        )}
+                                    </optgroup>
+                                    <optgroup label="Existantes :">
+                                        {tacticsList.map((tactic, index) => (
+                                            tacticModifiedList.filter(tacticModified => tactic.id === tacticModified.id)[0] !== undefined ?
+                                                <option key={tactic.id} className="noSaved" value={"load/" + tactic.id}> {tactic.id + " / " + tactic.type + " no saved"}</option>
+                                                :   <option key={tactic.id} id={"optionLoad" + tactic.id} value={"load/" + tactic.id} > {tactic.id + " / " + tactic.type}</option>
+                                        ))}
+                                    </optgroup>
+                                </select>
 
-                        <select name="tactic" id="tacticSelect" onChange={handleChange}>
-                            <option id="selectInit" value=""> Selectionner une tactique </option>
-                            <optgroup label="Création :">
-                                {tacticTypeList.map((tacticType, index) => (
-                                    <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
-                                    )
-                                )}
-                            </optgroup>
-                            <optgroup label="Existantes :">
-                                {tacticsList.map((tactic, index) => (
-                                    tacticModifiedList.filter(tacticModified => tactic.id === tacticModified.id)[0] !== undefined ?
-                                        <option key={tactic.id} className="noSaved" value={"load/" + tactic.id}> {tactic.id + " / " + tactic.type + " no saved"}</option>
-                                    :   <option key={tactic.id} id={"optionLoad" + tactic.id} value={"load/" + tactic.id} > {tactic.id + " / " + tactic.type}</option>
-                                ))}
-                            </optgroup>
-                        </select>
-                        {tacticSelected &&
-                            tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
-                                <button
-                                    className="tacticmenu"
-                                    id="save"
-                                    onClick={() => saveTactic(tacticSelected)}
-                                >
-                                    Save
-                                </button>
+                                {tacticSelected &&
+                                    tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
+                                        <button
+                                            className="tacticmenu"
+                                            id="save"
+                                            onClick={() => {
+                                                    playersSelected.filter(p => p !== null).length < 11 ?
+                                                        showModal("save")
+                                                    : saveTactic(tacticSelected)}}
+                                        >
+                                            Save
+                                        </button>
+                                }
+
+                                {tacticSelected && tacticSelected.id !== "new" &&
+                                    tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
+                                        <button className="tacticmenu" id="cancel" onClick={() => handleCancel()}
+                                        >
+                                            Annuler
+                                        </button>
+                                }
+                                {tacticSelected &&
+                                    tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
+                                        <button className="tacticmenu" id="delete"
+                                                onClick={() => showModal("delete")}
+                                        >
+                                            delete
+                                        </button>
+                                }
+                            </div>
                         }
-                        {tacticSelected && tacticSelected.id !== "new" &&
-                            tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
-                                <button className="tacticmenu" id="cancel" onClick={() => handleCancel()}
-                                >
-                                    Annuler
-                                </button>
-                        }
-                        {tacticSelected &&
-                            tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
-                                <button className="tacticmenu" id="delete"
-                                    onClick={() => deleteTactic(tacticSelected.id)}
-                                >
-                                    delete
-                                </button>
-                        }
+
                         <div id="soccerField">
                             {tacticSelected && playersSelected &&
                                 playersSelected.map((player, index) => (
@@ -422,18 +429,24 @@ const FormationPage = (props) => {
                         </div>
                     </div>
                     <div id="playersBox">
-                        <p>
-                            Il y a {players.length} joueur{players.length>1?"s":""}  dans l'équipe.
-                        </p>
-                        {(players.length < 11) &&
+                        {loadingPlayers && (
+                            <FreePlayersList id="playersList" className="playerList" >
+                                    <Loader type="Grid" height="100%" width="100%" color="LightGray" />
+                            </FreePlayersList>
+                        )}
+                        {(!loadingPlayers &&
+                            <FreePlayersList id="playersList" className="playerList" >
                             <p>
+                                Il y a {players.length} joueur{players.length>1?"s":""}  dans l'équipe.
+                            </p>
+                            {(players.length < 11) &&
+                                <p>
                                 Il faut au moins 11 joueurs pour définir une tactique.
                                 <Link to="/players" className="btn btn-link">
-                                    Ajouter des joueurs à votre équipe.
+                                Ajouter des joueurs à votre équipe.
                                 </Link>
-                            </p>
-                        }
-                        <FreePlayersList id="playersList" className="playerList" >
+                                </p>
+                            }
 
                             {playersFree.map(playerFree => (
                                 <PlayerCard
@@ -453,17 +466,48 @@ const FormationPage = (props) => {
                                     playersList = {players}
 
                                     picture = {playerFree.picture ?
-                                            pictures64.filter(pic => pic[playerFree.id] ? pic[playerFree.id] : null )[0]
+                                        pictures64.filter(pic => pic[playerFree.id] ? pic[playerFree.id] : null )[0]
                                         : null
                                     }
                                 />
-                                ))
+                            ))
                             }
-                        </FreePlayersList>
+                            </FreePlayersList>
+                        )}
                     </div>
 
                 </div>
                 <MyPreview />
+
+                <Modal show={show} handleClose={hideModal} title={modalType} >
+
+                    {modalType === "delete" && (
+                            <div>
+                                <p>Voulez vous vraiment supprimer cette tactique?</p>
+                                <button type="button" className="btn btn-danger" onClick={() => deleteTactic(tacticSelected.id)}>
+                                    Supprimer
+                                </button>
+                                <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
+                                    Annuler
+                                </button>
+                            </div>
+                        )
+                    }
+
+                    {modalType === "save" && (
+                        <div>
+                            <p>La tactique selectionnée n'est pas complète.
+                                Une tactique non complète ne pourra pas être utilisée pour un match.
+                            </p>
+                            <button type="button" className="btn btn-danger" onClick={() => saveTactic(tacticSelected)}>
+                                Sauvegarder quand même
+                            </button>
+                            <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
+                                Annuler
+                            </button>
+                        </div>
+                    )}
+                </Modal>
             </DndProvider>
         </div>
     )
