@@ -6,23 +6,25 @@ import coachAPI from "../services/coachAPI";
 import Field from "../components/forms/Field";
 import "../../scss/pages/TeamsAdminPage.scss";
 import Select from "../components/forms/Select";
+import Loader from "react-loader-spinner";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
-    // si role != ROLE_ADMIN -> redirection vers le dashboard qui lui correspond
+
     const role = usersAPI.checkRole();
     if (role === 'ROLE_COACH') {
         props.history.replace("/dashboardCoach")
     } else if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
     }
-    //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
+
     const clubId = usersAPI.checkClub();
     if (clubId === "new") {
         props.history.replace("/createClub/new")
     }
 
     const [teams, setTeams] = useState([])
+    console.log(teams)
     const [coachs, setCoachs] = useState([])
     const categories = ["Cadet", "Junior", "Senior"]
     const [errors, setErrors] = useState({});
@@ -45,7 +47,15 @@ const TeamsAdminPage = (props) => {
 
     const [refreshKey, setRefreshKey] = useState([0])
 
+    const [loadingNew, setLoadingNew] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
+    const [loading3, setLoading3] = useState(false)
+ //   console.log(loading3)
+
     useEffect(() => {
+        setLoading(true)
+        setLoading2(true)
         teamAPI.findAllTeams()
             .then(data => {
                 data.forEach(team => {
@@ -54,6 +64,8 @@ const TeamsAdminPage = (props) => {
                     }
                 })
                 setTeams(data)
+                setLoading(false)
+                setLoading2(false)
             })
             .catch(error => console.log(error.response))
         coachAPI.findAllCoach()
@@ -72,11 +84,12 @@ const TeamsAdminPage = (props) => {
     }
 
     const handleSubmit = async (event) => {
+        setLoadingNew(true)
         console.log("creation")
         console.log(newTeam)
         event.preventDefault();
         if (newTeam.coach && newTeam.coach !== "") {
-            newTeam.coach = coachs.filter(coach => Number(newTeam.coach) === coach.id)[0]["@id"]
+            newTeam.coach = coachs.filter(coach => Number(newTeam.coach) === coach.id)[0]
         }
         else {
             newTeam.coach = null
@@ -84,9 +97,15 @@ const TeamsAdminPage = (props) => {
         newTeam.club = "/api/clubs/" + clubId
         teamAPI.postTeam(newTeam)
             .then(response => {
+                if(!(response.data.coach)) {
+                    response.data.coach = "non assigné"
+                }
+                teams.push(response.data)
                 setErrorsNewTeam({label: "", category: ""})
                 setNewTeam({label:"", category:""})
-                setRefreshKey(oldKey => oldKey + 1)
+        //        setRefreshKey(oldKey => oldKey + 1)
+
+                setLoadingNew(false)
                 document.getElementById('showFormDiv').hidden = false
                 document.getElementById('form-create').hidden = true
             })
@@ -120,6 +139,7 @@ const TeamsAdminPage = (props) => {
     const handlePutTeam = id => {
         handleCanceled(id)
         console.log(editTeam)
+        setLoading3(id)
         let IRIcoach = null;
         if (editTeam.coach && editTeam.coach !== "non assigné") {
             IRIcoach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]["@id"]
@@ -127,9 +147,12 @@ const TeamsAdminPage = (props) => {
 
         teamAPI.putTeam(id, editTeam.label, IRIcoach)
             .then(response => {
+                console.log(response.data)
+                teams.filter(team => id === team.id)[0].label = editTeam.label
+                teams.filter(team => id === team.id)[0].coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]
                 setEditTeam({label:"", category:"", coach:""})
                 setErrors({label:""})
-                setRefreshKey(oldKey => oldKey + 1)
+                setLoading3(false)
             })
             .catch(error => {
                 const { violations } = error.response.data;
@@ -139,7 +162,7 @@ const TeamsAdminPage = (props) => {
                         apiErrors[violation.propertyPath] = {teamId:id,message:violation.message};
                     });
                 }
-                //todo faire un tableau des erreurs? ou garger l'id team de la team conscerné
+                setLoading3(false)
                 setErrors(apiErrors)
             })
     }
@@ -210,6 +233,12 @@ const TeamsAdminPage = (props) => {
     return (
         <div className="wrapper_container TeamsAdminPage ">
             <h1>Equipes du club</h1>
+            {(loading2 && role === 'ROLE_ADMIN') && (
+                <div className="invit-loader">
+                    <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
+                </div>
+            )}
+            {!loading2 && (
             <div id="createTeam">
                 <div id="showFormDiv" className="wrapper">
                     <button onClick={() => handleCreate()} className="btn btn-primary">
@@ -242,29 +271,12 @@ const TeamsAdminPage = (props) => {
                                         <option value=""> choix de la categorie </option>,
                                         categories.map((category, index) => (
                                             <option key={index} value={category}>
-                                            {category}
+                                                {category}
                                             </option>
                                         ))
                                     ]}
                                     required
-                                    />
-                                {/*<select
-                                    id="categoryselect"
-                                    className="form-control"
-                                    name="category"
-                                    onChange={handleChange}
-                                    placeholder="choix categorie"
-                                    required
-                                >
-                                    <option value=""> choix de la categorie </option>
-                                    {categories.map((category, index) => (
-                                            <option key={index} value={category}
-                                            >
-                                                {category}
-                                            </option>
-                                        )
-                                    )}
-                                </select>*/}
+                                />
                             </div>
                             <div className="select-box">
                                 <Select
@@ -281,220 +293,135 @@ const TeamsAdminPage = (props) => {
                                         ))
                                     ]}
                                 />
-                                {/*<label htmlFor="coachSelect"> Coach: </label>
-                                <select id="coachSelect" className="form-control" name="coach" onChange={handleChange}>
-                                    <option value=""> choix du coach </option>
-                                    {coachs.map(coach => (
-                                            <option key={coach.id} value={coach.id}>
-                                                {coach.user.firstName} {coach.user.lastName}
-                                            </option>
-                                        )
-                                    )}
-                                </select>*/}
                             </div>
                         </div>
                         <div id="sendDiv" className="wrapper">
-                            <button id="btn-submitCreate" className="btn btn-primary" type="submit" >
+                            <button id="btn-submitCreate" className="btn btn-primary" type="submit">
                                 Envoyer
                             </button>
-                            <button id="btn-cancelCreate" className="btn btn-danger" type="button" onClick={() => handleCancelCreate()} >
+                            <button id="btn-cancelCreate" className="btn btn-danger" type="button"
+                                    onClick={() => handleCancelCreate()}>
                                 Annuler
                             </button>
                         </div>
                     </fieldset>
                 </form>
             </div>
+            )}
+            {loading && (
+                <div className="bigLoader">
+                    <Loader type="Circles" height="200" width="200" color="LightGray" />
+                </div>
+            )}
+            {!loading &&
             <div className="tables_container">
                 <div id="div-search" className="form-group">
-                    <input className="search form-control" type="text" onChange={handleSearch} value={search} placeholder="Rechercher" />
+                    <input className="search form-control" type="text" onChange={handleSearch} value={search}
+                           placeholder="Rechercher"/>
                 </div>
                 <table className="table table-hover">
                     <thead>
-                        <tr className="thead-color">
-                            <th scope="col">Equipe</th>
-                            <th scope="col">Categorie</th>
-                            <th scope="col">Coach</th>
-                            <th></th>
-                            <th></th>
-                        </tr>
+                    <tr className="thead-color">
+                        <th scope="col">Equipe</th>
+                        <th scope="col">Categorie</th>
+                        <th scope="col">Coach</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
                     </thead>
                     <tbody>
-                        {filteredTeams.length > 0 ?
-                            filteredTeams.map(team => (
-                                <tr key={team.id} >
-                                    <td>
-                                        <p id={"labelTeam-" + team.id} >{team.label}</p>
-                                        <input
-                                            hidden
-                                            id={"input-labelTeam-" + team.id}
-                                            type="text"
-                                            name="label"
-                                            onChange={handleChange}
-                                            defaultValue={team.label}
-                                            //value={tm.label}
-                                            //error={errors.label}
-                                        />
-                                        {errors.label && errors.label.teamId === team.id &&
-                                            <p className="error">{errors.label.message}</p>
-                                        }
-                                    </td>
-                                    <td>{team.category}</td>
-                                    <td>
-                                        {team.coach !== "non assigné" ?
-                                                <p id={"labelCoach-" + team.id}>{team.coach.user.firstName + " " + team.coach.user.lastName}</p>
-                                            :   <p id={"labelCoach-" + team.id}> {"non assigné"}</p>
-                                        }
-                                        <select
-                                            hidden
-                                            id={"coachSelect-" + team.id}
-                                            name="coach"
-                                            onChange={handleChange}
-                                            defaultValue={team.coach !== "non assigné" ? team.coach.id : "non assigné"}
-                                            // value={tm.coach ? tm.coach.id :""}
-                                        >
-                                            <option value=""> choix du coach </option>
-                                            {coachs.map(coach => (
-                                                    <option key={coach.id} value={coach.id}>
-                                                        {coach.user.firstName} {coach.user.lastName}
-                                                    </option>
-                                                )
-                                            )}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button
-                                            onClick={() => handleEdit(team.id)}
-                                            id={"btn-edit-" + team.id}
-                                            className="btn btn-sm btn-success">
-                                            edit
-                                        </button>
-                                        <button
-                                            hidden
-                                            onClick={() => handleCanceled(team.id)}
-                                            id={"btn-canceled-" + team.id}
-                                            className="btn btn-sm btn-success">
-                                            annuler
-                                        </button>
-                                        <button
-                                            hidden
-                                            onClick={() => handlePutTeam(team.id)}
-                                            id={"btn-put-" + team.id}
-                                            className="btn btn-sm btn-success">
-                                            valider
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <button
-                                            onClick={() => handleDelete(team.id)}
-                                            id={"btn-delete-" + team.id}
-                                            className="btn btn-sm btn-danger">
-                                            supprimer
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        : "Aucun résultat"
-                        }
+                    {filteredTeams.length > 0 ?
+                        filteredTeams.map(team => (
+                            <tr key={team.id}>
+                                <td>
+                                    {loading3 && loading3 === team.id && (
+                                        <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
+                                    )}
+                                    {(!loading3 || loading3 !== team.id) && (
+                                        <p id={"labelTeam-" + team.id}>{team.label}</p>
+                                    )}
+                                    <input
+                                        hidden
+                                        id={"input-labelTeam-" + team.id}
+                                        type="text"
+                                        name="label"
+                                        onChange={handleChange}
+                                        defaultValue={team.label}
+                                        //value={tm.label}
+                                        //error={errors.label}
+                                    />
+                                    {errors.label && errors.label.teamId === team.id &&
+                                    <p className="error">{errors.label.message}</p>
+                                    }
+                                </td>
+                                <td>{team.category}</td>
+                                <td>
+                                    {loading3 && loading3 === team.id && (
+                                        <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
+                                    )}
+                                    {(!loading3 || loading3 !== team.id) && (
+                                        team.coach && team.coach !== "non assigné" ?
+                                            <p id={"labelCoach-" + team.id}>{team.coach.user.firstName + " " + team.coach.user.lastName}</p>
+                                            : <p id={"labelCoach-" + team.id}> {"non assigné"}</p>
+
+                                    )}
+                                    <select
+                                        hidden
+                                        id={"coachSelect-" + team.id}
+                                        name="coach"
+                                        onChange={handleChange}
+                                        defaultValue={(team.coach && team.coach !== "non assigné") ? team.coach.id : "non assigné"}
+                                        // value={tm.coach ? tm.coach.id :""}
+                                    >
+                                        <option value="non assigné"> non Assigné</option>
+                                        {coachs.map(coach => (
+                                                <option key={coach.id} value={coach.id}>
+                                                    {coach.user.firstName} {coach.user.lastName}
+                                                </option>
+                                            )
+                                        )}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button
+                                        onClick={() => handleEdit(team.id)}
+                                        id={"btn-edit-" + team.id}
+                                        className="btn btn-sm btn-success">
+                                        edit
+                                    </button>
+                                    <button
+                                        hidden
+                                        onClick={() => handleCanceled(team.id)}
+                                        id={"btn-canceled-" + team.id}
+                                        className="btn btn-sm btn-success">
+                                        annuler
+                                    </button>
+                                    <button
+                                        hidden
+                                        onClick={() => handlePutTeam(team.id)}
+                                        id={"btn-put-" + team.id}
+                                        className="btn btn-sm btn-success">
+                                        valider
+                                    </button>
+                                </td>
+                                <td>
+                                    <button
+                                        onClick={() => handleDelete(team.id)}
+                                        id={"btn-delete-" + team.id}
+                                        className="btn btn-sm btn-danger">
+                                        supprimer
+                                    </button>
+                                </td>
+                            </tr>
+                        ))
+                        : <p>Aucune équipe trouvée</p>
+                    }
                     </tbody>
 
                 </table>
             </div>
+            }
         </div>
-            /*
-                                {teams.filter(team => team.category === cat).length !== 0 ?
-                                    teams.filter(team => team.category === cat).map(tm =>
-                                        <tr key={tm.id}>
-                                            <td>
-                                                <p id={"labelTeam-" + tm.id}>
-                                                    {tm.label}
-                                                </p>
-                                                <input
-                                                    hidden
-                                                    id={"input-labelTeam-" + tm.id}
-                                                    type="text"
-                                                    name="label"
-                                                    label="Nom d'équipe"
-                                                    onChange={handleChange}
-                                                    defaultValue={tm.label}
-                                                    //value={tm.label}
-                                                    error={errors.label}
-                                                />
-
-                                            </td>
-                                            <td>
-                                                <select
-                                                    hidden
-                                                    id={"coachSelect-" + tm.id}
-                                                    name="coach"
-                                                    onChange={handleChange}
-                                                    defaultValue={tm.coach ? tm.coach.id : null}
-                                                // value={tm.coach ? tm.coach.id :""}
-                                                >
-                                                    <option value=""> choix du coach </option>
-                                                    {coachs.map(coach => (
-                                                        <option key={coach.id} value={coach.id}>
-                                                            {coach.id} {coach.user.firstName} {coach.user.lastName}
-                                                        </option>
-                                                    )
-                                                    )}
-                                                </select>
-                                                {
-                                                    // <td>{tm.coach.user.firstName} {tm.coach.user.lastName}</td> : <td>N/A</td>
-                                                }
-                                                <p id={"labelCoach-" + tm.id}>
-                                                    {tm.coach ?
-                                                        tm.coach.id + " " + tm.coach.user.firstName + " " + tm.coach.user.lastName
-                                                        :
-                                                        "N/A"
-                                                    }
-                                                </p>
-                                            </td>
-                                            <td>
-                                                <button
-                                                    onClick={() => handleEdit(tm.id)}
-                                                    id={"btn-edit-" + tm.id}
-                                                    className="btn btn-sm btn-success">
-                                                    edit
-                                            </button>
-                                                <button
-                                                    hidden
-                                                    onClick={() => handleCanceled(tm.id)}
-                                                    id={"btn-canceled-" + tm.id}
-                                                    className="btn btn-sm btn-success">
-                                                    annuler
-                                            </button>
-                                                <button
-                                                    hidden
-                                                    onClick={() => handlePutTeam(tm.id)}
-                                                    id={"btn-put-" + tm.id}
-                                                    className="btn btn-sm btn-success">
-                                                    valider
-                                            </button>
-                                            </td>
-                                            <td>
-                                                <button
-                                                    onClick={() => handleDelete(tm.id)}
-                                                    id={"btn-delete-" + tm.id}
-                                                    className="btn btn-sm btn-danger">
-                                                    supprimer
-                                            </button>
-                                            </td>
-                                        </tr>
-                                    )
-                                    :
-                                    <tr>
-                                        <td>
-                                            Il n'y a aucune équipe dans cette catégorie
-                                    </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                )
-                )}
-            </div>
-        </div>*/
     )
 }
 

@@ -13,16 +13,22 @@
     margin-left: auto;
     margin-right: auto;
 
-    #div-search {
-    width: 100%;
+  #div-search {
+    position:sticky;
+    top:0;
+    width: 97%;
     margin-bottom: 0;
     .search {
       width: 100%;
       }
     }
-   }
+  }
 
   table{
+    thead {
+      position:sticky;
+      top:37px;
+    }
     width : 97%;
     input {
       max-width: 150px;

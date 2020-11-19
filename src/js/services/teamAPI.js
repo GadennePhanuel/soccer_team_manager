@@ -13,6 +13,7 @@ function findTeam(id) {
 }
 
 function postTeam(team) {
+    team.coach = team.coach["@id"]
     return Axios.post(TEAMS_API, team)
     // .then(response => response.data['hydra:member'])
 }
