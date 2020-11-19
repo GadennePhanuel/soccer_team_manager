@@ -58,7 +58,6 @@ const FormationPage = (props) => {
     const [loadingPlayers, setLoadingPlayers] = useState(false)
     const [loadingTactics, setLoadingTactics] = useState(false)
 
- //   const [titleModal, setTitleModal] = useState('')
     const [modalType, setModalType] = useState('')
     const [show, setShow] = useState(false)
     const showModal = (modalType) => {
@@ -98,7 +97,7 @@ const FormationPage = (props) => {
      * @param tactic
      */
     const saveTactic = (tactic) => {
-        {show && hideModal()}
+        show && hideModal()
         setLoadingTactics(true)
         if (tactic !== undefined && playersSelected.length > 0) {
             let tacticTab = {type:tactic.type, team:team["@id"]}
@@ -119,6 +118,7 @@ const FormationPage = (props) => {
                         let newList = tacticsList.filter(oldTact => tactic.id !== oldTact.id)
                         newList.push(tactic)
                         setTacticsList(newList)
+                        //etant sauvegarder, on retir la tactic de la liste des tactics modifiées
                         setTacticModifiedList(tacticModifiedList.filter(tacticModified => tactic.id !== tacticModified.id))
                         setLoadingTactics(false)
                     })
@@ -154,7 +154,7 @@ const FormationPage = (props) => {
         else {
             setTacticModifiedList([])
         }
-        //recupère l'etat initiale dans tacicsList
+        //recupère l'etat initiale dans tacicsList pour le passer à tacticSelected
         setTacticSelected(clone(tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0]));
         setRefreshPlayerSelected(refreshPlayerSelected +1);
         setLoadingTactics(false)
@@ -197,6 +197,7 @@ const FormationPage = (props) => {
                 }
                 setTacticSelected(newTactic);
                 break;
+            default:
         }
         setRefreshPlayerSelected(refreshPlayerSelected +1);
     }
@@ -286,12 +287,12 @@ const FormationPage = (props) => {
      */
     useEffect(() => {
         let tabFreePlayer = players;
-        {playersSelected.map(playerS => (
+        playersSelected.map(playerS => (
                 playerS !== null && playerS !== undefined ?
                     tabFreePlayer = tabFreePlayer.filter(player => player.id !== playerS.id)
                     : tabFreePlayer
             ))
-        }
+
         setPlayersFree(tabFreePlayer)
     }, [players, playersSelected])
 
@@ -301,7 +302,7 @@ const FormationPage = (props) => {
      * @constructor
      */
     const MyPreview = () => {
-        const { display, itemType, item, style } = usePreview();
+        const { display, item, style } = usePreview();
         if (!display) {
             return null;
         }
