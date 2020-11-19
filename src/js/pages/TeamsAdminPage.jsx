@@ -225,7 +225,7 @@ const TeamsAdminPage = (props) => {
     return (
         <div className="wrapper_container TeamsAdminPage ">
             <h1>Equipes du club</h1>
-            {(loading2 && role === 'ROLE_ADMIN') && (
+            {loading2 && (
                 <div className="invit-loader">
                     <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
                 </div>
