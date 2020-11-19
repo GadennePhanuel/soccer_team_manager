@@ -110,6 +110,7 @@ const TeamsAdminPage = (props) => {
                 document.getElementById('form-create').hidden = true
             })
             .catch(error => {
+                setLoadingNew(false)
                 const { violations } = error.response.data;
                 const apiErrors = {};
                 if (violations) {
@@ -295,6 +296,14 @@ const TeamsAdminPage = (props) => {
                                 />
                             </div>
                         </div>
+                        {loadingNew && (
+                        //    <div id="sendDiv" className="wrapper">
+                                <div className="bigLoader">
+                                    <Loader className="newLoader" type="Circles" height="100" width="100" color="#192f49" />
+                                </div>
+                        //    </div>
+                        )}
+                        {!loadingNew &&
                         <div id="sendDiv" className="wrapper">
                             <button id="btn-submitCreate" className="btn btn-primary" type="submit">
                                 Envoyer
@@ -304,6 +313,7 @@ const TeamsAdminPage = (props) => {
                                 Annuler
                             </button>
                         </div>
+                        }
                     </fieldset>
                 </form>
             </div>
