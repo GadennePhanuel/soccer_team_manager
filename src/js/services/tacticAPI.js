@@ -18,7 +18,7 @@ function putTactic(tacticId, tacticTab){
 
 function deleteTactic(id){
     return Axios
-        .delete("http://localhost:8000/api/tactics/" + id)
+        .delete(TACTICS_API + "/" + id)
 }
 
 export default {
