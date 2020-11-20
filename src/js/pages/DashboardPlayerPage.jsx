@@ -7,7 +7,6 @@ import encounterAPI from "../services/encounterAPI";
 import trainingsAPI from "../services/trainingsAPI";
 import "../../scss/pages/DashboardPlayerPage.scss";
 import {Link} from "react-router-dom";
-
 import Loader from "react-loader-spinner";
 
 const DashboardPlayerPage = (props) => {
@@ -28,7 +27,6 @@ const DashboardPlayerPage = (props) => {
 
 
     const [encounters, setEncounters] = useState([]);
-    // const [nextEncounters, setNextEncounters] = useState([])
     const [oldEncounters, setOldEncounters] = useState([]);
     const [trainings, setTrainings] = useState([])
     const [team, setTeam] = useState({});
@@ -109,7 +107,7 @@ const DashboardPlayerPage = (props) => {
 
     return (
         
-        <div className="DashboardPlayerPage wrapper_container EncountersPage">
+        <div className="DashboardPlayerPage wrapper_container">
             {player.user && !loading &&
                 <h1>Bonjour {player.user.firstName}</h1>            
             }
@@ -178,8 +176,8 @@ const DashboardPlayerPage = (props) => {
                                         <div className="nextTrainings" >
                                             <p><strong>{nextTraining.label}</strong></p>
                                             <p>{
-                                                trainings[0].description.length > 70 && 
-                                                trainings[0].description.substring(0,70) + "..."
+                                                nextTraining.description.length > 70 && 
+                                                nextTraining.description.substring(0,70) + "..."
                                                 }   
                                             </p>
                                         </div>

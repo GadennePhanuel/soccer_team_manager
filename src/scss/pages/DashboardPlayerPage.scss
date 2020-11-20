@@ -2,12 +2,14 @@
 @import "../utilities//mixins.scss";
 
 .DashboardPlayerPage{
+    h1{
+        text-align: center;
+    }
 
     #nextEvent{
         display:flex;
         justify-content: space-around;
         width:100%;
-        
 
         h4{
             margin-bottom:15px;
