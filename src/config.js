@@ -12,5 +12,6 @@ export const TACTICS_API = API_URL + "tactics";
 export const ENCOUNTERS_API = API_URL + "encounters";
 export const TRAININGS_API = API_URL + "trainings";
 export const TRAININGMISSEDS_API = API_URL + "training_misseds";
+export const TACTICARCH_API = API_URL + "tactic_arches";
 
 export const LOGIN_API = API_URL + "login_check";
