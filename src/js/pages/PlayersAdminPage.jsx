@@ -6,6 +6,7 @@ import playerAPI from "../services/playerAPI";
 import "../../scss/pages/PlayersAdminPage.scss";
 import TeamContext from "../contexts/TeamContext";
 import Loader from "react-loader-spinner";
+import CurrentUser from "../components/CurrentUser";
 
 
 const PlayersAdminPage = (props) => {
@@ -167,7 +168,7 @@ const PlayersAdminPage = (props) => {
 
     return (
         <div className="wrapper_container PlayersAdminPage">
-
+            <CurrentUser />
             <h1>Joueurs inscrits</h1>
             {(loading2 && role === 'ROLE_ADMIN') && (
                 <div className="invit-loader">

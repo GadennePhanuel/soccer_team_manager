@@ -18,7 +18,6 @@ import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
 import EncountersPage from "./js/pages/EncountersPage";
 import EncountersAdminPage from "./js/pages/EncountersAdminPage";
-import CurrentUser from "./js/components/CurrentUser";
 import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
@@ -63,7 +62,6 @@ function App() {
               setCurrentTeamId
             }}
           >
-            <CurrentUser />
             <main className="container-fluid">
               <Switch>
                 <Route path="/registerUser/:token" component={RegisterUserPage} />

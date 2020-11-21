@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import playerAPI from '../services/playerAPI';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
+import CurrentUser from '../components/CurrentUser';
 
 const MyPlayersCoachPage = (props) => {
 
@@ -90,6 +91,7 @@ const MyPlayersCoachPage = (props) => {
 
     return (
         <div className="wrapper_container MyPlayersCoachPage">
+            <CurrentUser />
             {loading && (
                 <h1>
                     <Loader type="ThreeDots" height="20" width="508" color="LightGray" />

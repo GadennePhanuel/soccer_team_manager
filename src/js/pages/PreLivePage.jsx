@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Loader from 'react-loader-spinner';
 import "../../scss/pages/PreLivePage.scss";
+import CurrentUser from '../components/CurrentUser';
 import SlotPoste from "../components/formation/SlotPoste";
 import Modal from "../components/Modal";
 import MatchLiveContext from '../contexts/MatchLiveContext';
@@ -85,6 +86,7 @@ const PreLivePage = (props) => {
                 })
                 .catch(error => {
                     console.log(error.response)
+                    setLoading(false)
                 })
 
             //récupération de toute les tactiques de currentTeam
@@ -335,6 +337,7 @@ const PreLivePage = (props) => {
 
     return (
         <div className="wrapper_container PreLivePage">
+            <CurrentUser />
             <h1>Pré-Live</h1>
 
             {(loading || loading2 || loading3 || loading4) && (
