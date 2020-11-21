@@ -8,6 +8,12 @@ function findAllCoach(){
             .then(response => response.data['hydra:member'])
 }
 
+function findCoach(id) {
+    return Axios
+        .get(COACHS_API + "/" + id)
+}
+
+
 function deleteCoach(id){
     return Axios
             .delete(COACHS_API + "/" + id)
@@ -26,6 +32,7 @@ function sendMailToCoach(email, club){
 
 export default {
     findAllCoach,
+    findCoach,
     deleteCoach,
     sendMailToCoach
 }
