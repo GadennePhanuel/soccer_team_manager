@@ -607,7 +607,7 @@ const EncountersPage = (props) => {
                                         </td>
                                         <td>
                                             {
-                                                encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
+                                                encounter.tacticArch ? encounter.tacticArch.type : 'Pas de plan tactique sélectionné'
                                             }
                                         </td>
                                         <td>{(encounter.home && encounter.visitor) ? encounter.home + "-" + encounter.visitor : "Pas de score attribué"}</td>
