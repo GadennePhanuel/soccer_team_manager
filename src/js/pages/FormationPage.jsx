@@ -35,7 +35,6 @@ const FormationPage = (props) => {
     const [players, setPlayers] = useState([])
     const [pictures64, setPictures64] = useState([])
 
-    const [change, setChange] = useState()
     const [tacticsList, setTacticsList] = useState([])
     const [tacticModifiedList, setTacticModifiedList] = useState([])
     const [tacticSelected, setTacticSelected] = useState()
@@ -256,15 +255,7 @@ const FormationPage = (props) => {
 
                 if(tacticSelected[post] !== null && tacticSelected[post] !== undefined){
                     let thePlayer = players.filter(player => tacticSelected[post].id === player.id)[0]
-
-                    if(thePlayer === undefined){ //si le player n'est plus dans l'equipe
-                        tacticSelected[post] = null;
-                        setChange(true);
-                        tabSelection.push(null)
-                    }
-                    else { // si le player est bien dans l'equipe
-                        tabSelection.push(thePlayer)
-                    }
+                    tabSelection.push(thePlayer)
                 }
                 else {tabSelection.push(null)}
             }
@@ -272,15 +263,6 @@ const FormationPage = (props) => {
         
         setPlayersSelected(tabSelection);
     }, [refreshPlayerSelected])
-
-    /**
-     * useEffect appelé pour corrigé en bdd, une tactic dont un des joueurs postés, n'est plus dans l'équipe.
-     */
-    useEffect(() =>{
-        if(change === true ){
-            saveTactic(tacticSelected)
-        }
-    },[change])
 
     /**
      * chargement du tableau des joueurs libres soumis à la modification du tableau de joueurs selectionnés
