@@ -188,6 +188,8 @@ const LivePage = (props) => {
                                         yellowCard: stat.yellowCard
                                     }
                                 })
+                            } else {
+                                setModif(true)
                             }
 
                             setStats(statsArrayTmp)
