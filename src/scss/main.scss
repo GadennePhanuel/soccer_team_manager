@@ -1,5 +1,10 @@
 @import "./utilities/variables.scss";
 
+@font-face {
+  font-family: "ARCADE CLASSIC";
+  src: url("./font-family/ARCADECLASSIC.TTF");
+}
+
 body {
     background-color: $base-color;
 }

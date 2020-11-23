@@ -1,0 +1,18 @@
+@import "../utilities/variables.scss";
+
+.ButtonsCarousel{
+    width: 25px;
+    height: 25px;
+
+    &:focus{
+        outline: none;
+    }
+}
+.btn-left{
+    background: url('../img/left-chevron.png') center center no-repeat;
+    background-size: contain;
+}
+.btn-right{
+    background: url('../img/right-chevron.png') center center no-repeat;
+    background-size: contain;
+}

@@ -9,6 +9,7 @@ import Select from "../components/forms/Select";
 import dateFormat from 'dateformat';
 import "../../scss/pages/EncountersPage.scss";
 import Loader from "react-loader-spinner";
+import CurrentUser from "../components/CurrentUser";
 
 const EncountersPage = (props) => {
     authAPI.setup();
@@ -331,6 +332,7 @@ const EncountersPage = (props) => {
 
     return (
         <div className="wrapper_container EncountersPage">
+            <CurrentUser />
             <h1>Matchs</h1>
             {loading && (
                 <div className="bigLoader">
@@ -478,7 +480,7 @@ const EncountersPage = (props) => {
                                     </td>
                                     <td>
                                         {
-                                            encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
+                                            encounter.tacticArch ? encounter.tacticArch.type : 'Pas de plan tactique sélectionné'
                                         }
                                     </td>
 
@@ -607,7 +609,7 @@ const EncountersPage = (props) => {
                                         </td>
                                         <td>
                                             {
-                                                encounter.tactic ? encounter.tactic.type : 'Pas de plan tactique sélectionné'
+                                                encounter.tacticArch ? encounter.tacticArch.type : 'Pas de plan tactique sélectionné'
                                             }
                                         </td>
                                         <td>{(encounter.home && encounter.visitor) ? encounter.home + "-" + encounter.visitor : "Pas de score attribué"}</td>

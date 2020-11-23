@@ -1,0 +1,517 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+.LivePage{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    padding: 5px 15px 5px 0;
+
+    //
+    //  STYLE DE LA DIV GLOBAL EN HEADER (scoreboard - div des remplacant - brn_list)
+    //
+    .infos-players-substitute{
+        width: 100%;
+        height: 95px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    //
+    //  STYLE DE LA DIV MAIN 
+    //
+    .field-playersOut{
+        width: 100%;
+    }
+
+
+    //
+    //  STYLE DE LA DIV TERRAIN (background field)
+    //
+    #soccerFieldHz{
+        border: solid 1px black;
+        height: 663px;
+        width: 994px;
+        background: url("../img/field-hz.png")center center no-repeat;
+        background-size: contain;
+        position: relative;
+    }
+
+    
+    //
+    //  STYLE EMPLACEMENT DE BASE SUR LE TERRAIN
+    //
+    .fieldPos {
+        position: absolute;;
+        background-color:rgba(0,0,0,0.5);
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+    }
+
+    //
+    //  STYLE DIV DES JOUEURS REMPLACANTS
+    //
+    .playersSubstituteList{
+        max-width: 520px;
+        height: 95px;
+        padding: 0 20px;
+        margin: 0 25px;
+    }
+
+    //
+    //  STYLE CARDS DES JOUEURS REMPLACANTS
+    //
+    .playerCardSubstitute{
+        min-width: 70px;
+        max-width: 70px;
+        min-height: 95px;
+        max-height: 95px;
+        background-color: #333;
+        position: relative;
+        margin: 0 auto;
+        .picture-profil{
+            display: flex;
+            justify-content: center;
+        }
+        img{
+            max-height: 80px;
+        }
+        p{
+            position: absolute;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 700;
+            color: $base-color;
+            background-color: #333;
+            width: 100%;
+            text-align: center;
+            bottom: 0;
+            left: 0;
+        }
+        .user-picture{
+            width: 70px;
+            height: 95px;
+            background: url('../img/user-white.png') center center no-repeat;
+            background-size: contain;
+
+        }
+    }
+
+
+    //
+    //  STYLE DIV DES 3 BUTTONS SAUVEGARDER/QUITTER/SUPPRIMER
+    //
+    .btn_list{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        .btn{
+            max-height: 31px;
+            line-height: 1;
+        }
+    }
+
+
+
+    //
+    //  STYLE CARD D UN JOUEUR PENDANT UN DRAG
+    //
+    .playerCardDragged{
+        opacity: 0.5;
+    }
+
+
+    //
+    //  STYLE CARD DES JOUEURS SUR LE TERRAIN
+    //
+    .playerCardSelected{
+        width: 110px;
+        height: 110px;
+        .picture-profil{
+            display: flex;
+            justify-content: center;
+            width: 110px;
+            height: 110px;
+        }
+        img{
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+        }
+        p{
+            position: absolute;
+            margin: 0;
+            font-size: 10px;
+            font-weight: 700;
+            color: $base-color;
+            background-color: #333;
+            width: 55px;
+            text-align: center;
+            bottom: 0px;
+            left: 0;
+            transform: translate(50%, 50%);
+        }
+        .user-picture{
+            width: 110px;
+            height: 110px;
+            background: url('../img/user-white.png') center center no-repeat;
+            background-size: contain;
+
+        }
+
+        .div-stats{
+            position: relative;
+            display: flex;
+            width: 100%;
+            font-weight: 700;
+            font-size: 1.2em;
+            div{
+                position: absolute;
+            }
+            .yellow-div{
+                top: -115px;
+                left : 0px;
+                &::before{
+                    content: "";
+                    width: 16px;
+                    height: 26px;
+                    background-color: yellow;
+                    position: absolute;
+                    z-index: -1;
+                    left: -2px;
+                }
+                .down{
+                top: 6px;
+                left: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/minus.png') center center no-repeat;
+                background-size: contain;
+                }
+                .up{
+                top: 6px;
+                right: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/plus.png') center center no-repeat;
+                background-size: contain;
+                }
+            }
+            .red-div{
+                top: -115px;
+                right: 0px;
+                &::before{
+                    content: "";
+                    width: 15px;
+                    height: 26px;
+                    background-color: red;
+                    position: absolute;
+                    z-index: -1;
+                    right: -2.5px;
+                }
+                .down{
+                top: 6px;
+                left: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/minus.png') center center no-repeat;
+                background-size: contain;
+                }
+                .up{
+                top: 6px;
+                right: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/plus.png') center center no-repeat;
+                background-size: contain;
+                }
+            }
+            .goal-div{
+                bottom: 0px;
+                right: 0px;
+                &::before{
+                    content: "";
+                    width: 14px;
+                    height: 23px;
+                    background: url('../img/goal_2.png') center center no-repeat;
+                    background-size: contain;
+                    position: absolute;
+                    z-index: -1;
+                    right: -2.5px;
+                    bottom: -15px;
+                }
+                .down{
+                top: 6px;
+                left: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/minus.png') center center no-repeat;
+                background-size: contain;
+                }
+                .up{
+                top: 6px;
+                right: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/plus.png') center center no-repeat;
+                background-size: contain;
+                }
+            }
+            .pass-div{
+                bottom: 0px;
+                left: 0px;
+                &::before{
+                    content: "";
+                    width: 14px;
+                    height: 23px;
+                    background: url('../img/passAssist.png') center center no-repeat;
+                    background-size: contain;
+                    position: absolute;
+                    z-index: -1;
+                    left: -2px;
+                    bottom: -15px;
+                }
+                .down{
+                top: 6px;
+                left: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/minus.png') center center no-repeat;
+                background-size: contain;
+                }
+                .up{
+                top: 6px;
+                right: -20px;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background: white url('../img/plus.png') center center no-repeat;
+                background-size: contain;
+                }
+            }
+        }
+    }
+
+    //
+    //  STYLE DIV AFFICHAGE DU TYPE DE LA FORMATION ACTUELLE
+    //    
+    .formations{
+        position: relative;
+        padding: 5px 10px;
+        font-weight: 700;
+        p{
+            margin: 0;
+            position: absolute;
+            left: 30px;
+        }
+        .change-formation{
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background:  url('../img/options.png') center center no-repeat;
+            background-size: contain;
+            top: 7px;
+            left: 8px;
+        }
+    }
+
+
+
+    //
+    //  STYLE DIV DES JOUEURS SORTIS DU TERRAIN
+    //
+    .list-substitutes-out{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        padding: 5px;
+        color: $base-color;
+        background-color: rgba(0,0,0,0.5);
+        
+        h5{
+            margin: 0 auto;
+            text-decoration: underline;
+        }
+        ul{
+            list-style: inside;
+            list-style-type: disc;
+        }
+    }
+
+    //
+    //  STYLE DIV-ICON POUR CHANGER DE COTE DE TERRAIN
+    //    
+    .side{
+        position: absolute;
+        bottom: 2.5px;
+        right: 2.5px;
+        width: 64px;
+        height: 64px;
+        background: url('../img/exchange2.png') center center no-repeat;
+        background-size: contain;
+        transform: none;
+    }
+    .side-reverse{
+        transform: rotate(180deg);
+    }
+
+
+    //
+    //  STYLE MODAL CHANGEMENT DE FORMATION
+    //
+    .tactic-modal{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        select{
+            width: auto;
+        }
+        .currentTactic{
+            color: red;
+        }
+        #soccerFieldHzModal{
+            border: solid 1px black;
+            height: 331.5px;
+            width: 497px;
+            background: url("../img/field-hz.png")center center no-repeat;
+            background-size: contain;
+            margin: 20px auto;
+            position: relative;
+        }
+        .position-soccer-field-modal{
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: yellow;
+            p{
+                margin: 0;
+                position: absolute;
+                top: 25%;
+                width: 100%;
+                text-align: center;
+            }
+        }
+        button{
+            font-size: 1.2em;
+        }
+    }
+
+
+
+
+    //
+    //  STYLE MODAL CONFIRMATION DE REMPLACEMENT
+    //
+    .confirm-modal{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        div{
+            display: flex;
+            align-items: center;
+        }
+        .players-subsitutes{
+            display: flex;
+            flex-direction: column;
+            width: 200px;
+            height: 300px;
+            justify-content: center;
+            position: relative;
+            p{
+                position: absolute;
+                margin: 0;
+                bottom: 0;
+                width: 100%;
+                text-align: center;
+                color: $base-color;
+                background-color: #333;
+                font-size: 1.2em;
+                font-weight: 700;
+            }
+        }
+        .picture-profil{
+            display: flex;
+            justify-content: center;
+            width: 200px;
+            height: 300px;
+        }    
+        img{
+            max-height: 300px;
+        }
+        .user-picture{
+            width: 160px;
+            height: 300px;
+            background: url('../img/user.png') center center no-repeat;
+            background-size: contain;
+        }
+        .arrows{
+            height: 100px;
+            width: 120px;
+            background: url('../img/down-and-up-arrows.png') center center no-repeat;
+            background-size: cover;
+            margin: 0 30px;
+        }
+        h2{
+            margin-bottom: 20px;
+            text-decoration: underline;
+        }
+        button{
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+    }
+
+
+    //
+    //  STYLE MODAL DEMANDE DE CONFIRMATION POUR QUITTER LE LIVE
+    //
+    .quit-modal{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        button{
+            font-size: 1.2em;
+            margin: 15px 25px;
+        }
+        .warning-save{
+            text-align: center;
+            color: red;
+            font-weight: 700;
+            p{
+                margin: 0;
+            }
+        }
+    }
+
+    //
+    //  STYLE MODAL DEMANDE DE CONFIRMATION POUR QUITTER LE LIVE
+    //
+    .delete-modal{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        button{
+            font-size: 1.2em;
+            margin: 15px 25px;
+        }
+        p{
+            margin: 0;
+            text-align: center;
+        }
+        p:first-of-type{
+            color: red;
+            font-weight: 700;
+        }
+    }
+}

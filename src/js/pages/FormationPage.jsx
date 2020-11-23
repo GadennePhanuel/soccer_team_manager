@@ -14,10 +14,11 @@ import tacticAPI from "../services/tacticAPI";
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import { usePreview } from 'react-dnd-preview/dist/cjs/usePreview';
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import playerAPI from "../services/playerAPI";
 import Loader from "react-loader-spinner";
 import Modal from "../components/Modal";
+import CurrentUser from '../components/CurrentUser';
 
 const FormationPage = (props) => {
 
@@ -40,14 +41,14 @@ const FormationPage = (props) => {
     const [tacticSelected, setTacticSelected] = useState()
 
     const tacticTypeList = [
-        [ "5-3-2", [50,90,"gardien"], [15,60,"Arrière gauche"], [28,73,"Defense gauche"], [50,76,"Defense centre"], [72,73, "Defense droit"], [85,60, "Arrière droit"], [25,42,"Milieu gauche"], [50,50,"Milieu central"], [75,42,"Milieu droit"], [27,20,"Avant gauche"], [73,20,"Avant droit"]],
-        [ "5-4-1", [50,90,"gardien"], [15,60,"Arrière gauche"], [28,73,"Defense gauche"], [50,76,"Defense centre"], [72,73, "Defense droit"], [85,60, "Arrière droit"], [15,36,"Milieu gauche"], [36,45,"Milieu central"], [64,45,"Milieu central"], [85,36,"Aillier droit"], [50,15,"Avant centre"]],
-        [ "3-5-2", [50,90,"gardien"], [22,70,"Defenseur central"], [50,77,"Defense central"], [78,70,"Defense central"], [15,35, "Milieu gauche"], [32,45, "Milieu central"], [50,55,"Milieu central"], [68,45,"Milieu central"], [85,35,"Milieu droit"], [28,20,"Avant centre"], [72,20,"Avant centre"]],
-        [ "4-4-2-losange", [50,90,"gardien"], [15,65,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,65, "Arrière droit"], [50,62, "Milieu defensif"], [25,47,"Milieu gauche"], [50,35,"Milieu offensif"], [75,47,"Milieu droit"], [27,20,"Avant gauche"], [73,20,"Avant droit"]],
-        [ "4-4-2-carre", [50,90,"gardien"], [15,65,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,65, "Arrière droit"], [15,40, "Milieu gauche"], [35,53,"Milieu central"], [65,53,"Milieu central"], [85,40,"Milieu droit"], [27,20,"Avant gauche"], [73,20,"Avant droit"]],
-        [ "4-3-3", [50,90,"gardien"], [15,65,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,65, "Arrière droit"], [25,47, "Milieu gauche"], [50,50,"Milieu central"], [75,47,"Milieu droit"], [15,25,"Aillier gauche"], [85,25,"Aillier droit"], [50,15,"Avant centre"]],
-        [ "4-5-1", [50,90,"gardien"], [15,68,"Arrière gauche"], [35,75,"Defense centre"], [65,75,"Defense centre"], [85,68, "Arrière droit"], [25,55, "Milieu defensif"], [75,55,"Milieu defensif"], [15,35,"Milieu gauche"], [50,37,"Milieu Offensif"], [85,35,"Milieu droit"], [50,15,"Avant centre"]],
-        [ "4-2-3-1", [50,90,"gardien"], [15,72,"Defense gauche"], [38,72,"Defense centre"], [61,72,"Defense centre"], [85,72,"Defense droit"], [38,55,"Milieu, defensif"], [61,55,"Milieu defensif"], [15,35,"Aillier gauche"], [50,35,"Aillier centre"], [85,35,"Aillier droit"], [50,15,"Avant centre"]]
+        ["5-3-2", [50, 90, "gardien"], [15, 60, "Arrière gauche"], [28, 73, "Defense gauche"], [50, 76, "Defense centre"], [72, 73, "Defense droit"], [85, 60, "Arrière droit"], [25, 42, "Milieu gauche"], [50, 50, "Milieu central"], [75, 42, "Milieu droit"], [27, 20, "Avant gauche"], [73, 20, "Avant droit"]],
+        ["5-4-1", [50, 90, "gardien"], [15, 60, "Arrière gauche"], [28, 73, "Defense gauche"], [50, 76, "Defense centre"], [72, 73, "Defense droit"], [85, 60, "Arrière droit"], [15, 36, "Milieu gauche"], [36, 45, "Milieu central"], [64, 45, "Milieu central"], [85, 36, "Aillier droit"], [50, 15, "Avant centre"]],
+        ["3-5-2", [50, 90, "gardien"], [22, 70, "Defenseur central"], [50, 77, "Defense central"], [78, 70, "Defense central"], [15, 35, "Milieu gauche"], [32, 45, "Milieu central"], [50, 55, "Milieu central"], [68, 45, "Milieu central"], [85, 35, "Milieu droit"], [28, 20, "Avant centre"], [72, 20, "Avant centre"]],
+        ["4-4-2-losange", [50, 90, "gardien"], [15, 65, "Arrière gauche"], [35, 75, "Defense centre"], [65, 75, "Defense centre"], [85, 65, "Arrière droit"], [50, 62, "Milieu defensif"], [25, 47, "Milieu gauche"], [50, 35, "Milieu offensif"], [75, 47, "Milieu droit"], [27, 20, "Avant gauche"], [73, 20, "Avant droit"]],
+        ["4-4-2-carre", [50, 90, "gardien"], [15, 65, "Arrière gauche"], [35, 75, "Defense centre"], [65, 75, "Defense centre"], [85, 65, "Arrière droit"], [15, 40, "Milieu gauche"], [35, 53, "Milieu central"], [65, 53, "Milieu central"], [85, 40, "Milieu droit"], [27, 20, "Avant gauche"], [73, 20, "Avant droit"]],
+        ["4-3-3", [50, 90, "gardien"], [15, 65, "Arrière gauche"], [35, 75, "Defense centre"], [65, 75, "Defense centre"], [85, 65, "Arrière droit"], [25, 47, "Milieu gauche"], [50, 50, "Milieu central"], [75, 47, "Milieu droit"], [15, 25, "Aillier gauche"], [85, 25, "Aillier droit"], [50, 15, "Avant centre"]],
+        ["4-5-1", [50, 90, "gardien"], [15, 68, "Arrière gauche"], [35, 75, "Defense centre"], [65, 75, "Defense centre"], [85, 68, "Arrière droit"], [25, 55, "Milieu defensif"], [75, 55, "Milieu defensif"], [15, 35, "Milieu gauche"], [50, 37, "Milieu Offensif"], [85, 35, "Milieu droit"], [50, 15, "Avant centre"]],
+        ["4-2-3-1", [50, 90, "gardien"], [15, 72, "Defense gauche"], [38, 72, "Defense centre"], [61, 72, "Defense centre"], [85, 72, "Defense droit"], [38, 55, "Milieu, defensif"], [61, 55, "Milieu defensif"], [15, 35, "Aillier gauche"], [50, 35, "Aillier centre"], [85, 35, "Aillier droit"], [50, 15, "Avant centre"]]
     ]
 
     const [playersSelected, setPlayersSelected] = useState([])
@@ -99,13 +100,13 @@ const FormationPage = (props) => {
         show && hideModal()
         setLoadingTactics(true)
         if (tactic !== undefined && playersSelected.length > 0) {
-            let tacticTab = {type:tactic.type, team:team["@id"]}
-            for(let i=1; i<=11; i++){
-                let post = "pos"+i;
-                if(tactic[post] === null){
+            let tacticTab = { type: tactic.type, team: team["@id"] }
+            for (let i = 1; i <= 11; i++) {
+                let post = "pos" + i;
+                if (tactic[post] === null) {
                     tacticTab[post] = null
                 }
-                else if(tacticSelected[post] !== undefined){
+                else if (tacticSelected[post] !== undefined) {
                     tacticTab[post] = tactic[post]["@id"]
                 }
             }
@@ -113,7 +114,7 @@ const FormationPage = (props) => {
             if (tactic.id !== "new") {
                 tacticAPI.putTactic(tactic.id, tacticTab)
                     .then(response => {
-                     //   document.getElementById("save").blur()
+                        //   document.getElementById("save").blur()
                         let newList = tacticsList.filter(oldTact => tactic.id !== oldTact.id)
                         newList.push(tactic)
                         setTacticsList(newList)
@@ -129,7 +130,7 @@ const FormationPage = (props) => {
             else {
                 tacticAPI.postTactic(tacticTab)
                     .then(response => {
-                    //    document.getElementById("save").blur();
+                        //    document.getElementById("save").blur();
                         tacticsList.push(response.data)
                         setTacticsList(tacticsList)
                         setTacticSelected(response.data)
@@ -144,10 +145,10 @@ const FormationPage = (props) => {
     }
 
     const handleCancel = () => {
-      //  purge tableau des tactics modifées
+        //  purge tableau des tactics modifées
         setLoadingTactics(true)
         let newTab = tacticModifiedList.filter(tactic => tacticSelected.id !== tactic.id)
-        if(newTab !== undefined){
+        if (newTab !== undefined) {
             setTacticModifiedList(newTab)
         }
         else {
@@ -155,7 +156,7 @@ const FormationPage = (props) => {
         }
         //recupère l'etat initiale dans tacicsList pour le passer à tacticSelected
         setTacticSelected(clone(tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0]));
-        setRefreshPlayerSelected(refreshPlayerSelected +1);
+        setRefreshPlayerSelected(refreshPlayerSelected + 1);
         setLoadingTactics(false)
     }
 
@@ -174,31 +175,31 @@ const FormationPage = (props) => {
         switch (value[0]) {
             case "load":
                 let modifiedTactic = tacticModifiedList.filter(tactic => Number(value[1]) === tactic.id)[0]
-                if(modifiedTactic !== undefined){
+                if (modifiedTactic !== undefined) {
                     setTacticSelected(clone(modifiedTactic))
-                }else {
+                } else {
                     setTacticSelected(clone(tacticsList.filter(tactic => Number(value[1]) === tactic.id)[0]));
                 }
                 break;
             case "new":
                 //retrait de la derniere tactic new
-                if(tacticModifiedList && tacticModifiedList.length >0){
+                if (tacticModifiedList && tacticModifiedList.length > 0) {
                     let tabModifiedList = tacticModifiedList.filter(tactic => tactic.id !== "new")
                     setTacticModifiedList(tabModifiedList)
                 }
 
                 let newTactic = {}
-                newTactic.id ="new"
+                newTactic.id = "new"
                 newTactic.type = value[1];
-                for(let i=1; i<=11; i++){
-                    let post = "pos"+i;
+                for (let i = 1; i <= 11; i++) {
+                    let post = "pos" + i;
                     newTactic[post] = null;
                 }
                 setTacticSelected(newTactic);
                 break;
             default:
         }
-        setRefreshPlayerSelected(refreshPlayerSelected +1);
+        setRefreshPlayerSelected(refreshPlayerSelected + 1);
     }
 
     const [refreshPlayerSelected, setRefreshPlayerSelected] = useState([0])
@@ -250,18 +251,18 @@ const FormationPage = (props) => {
         let tabSelection = [];
         if (tacticSelected !== undefined && tacticSelected !== null) {
 
-            for(let i=1; i<=11; i++){
-                let post = "pos"+i;
+            for (let i = 1; i <= 11; i++) {
+                let post = "pos" + i;
 
-                if(tacticSelected[post] !== null && tacticSelected[post] !== undefined){
+                if (tacticSelected[post] !== null && tacticSelected[post] !== undefined) {
                     let thePlayer = players.filter(player => tacticSelected[post].id === player.id)[0]
-                    tabSelection.push(thePlayer)
                 }
-                else {tabSelection.push(null)}
+                else { tabSelection.push(null) }
             }
         }
-        
+
         setPlayersSelected(tabSelection);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshPlayerSelected])
 
     /**
@@ -270,10 +271,10 @@ const FormationPage = (props) => {
     useEffect(() => {
         let tabFreePlayer = players;
         playersSelected.map(playerS => (
-                playerS !== null && playerS !== undefined ?
-                    tabFreePlayer = tabFreePlayer.filter(player => player.id !== playerS.id)
-                    : tabFreePlayer
-            ))
+            playerS !== null && playerS !== undefined ?
+                tabFreePlayer = tabFreePlayer.filter(player => player.id !== playerS.id)
+                : tabFreePlayer
+        ))
 
         setPlayersFree(tabFreePlayer)
     }, [players, playersSelected])
@@ -290,12 +291,12 @@ const FormationPage = (props) => {
         }
         if (item.player) {
             return <div className="playerCardDragged" style={style}>
-                    <p className="nameCard">{item.player.user.firstName +" "+ item.player.user.lastName}</p>
+                <p className="nameCard">{item.player.user.firstName + " " + item.player.user.lastName}</p>
 
             </div>;
         } else {
             return <div className="playerCardDragged" style={style}>
-                    <p className="noNameCard">Non Assigné</p>
+                <p className="noNameCard">Non Assigné</p>
             </div>;
         }
     };
@@ -304,11 +305,11 @@ const FormationPage = (props) => {
         backends: [
             {
                 backend: HTML5Backend,
-               // options : { enableTouchEvents: true}
+                // options : { enableTouchEvents: true}
             },
             {
                 backend: TouchBackend,
-                options: { enableMouseEvents: true},
+                options: { enableMouseEvents: true },
                 preview: true,
                 transition: TouchTransition
             }
@@ -318,10 +319,11 @@ const FormationPage = (props) => {
 
     return (
         <div className="FormationPage wrapper_container">
+            <CurrentUser />
             <DndProvider backend={MultiBackend} options={HTML5toTouch}>
                 <div className="flexBox">
                     <div id="tacticBox">
-                        {loadingTactics  &&
+                        {loadingTactics &&
                             <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
                         }
                         {!loadingTactics &&
@@ -330,46 +332,47 @@ const FormationPage = (props) => {
                                     <option id="selectInit" value=""> Selectionner une tactique </option>
                                     <optgroup label="Création :">
                                         {tacticTypeList.map((tacticType, index) => (
-                                                <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
-                                            )
+                                            <option key={index} value={"new/" + tacticType[0]}>{tacticType[0]}</option>
+                                        )
                                         )}
                                     </optgroup>
                                     <optgroup label="Existantes :">
                                         {tacticsList.map((tactic, index) => (
                                             tacticModifiedList.filter(tacticModified => tactic.id === tacticModified.id)[0] !== undefined ?
                                                 <option key={tactic.id} className="noSaved" value={"load/" + tactic.id}> {tactic.id + " / " + tactic.type + " no saved"}</option>
-                                                :   <option key={tactic.id} id={"optionLoad" + tactic.id} value={"load/" + tactic.id} > {tactic.id + " / " + tactic.type}</option>
+                                                : <option key={tactic.id} id={"optionLoad" + tactic.id} value={"load/" + tactic.id} > {tactic.id + " / " + tactic.type}</option>
                                         ))}
                                     </optgroup>
                                 </select>
 
                                 {tacticSelected &&
                                     tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
-                                        <button
-                                            className="tacticmenu"
-                                            id="save"
-                                            onClick={() => {
-                                                    playersSelected.filter(p => p !== null).length < 11 ?
-                                                        showModal("save")
-                                                    : saveTactic(tacticSelected)}}
-                                        >
-                                            Save
+                                    <button
+                                        className="tacticmenu"
+                                        id="save"
+                                        onClick={() => {
+                                            playersSelected.filter(p => p !== null).length < 11 ?
+                                                showModal("save")
+                                                : saveTactic(tacticSelected)
+                                        }}
+                                    >
+                                        Save
                                         </button>
                                 }
 
                                 {tacticSelected && tacticSelected.id !== "new" &&
                                     tacticModifiedList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
-                                        <button className="tacticmenu" id="cancel" onClick={() => handleCancel()}
-                                        >
-                                            Annuler
+                                    <button className="tacticmenu" id="cancel" onClick={() => handleCancel()}
+                                    >
+                                        Annuler
                                         </button>
                                 }
                                 {tacticSelected &&
                                     tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
-                                        <button className="tacticmenu" id="delete"
-                                                onClick={() => showModal("delete")}
-                                        >
-                                            delete
+                                    <button className="tacticmenu" id="delete"
+                                        onClick={() => showModal("delete")}
+                                    >
+                                        delete
                                         </button>
                                 }
                             </div>
@@ -381,79 +384,79 @@ const FormationPage = (props) => {
                                     <SlotSelection
                                         key={index}
                                         id={"pos" + (index + 1)}
-                                        num = {index+1}
-                                        tactic = {tacticTypeList.filter((tactic) => tactic[0] === tacticSelected.type)[0]}
+                                        num={index + 1}
+                                        tactic={tacticTypeList.filter((tactic) => tactic[0] === tacticSelected.type)[0]}
                                         className="fieldPos"
-                                        >
-                                            <PlayerCard
-                                                player={player !== undefined ? player : null}
-                                                posOrigin={"pos" + (index + 1)}
-                                                className="playerCardSloted"
+                                    >
+                                        <PlayerCard
+                                            player={player !== undefined ? player : null}
+                                            posOrigin={"pos" + (index + 1)}
+                                            className="playerCardSloted"
 
-                                                tactic ={tacticSelected}
-                                                setTactic = {setTacticSelected}
-                                                tacticsModified = {tacticModifiedList}
-                                                setTacticsModified = {setTacticModifiedList}
+                                            tactic={tacticSelected}
+                                            setTactic={setTacticSelected}
+                                            tacticsModified={tacticModifiedList}
+                                            setTacticsModified={setTacticModifiedList}
 
-                                                refreshSelection = {refreshPlayerSelected}
-                                                setRefreshSelection = {setRefreshPlayerSelected}
+                                            refreshSelection={refreshPlayerSelected}
+                                            setRefreshSelection={setRefreshPlayerSelected}
 
-                                                playersList = {players}
+                                            playersList={players}
 
-                                                picture = {player !== null && player.picture ?
-                                                        pictures64.filter(pic => pic[player.id] ? pic[player.id] : null )[0]
-                                                    : null
-                                                }
-                                            />
+                                            picture={player !== null && player.picture ?
+                                                pictures64.filter(pic => pic[player.id] ? pic[player.id] : null)[0]
+                                                : null
+                                            }
+                                        />
                                     </SlotSelection>
                                 ))
-                                }
+                            }
                         </div>
                     </div>
                     <div id="playersBox">
                         {loadingPlayers && (
                             <FreePlayersList id="playersList" className="playerList" >
-                                    <Loader type="Grid" height="100%" width="100%" color="LightGray" />
+                                <Loader type="Grid" height="100%" width="100%" color="LightGray" />
                             </FreePlayersList>
                         )}
                         {(!loadingPlayers &&
                             <FreePlayersList id="playersList" className="playerList" >
-                            <p>
-                                Il y a {players.length} joueur{players.length>1?"s":""}  dans l'équipe.
-                            </p>
-                            {(players.length < 11) &&
                                 <p>
-                                Il faut au moins 11 joueurs pour définir une tactique.
+                                    Il y a {players.length} joueur{players.length > 1 ? "s" : ""}  dans l'équipe.
+                            </p>
+                                {(players.length < 11) &&
+                                    <p>
+                                        Il faut au moins 11 joueurs pour définir une tactique.
                                 <Link to="/players" className="btn btn-link">
-                                Ajouter des joueurs à votre équipe.
+                                            Ajouter des joueurs à votre équipe.
                                 </Link>
-                                </p>
-                            }
+                                    </p>
+                                }
 
-                            {playersFree.map(playerFree => (
-                                <PlayerCard
-                                    key={playerFree.id}
-                                    player={playerFree}
-                                    className="playerCard"
-                                    posOrigin="free"
+                                {playersFree.map(playerFree => (
+                                    <PlayerCard
+                                        key={playerFree.id}
+                                        player={playerFree}
+                                        className="playerCard"
+                                        posOrigin="free"
 
-                                    tactic ={tacticSelected}
-                                    setTactic = {setTacticSelected}
-                                    tacticsModified = {tacticModifiedList}
-                                    setTacticsModified = {setTacticModifiedList}
+                                        tactic={tacticSelected}
+                                        setTactic={setTacticSelected}
+                                        tacticsModified={tacticModifiedList}
+                                        setTacticsModified={setTacticModifiedList}
 
-                                    refreshSelection = {refreshPlayerSelected}
-                                    setRefreshSelection = {setRefreshPlayerSelected}
+                                        refreshSelection={refreshPlayerSelected}
+                                        setRefreshSelection={setRefreshPlayerSelected}
 
-                                    playersList = {players}
+                                        playersList={players}
 
-                                    picture = {playerFree.picture ?
-                                        pictures64.filter(pic => pic[playerFree.id] ? pic[playerFree.id] : null )[0]
-                                        : null
-                                    }
-                                />
-                            ))
-                            }
+                                        picture={playerFree.picture ?
+                                            pictures64.filter(pic => pic[playerFree.id] ? pic[playerFree.id] : null)[0]
+                                            : null
+                                        }
+                                    />
+                                ))
+                                }
                             </FreePlayersList>
                         )}
                     </div>
@@ -464,22 +467,22 @@ const FormationPage = (props) => {
                 <Modal show={show} handleClose={hideModal} title={modalType} >
 
                     {modalType === "delete" && (
-                            <div>
-                                <p>Voulez vous vraiment supprimer cette tactique?</p>
-                                <button type="button" className="btn btn-danger" onClick={() => deleteTactic(tacticSelected.id)}>
-                                    Supprimer
+                        <div>
+                            <p>Voulez vous vraiment supprimer cette tactique?</p>
+                            <button type="button" className="btn btn-danger" onClick={() => deleteTactic(tacticSelected.id)}>
+                                Supprimer
                                 </button>
-                                <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
-                                    Annuler
+                            <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
+                                Annuler
                                 </button>
-                            </div>
-                        )
+                        </div>
+                    )
                     }
 
                     {modalType === "save" && (
                         <div>
                             <p>La tactique selectionnée n'est pas complète.
-                                Une tactique non complète ne pourra pas être utilisée pour un match.
+                            Une tactique non complète ne pourra pas être utilisée pour un match.
                             </p>
                             <button type="button" className="btn btn-danger" onClick={() => saveTactic(tacticSelected)}>
                                 Sauvegarder quand même

@@ -1,0 +1,221 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+.PreLivePage {
+    @include component-size(flex, column, center, flex-start);
+
+    .div-current-encounter{
+        margin-top: 25px;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        
+        section{
+            display: flex;
+        }
+
+        .current-encounter{
+            border: solid 1px black;
+            border-radius: 10px 0 0 10px;
+            padding: 10px 20px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            p{
+                text-align: center;
+                margin-bottom: 5px;
+            }
+            span{
+                font-weight: 700;
+                font-size: 110%;
+            }
+        }
+        .change-current-encounter{
+            width: 80px;
+            border: solid 1px black;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+            background: $fifth-color url("../img/change.png") center center no-repeat;
+            background-size: 60%;
+        }
+    }
+
+    #div-search{
+        margin: 15px auto 0 auto;
+        width: 50%;
+    }
+    table{
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+            position: relative;
+        }
+    }
+    .encounter-lived::before{
+        content: "L";
+        font-size: 80%;
+        font-weight: 700;
+        line-height: 1.1;
+        width: 15px;
+        height: 15px;
+        position: absolute;
+        background-color: red;
+        border-radius: 50%;
+        left: -22px;
+        top: 40%;
+    }
+
+    .btn-management{
+        &:focus{
+            background-color: $second-color;
+            border-color: $second-color;
+            box-shadow: none;
+        }
+    }
+
+    .tactic{
+        width: 100%;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        select{
+            max-width: 300px;
+        }
+    }
+
+    .tacticSelected{
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+    }
+
+    #soccerField {
+        position: relative;
+        border: solid 1px black;
+        width:409.6px;
+        height:548px;
+        background: url("../img/soccer-field.png")center center no-repeat;
+        //background-size: 40%;
+    }
+    .fieldPos {
+        position: absolute;;
+        background-color:rgba(0,0,0,0.5);
+        font-size:10px;
+        transform: translate(-50%, -50%);
+        .position-name{
+            text-align: center;
+            margin-bottom: 0;
+            background-color: $fifth-color;
+            color: $base-color;
+            font-weight: 700;
+        }
+    }
+    .player-div{
+        width: 66px;
+        height: 64.2px;
+        p{
+            text-align: center;
+            margin-bottom: 0;
+            font-weight: 900;
+            color: $base-color;
+        }
+    }
+
+    .substitute{
+        h3{
+            margin: 10px;
+        }
+        width: 200px;
+        max-height: 548px;
+        overflow: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        align-content: flex-start;
+        border: 1px solid black;
+        border-left: none;
+        .player-div{
+            background-color: rgba(0,0,0,0.5);
+            margin: 10px;
+            p{
+                font-size: 10px;
+            }
+        }
+    }
+    .player-no-picture{
+        height: 52px;
+        background: url("../img/user.png") center center no-repeat;
+        background-size: contain;
+    }
+    .player-picture-div{
+        height: 52px;
+        display: flex;
+        justify-content: center;
+    }
+    .player-null{
+        height: 49.2px;
+        background: url("../img/surprise-face.png") center center no-repeat;
+        background-size: 50%;
+    }
+    img{
+        height: 52px;
+    }
+    .warning-msg{
+        p{
+            margin-bottom: 0;
+            color: red;
+            font-size: 80%;
+            font-style: italic;
+        }
+    }
+
+    .starting-live{
+        margin: 15px;
+        font-size: 2em;
+        font-weight: 700;
+        padding: 15px 25px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        color: $base-color;
+        background-color: $fifth-color;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 9px #999;
+        
+
+        &:active{
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+    }
+
+    .confirm-modal{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        h5{
+            color: red;
+            text-align: center;
+        }
+        p{
+            font-weight: 700;
+        }
+        button{
+            margin: 15px 15px 0px 15px;
+            padding: 10px 20px;
+            font-size: 1.5em;
+        }
+        span{
+            text-decoration: underline;
+        }
+
+    }
+}

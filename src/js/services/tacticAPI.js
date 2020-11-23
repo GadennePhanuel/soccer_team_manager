@@ -1,8 +1,7 @@
 import Axios from "axios"
-import {TACTICS_API} from "../../config";
+import { TACTICS_API } from "../../config";
 
-
-function findTactic(id){
+function findTactic(id) {
     return Axios
         .get(TACTICS_API + "/" + id)
 }
@@ -11,12 +10,12 @@ function postTactic(tacticTab) {
     return Axios.post(TACTICS_API, tacticTab)
 }
 
-function putTactic(tacticId, tacticTab){
+function putTactic(tacticId, tacticTab) {
     return Axios
         .put(TACTICS_API + "/" + tacticId, tacticTab)
 }
 
-function deleteTactic(id){
+function deleteTactic(id) {
     return Axios
         .delete(TACTICS_API + "/" + id)
 }
