@@ -7,6 +7,7 @@ import trainingsAPI from "../services/trainingsAPI";
 import TeamContext from "../contexts/TeamContext";
 import { Link } from "react-router-dom";
 import Loader from "react-loader-spinner";
+import "../../scss/pages/DashboardCoachPage.scss";
 import CurrentUser from "../components/CurrentUser";
 
 const DashboardCoachPage = (props) => {
@@ -122,7 +123,7 @@ const DashboardCoachPage = (props) => {
                     <div id="nextEncounter">
                         <h4>Prochain match</h4>
                         {encounters.length > 0 &&
-                            <div>
+                            <div id="centerEncounter">
                                 <p className="date">{formattedDate(new Date(encounters[0].date))}</p>
                                 <Link to={"/encountersCoach"} className="btn btn-link">
                                     <div id="encounter">
@@ -139,7 +140,7 @@ const DashboardCoachPage = (props) => {
                             <div>
                                 <p className="date">{formattedDate(new Date(trainings[0].date))}</p>
                                 <Link to={"/trainings"} className="btn btn-link">
-                                    <div className="nextTrainings" >
+                                    <div id="training" >
                                         <p><strong>{trainings[0].label}</strong></p>
                                         <p>{
                                             trainings[0].description.length > 70 &&
@@ -155,7 +156,7 @@ const DashboardCoachPage = (props) => {
             }
             {!loading &&
                 <div id="oldEncounters">
-                    <h6>Derniers matchs</h6>
+                    <h4>Derniers matchs</h4>
                     {oldEncountersReverse.length > 0 ?
                         oldEncountersReverse.slice(0, 5).map(oldEncounter => (
                             <div key={oldEncounter.id}>
@@ -183,7 +184,7 @@ const DashboardCoachPage = (props) => {
 
                             </div>
                         )) :
-                        <div className="nextEncounters">
+                        <div className="oldEncounters">
                             <p>Aucun match passé</p>
                         </div>
 
