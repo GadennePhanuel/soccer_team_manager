@@ -502,8 +502,8 @@ const PreLivePage = (props) => {
                         {oldEncounters.length > 0 && (
                             <tbody>
                                 {filteredOldEncounters.map((oldEncounter, index) => (
-                                    <tr key={index} className={oldEncounter.tacticArch ? "encounter-lived" : ""}>
-                                        <td>{formattedDate(new Date(oldEncounter.date))}</td>
+                                    <tr key={index}>
+                                        <td className={oldEncounter.tacticArch ? "encounter-lived" : ""}>{formattedDate(new Date(oldEncounter.date))}</td>
                                         <td>{oldEncounter.labelOpposingTeam + " - " + oldEncounter.categoryOpposingTeam}</td>
                                         <td>
                                             <button className="btn btn-secondary" onClick={() => handleChangeCurrentEncounter(oldEncounter)}>V</button>
