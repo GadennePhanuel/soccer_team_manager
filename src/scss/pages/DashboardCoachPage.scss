@@ -1,0 +1,62 @@
+@import "../utilities/variables.scss";
+@import "../utilities//mixins.scss";
+
+
+.DashboardCoachPage{
+    h1{
+        text-align: center;
+    }
+
+    h4{
+        margin-bottom:15px;
+        font-weight: 600;
+        background-color: $fifth-color;
+        color: #fff;
+        padding:10px 5px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+    .btn-link{
+        width :100%;
+        padding:0px;
+        color:rgb(26, 24, 24);
+    }
+
+    #nextEvent{
+        display:flex;
+        justify-content: space-around;
+        width:100%;
+        text-align:center;
+
+        #nextEncounter{
+            margin-top:40px;
+            background-color:#fff;
+            padding-bottom : 30px;
+            width: 40%;
+            border-radius: 10px;
+        }
+
+        #nextTraining{
+            margin-top:40px;
+            background-color:#fff;
+            padding-bottom : 30px;
+            width: 55%;
+            border-radius: 10px;
+        }
+    }
+
+
+
+    #oldEncounters{
+        width: 97%;
+        margin:auto;
+        
+        h4{
+            margin-top: 25px;
+            text-align: center;
+        }
+        .oldEncounters{
+            background-color:#fff;        
+        }
+    }
+}

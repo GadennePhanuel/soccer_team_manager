@@ -7,6 +7,7 @@ import trainingsAPI from "../services/trainingsAPI";
 import TeamContext from "../contexts/TeamContext";
 import {Link} from "react-router-dom";
 import Loader from "react-loader-spinner";
+import "../../scss/pages/DashboardCoachPage.scss";
 
 const DashboardCoachPage = (props) => {
     authAPI.setup();
@@ -152,7 +153,7 @@ const DashboardCoachPage = (props) => {
             }
             {!loading &&
                 <div id="oldEncounters">
-                    <h6>Derniers matchs</h6>
+                    <h4>Derniers matchs</h4>
                     {oldEncountersReverse.length > 0 ?
                         oldEncountersReverse.slice(0,5).map(oldEncounter => (
                             <div key={oldEncounter.id}>
