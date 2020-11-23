@@ -79,7 +79,7 @@ const PreLivePage = (props) => {
 
                     })
                     setEncounters(encountersArray)
-                    setOldEncounters(oldEncountersArray)
+                    setOldEncounters(oldEncountersArray.reverse())
                     setCurrentEncounter(encountersArray[0])
                     setMatchLiveId(encountersArray[0].id)
                     setLoading(false)

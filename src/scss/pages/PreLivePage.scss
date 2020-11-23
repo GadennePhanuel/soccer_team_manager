@@ -71,10 +71,22 @@
     }
 
     .btn-management{
+        padding-left: 25px;
+        position: relative;
         &:focus{
             background-color: $second-color;
             border-color: $second-color;
             box-shadow: none;
+        }
+        &::before{
+            content: "";
+            position: absolute;
+            top: 8px;
+            left: 5px;
+            width: 20px;
+            height: 20px;
+            background: url('../img/downward-arrow-curve.png') center center no-repeat;
+            background-size: contain;
         }
     }
 
