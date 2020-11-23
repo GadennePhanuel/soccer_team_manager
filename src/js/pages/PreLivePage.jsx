@@ -251,7 +251,8 @@ const PreLivePage = (props) => {
         ["4-4-2-losange", [50, 93, "G"], [10, 64, "AiG"], [34, 77, "DCG"], [66, 77, "DCD"], [90, 64, "AiD"], [50, 57, "MD"], [27, 48, "MG"], [50, 36, "MO"], [73, 48, "MD"], [27, 20, "AvG"], [73, 20, "AvD"]],
         ["4-4-2-carre", [50, 93, "G"], [10, 64, "AiG"], [34, 77, "DCG"], [66, 77, "DCD"], [90, 64, "AiD"], [15, 40, "MG"], [35, 53, "MCG"], [65, 53, "MCD"], [85, 40, "MD"], [27, 20, "AvG"], [73, 20, "AvD"]],
         ["4-3-3", [50, 93, "G"], [10, 64, "AiG"], [35, 75, "DCG"], [65, 75, "DCD"], [90, 64, "AiD"], [25, 47, "MG"], [50, 50, "MC"], [75, 47, "MD"], [15, 25, "AvG"], [85, 25, "AvD"], [50, 15, "AC"]],
-        ["4-5-1", [50, 93, "G"], [12, 67, "AiG"], [35, 78, "DCG"], [65, 78, "DCD"], [88, 67, "AiD"], [31, 55, "MDG"], [69, 55, "MDD"], [16, 35, "MG"], [50, 37, "MO"], [84, 35, "MD"], [50, 15, "AC"]]
+        ["4-5-1", [50, 93, "G"], [12, 67, "AiG"], [35, 78, "DCG"], [65, 78, "DCD"], [88, 67, "AiD"], [31, 55, "MDG"], [69, 55, "MDD"], [16, 35, "MG"], [50, 37, "MO"], [84, 35, "MD"], [50, 15, "AC"]],
+        ["4-2-3-1", [50, 93, "G"], [15, 72, "AiG"], [38, 75, "DCG"], [61, 75, "DCD"], [85, 72, "AiD"], [38, 55, "MDG"], [61, 55, "MDD"], [15, 35, "MG"], [50, 35, "MO"], [85, 35, "MD"], [50, 15, "AC"]]
     ]
     /**
      * 
@@ -384,7 +385,7 @@ const PreLivePage = (props) => {
                     )}
                     {currentEncounter.tacticArch && (
                         <div>
-                            <p>Vous avez déjà fait un live pour ce match</p>
+                            <p>Vous avez déjà un live en cours pour ce match</p>
                             <button className="starting-live" type="button" onClick={resumeLive}>
                                 Reprendre le Live
                             </button>
