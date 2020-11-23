@@ -9,6 +9,7 @@ import trainingsAPI from '../services/trainingsAPI';
 import playerAPI from "../services/playerAPI";
 import trainingMissedsAPI from "../services/trainingMissedsAPI"
 import Loader from "react-loader-spinner";
+import CurrentUser from "../components/CurrentUser";
 
 const TrainingsPage = () => {
     const { currentTeamId } = useContext(TeamContext)
@@ -342,6 +343,7 @@ const TrainingsPage = () => {
 
     return (
         <div className="wrapper_container TrainingsPage">
+            <CurrentUser />
             {loading && (
                 <div className="bigLoader">
                     <Loader type="Circles" height="200" width="200" color="LightGray" />

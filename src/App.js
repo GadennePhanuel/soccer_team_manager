@@ -18,13 +18,15 @@ import ProfilForm from "./js/pages/ProfilForm";
 import RegisterUserPage from "./js/pages/RegisterUserPage";
 import EncountersPage from "./js/pages/EncountersPage";
 import EncountersAdminPage from "./js/pages/EncountersAdminPage";
-import CurrentUser from "./js/components/CurrentUser";
 import MyPlayersCoachPage from "./js/pages/MyPlayersCoachPage";
 import TeamContext from "./js/contexts/TeamContext";
 import PlayerStatsPage from "./js/pages/PlayerStatsPage";
 import TrainingsPage from "./js/pages/TrainingsPage";
 import PlanningPlayer from "./js/pages/PlanningPlayer";
 import FormationPage from "./js/pages/FormationPage";
+import PreLivePage from "./js/pages/PreLivePage";
+import LivePage from "./js/pages/LivePage";
+import MatchLiveContext from "./js/contexts/MatchLiveContext";
 
 
 function App() {
@@ -35,6 +37,7 @@ function App() {
   );
 
   const [currentTeamId, setCurrentTeamId] = useState('')
+  const [matchLiveId, setMatchLiveId] = useState('')
 
   const SideNavWithRouter = withRouter(SideNav);
 
@@ -45,41 +48,51 @@ function App() {
         setIsAuthenticated,
       }}
     >
-      <HashRouter>
-        <SideNavWithRouter />
-        <TeamContext.Provider
-          value={{
-            currentTeamId,
-            setCurrentTeamId
-          }}
-        >
-          <CurrentUser />
-          <main className="container-fluid">
-            <Switch>
-              <Route path="/registerUser/:token" component={RegisterUserPage} />
-              <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
-              <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
-              <PrivateRoute path="/player/:id/planning" component={PlanningPlayer} />
-              <Route path="/RegisterAdmin" component={RegisterAdminPage} />
-              <Route path="/login" component={LoginPage} />
-              <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
-              <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
-              <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
-              <PrivateRoute path="/coachs" component={CoachAdminPage} />
-              <PrivateRoute path="/players" component={PlayersAdminPage} />
-              <PrivateRoute path="/teams" component={TeamsAdminPage} />
-              <PrivateRoute path="/mail" component={MailPage} />
-              <PrivateRoute path="/profil" component={ProfilForm} />
-              <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
-              <PrivateRoute path="/encountersCoach" component={EncountersPage} />
-              <PrivateRoute path="/encountersAdmin" component={EncountersAdminPage} />
-              <PrivateRoute path="/trainings" component={TrainingsPage} />
-              <PrivateRoute path="/formation" component={FormationPage} />
-              <Route path="/" component={LoginPage} />
-            </Switch>
-          </main>
-        </TeamContext.Provider>
-      </HashRouter>
+      <MatchLiveContext.Provider
+        value={{
+          matchLiveId,
+          setMatchLiveId
+        }}
+      >
+        <HashRouter>
+          <SideNavWithRouter />
+          <TeamContext.Provider
+            value={{
+              currentTeamId,
+              setCurrentTeamId
+            }}
+          >
+            <main className="container-fluid">
+              <Switch>
+                <Route path="/registerUser/:token" component={RegisterUserPage} />
+                <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
+                <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
+                <PrivateRoute path="/player/:id/planning" component={PlanningPlayer} />
+                <Route path="/RegisterAdmin" component={RegisterAdminPage} />
+                <Route path="/login" component={LoginPage} />
+                <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />
+                <PrivateRoute path="/dashboardCoach" component={DashboardCoachPage} />
+                <PrivateRoute path="/dashboardPlayer" component={DashboardPlayerPage} />
+                <PrivateRoute path="/coachs" component={CoachAdminPage} />
+                <PrivateRoute path="/players" component={PlayersAdminPage} />
+                <PrivateRoute path="/teams" component={TeamsAdminPage} />
+                <PrivateRoute path="/mail" component={MailPage} />
+                <PrivateRoute path="/profil" component={ProfilForm} />
+                <PrivateRoute path="/myPlayers" component={MyPlayersCoachPage} />
+                <PrivateRoute path="/encountersCoach" component={EncountersPage} />
+                <PrivateRoute path="/encountersAdmin" component={EncountersAdminPage} />
+                <PrivateRoute path="/trainings" component={TrainingsPage} />
+                <PrivateRoute path="/formation" component={FormationPage} />
+
+                <PrivateRoute path="/preLive" component={PreLivePage} />
+                <PrivateRoute path="/live/:matchId" component={LivePage} />
+
+                <Route path="/" component={LoginPage} />
+              </Switch>
+            </main>
+          </TeamContext.Provider>
+        </HashRouter>
+      </MatchLiveContext.Provider>
     </AuthContext.Provider>
   );
 }

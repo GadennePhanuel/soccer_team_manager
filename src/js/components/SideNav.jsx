@@ -4,9 +4,11 @@ import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
 import usersAPI from "../services/usersAPI";
 import "../../scss/layout/SideNav.scss";
+import MatchLiveContext from "../contexts/MatchLiveContext";
 
 const SideNav = (props) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+  const { matchLiveId } = useContext(MatchLiveContext)
 
   //supression du token du localStorage
   const handleLogout = () => {
@@ -35,10 +37,9 @@ const SideNav = (props) => {
     setLoading(false)
   }, [isAuthenticated, roles, userId])
 
-
   return (
     <>
-      {(isAuthenticated && !loading) && (
+      {(isAuthenticated && !loading && props.location.pathname !== "/live/" + matchLiveId) && (
         <nav className="SideNav">
 
           <div className="SideNav-items">
@@ -74,13 +75,16 @@ const SideNav = (props) => {
                 <NavLink to="/myPlayers" className="myPlayers">
                 </NavLink>
 
-                <NavLink to="/formation" className="formation">
-                </NavLink>
-
                 <NavLink to="/trainings" className="trainings">
                 </NavLink>
 
                 <NavLink to="/encountersCoach" className="encounter-management">
+                </NavLink>
+
+                <NavLink to="/formation" className="formation">
+                </NavLink>
+
+                <NavLink to="/preLive" className="preLive">
                 </NavLink>
               </>
             )}
