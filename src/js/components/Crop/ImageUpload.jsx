@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import ImageCropper from './ImageCropper'
+import Modal from "../Modal";
+import playerAPI from '../../services/playerAPI';
 
-const ImageUpload = () => {
+const ImageUpload = ({ parentCallBack }) => {
     const [blob, setBlob] = useState(null)
     const [inputImg, setInputImg] = useState('')
 
@@ -22,39 +24,63 @@ const ImageUpload = () => {
         if (file) {
             reader.readAsDataURL(file)
         }
+        showModal()
     }
+
+
 
     const handleSubmitImage = (e) => {
         // upload blob to firebase 'images' folder with filename 'image'
         e.preventDefault()
-        console.log(e)
-        // firebase
-        //     .storage()
-        //     .ref('images')
-        //     .child('image')
-        //     .put(blob, { contentType: blob.type })
-        //     .then(() => {
-        //         // redirect user 
-        //     })
+        var bodyFormData = new FormData();
+        bodyFormData.append('image', blob)
+
+        playerAPI.uploadNewPicture(bodyFormData)
+            .then(response => {
+                parentCallBack()
+                hideModal()
+            })
+            .catch(error => {
+                //handle error
+                console.log(error);
+            });
+
     }
 
+    const [show, setShow] = useState(false)
+    const showModal = () => {
+        setShow(true)
+    }
+    const hideModal = () => {
+        setShow(false)
+        document.getElementById('formPicture').reset()
+    }
 
     return (
-        <form onSubmit={handleSubmitImage}>
+        <form onSubmit={handleSubmitImage} id="formPicture">
+            {
+                inputImg && (
+                    <Modal
+                        show={show}
+                        handleClose={hideModal}
+                        title="Crop Img"
+                    >
+                        <div className="ModalCrop">
+                            <ImageCropper
+                                getBlob={getBlob}
+                                inputImg={inputImg}
+                            />
+                            <button type='submit' className="btn btn-secondary">Submit</button>
+                        </div>
+                    </Modal>
+                )
+            }
             <input
                 type='file'
                 accept='image/*'
                 onChange={onInputChange}
             />
-            {
-                inputImg && (
-                    <ImageCropper
-                        getBlob={getBlob}
-                        inputImg={inputImg}
-                    />
-                )
-            }
-            <button type='submit'>Submit</button>
+
         </form>
     )
 }

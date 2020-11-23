@@ -29,6 +29,7 @@ const ImageCropper = ({ getBlob, inputImg }) => {
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
+
             />
         </div>
     )
