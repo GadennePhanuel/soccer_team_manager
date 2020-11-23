@@ -36,7 +36,6 @@ const FormationPage = (props) => {
     const [players, setPlayers] = useState([])
     const [pictures64, setPictures64] = useState([])
 
-    const [change, setChange] = useState()
     const [tacticsList, setTacticsList] = useState([])
     const [tacticModifiedList, setTacticModifiedList] = useState([])
     const [tacticSelected, setTacticSelected] = useState()
@@ -256,16 +255,7 @@ const FormationPage = (props) => {
                 let post = "pos" + i;
 
                 if (tacticSelected[post] !== null && tacticSelected[post] !== undefined) {
-                    let thePlayer = players.filter(player => tacticSelected[post].id === player.id)[0]
-
-                    if (thePlayer === undefined) { //si le player n'est plus dans l'equipe
-                        tacticSelected[post] = null;
-                        setChange(true);
-                        tabSelection.push(null)
-                    }
-                    else { // si le player est bien dans l'equipe
-                        tabSelection.push(thePlayer)
-                    }
+                    tabSelection.push(players.filter(player => tacticSelected[post].id === player.id)[0])
                 }
                 else { tabSelection.push(null) }
             }
@@ -274,16 +264,6 @@ const FormationPage = (props) => {
         setPlayersSelected(tabSelection);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [refreshPlayerSelected])
-
-    /**
-     * useEffect appelé pour corrigé en bdd, une tactic dont un des joueurs postés, n'est plus dans l'équipe.
-     */
-    useEffect(() => {
-        if (change === true) {
-            saveTactic(tacticSelected)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [change])
 
     /**
      * chargement du tableau des joueurs libres soumis à la modification du tableau de joueurs selectionnés
@@ -441,17 +421,19 @@ const FormationPage = (props) => {
                         )}
                         {(!loadingPlayers &&
                             <FreePlayersList id="playersList" className="playerList" >
-                                <p>
-                                    Il y a {players.length} joueur{players.length > 1 ? "s" : ""}  dans l'équipe.
-                            </p>
-                                {(players.length < 11) &&
+                                <div className="FreePlayersInfos">
+                                    <p>
+                                        Il y a {players.length} joueur{players.length > 1 ? "s" : ""}  dans l'équipe.
+                                    </p>
+                                    {(players.length < 11) &&
                                     <p>
                                         Il faut au moins 11 joueurs pour définir une tactique.
-                                <Link to="/players" className="btn btn-link">
+                                        <Link to="/players" className="btn btn-link">
                                             Ajouter des joueurs à votre équipe.
-                                </Link>
+                                        </Link>
                                     </p>
-                                }
+                                    }
+                                </div>
 
                                 {playersFree.map(playerFree => (
                                     <PlayerCard
@@ -488,28 +470,36 @@ const FormationPage = (props) => {
 
                     {modalType === "delete" && (
                         <div>
-                            <p>Voulez vous vraiment supprimer cette tactique?</p>
-                            <button type="button" className="btn btn-danger" onClick={() => deleteTactic(tacticSelected.id)}>
-                                Supprimer
-                                </button>
-                            <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
-                                Annuler
-                                </button>
+                            <div className="messageBox">
+                                <p>Voulez vous vraiment supprimer cette tactique?</p>
+                            </div>
+                            <div className="btnBox">
+                                <button type="button" className="btn btn-secondary" onClick={() => deleteTactic(tacticSelected.id)}>
+                                    Supprimer
+                                    </button>
+                                <button type="button" className="btn btn-primary" onClick={() => hideModal()}>
+                                    Annuler
+                                    </button>
+                            </div>
                         </div>
                     )
                     }
 
                     {modalType === "save" && (
                         <div>
-                            <p>La tactique selectionnée n'est pas complète.
-                            Une tactique non complète ne pourra pas être utilisée pour un match.
-                            </p>
-                            <button type="button" className="btn btn-danger" onClick={() => saveTactic(tacticSelected)}>
-                                Sauvegarder quand même
-                            </button>
-                            <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
-                                Annuler
-                            </button>
+                            <div className="messageBox">
+                                <p>La tactique selectionnée n'est pas complète. <br/>
+                                Une tactique non complète ne pourra pas être utilisée pour un match.
+                                </p>
+                            </div>
+                            <div className="btnBox">
+                                <button type="button" className="btn btn-secondary" onClick={() => saveTactic(tacticSelected)}>
+                                    Sauvegarder quand même
+                                </button>
+                                <button type="button" className="btn btn-primary" onClick={() => hideModal()}>
+                                    Annuler
+                                </button>
+                            </div>
                         </div>
                     )}
                 </Modal>
