@@ -75,10 +75,15 @@ const ImageUpload = ({ parentCallBack }) => {
                     </Modal>
                 )
             }
+            <label htmlFor="inputUploadImg" className="inputUploadImg">
+                Changer votre photo de profil
+            </label>
             <input
                 type='file'
-                accept='image/*'
+                accept='image/png, image/jpeg'
                 onChange={onInputChange}
+                id="inputUploadImg"
+                hidden
             />
 
         </form>
