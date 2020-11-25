@@ -29,12 +29,14 @@ function deleteCoachOnTeam(id) {
     )
 }
 
-function putTeam(teamId, teamLabel, teamCoach) {
+function putTeam(team) {
+    console.log("teamAPI")
+    console.log(team)
     return Axios
-        .put(TEAMS_API + "/" + teamId,
+        .put(TEAMS_API + "/" + team.id,
             {
-                coach: teamCoach,
-                label: teamLabel,
+                coach: team.coach,
+                label: team.label,
             }
         )
     //.then(response => response.data['hydra:member'])
