@@ -1,0 +1,136 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+
+.DashboardAdminPage{
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: auto;
+    color: $fifth-color;
+
+    h1{
+        text-align:center;
+        margin-bottom: 40px;
+    }
+
+    h4{
+        margin-bottom:15px;
+        font-weight: 600;
+        background-color: $fifth-color;
+        color: #fff;
+        padding:10px 5px;
+        text-align:center;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .btn-link{
+        width :100%;
+        padding:0px;
+        color: $fifth-color;
+    }
+
+    .btn-link:hover{
+        text-decoration: none;
+        color: $fifth-color;
+    }
+
+    .date{
+        margin-left:5%;
+        margin-bottom:5px;
+        color: #c2c3c5; 
+        font-weight: 600;
+        font-size: 18px;   
+    }
+
+    .formClub{
+        width:45%;
+        margin: auto;
+        #center{
+            width:100%;
+            text-align: center;
+            margin-bottom: 10px;
+            button{
+                display:block;
+                margin: auto;
+            }
+        }
+    fieldset{
+        border:2px solid $fifth-color;
+        padding-left: 10px;
+        padding-right: 20px;
+        border-radius: 10px;
+        legend {
+            width:28%;
+            text-align: center;
+        }
+       
+    }
+
+    }
+
+    #nb{
+        display:flex;
+        justify-content: space-around;
+        margin-top:50px;
+        margin-bottom: 50px;
+        
+        div{
+            background-color: #fff;
+            width:15%;
+            padding-top:10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            text-align: center;
+            border-radius: 10px;
+            border: 1px solid $fifth-color;
+            
+            p{
+                font-size: 20px;
+            }
+        }
+
+    }
+
+    #nextEncounter{
+        margin-top:40px;
+        background-color:#fff;
+        padding-bottom : 30px;
+        min-width: 97%;
+        max-width: 97%;
+        border-radius: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        
+           #encounter{
+               background-color:#e0e1e7;
+               padding : 16px 25px ;
+               text-align: center;
+               min-width: 90%;
+               max-width: 90%;
+               margin:auto;
+               border-radius: 10px;
+               border: 1px solid $fifth-color;
+               p{
+                   margin-left : 7px;
+                   margin-right: 7px;
+                   font-size: 26px;
+                   margin-bottom: 0px;
+
+                   .vs{
+                       background-color:#adaeb4;
+                       padding-top: 19px;
+                       padding-bottom: 20px;
+                       padding-left : 15px;
+                       padding-right:15px;
+                       color: #d0d1d4;
+                       margin-right:7px;
+                       margin-left:7px;
+                   }
+               }
+               
+           }
+       }
+
+
+}
