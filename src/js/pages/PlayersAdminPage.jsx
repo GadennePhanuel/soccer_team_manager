@@ -95,13 +95,18 @@ const PlayersAdminPage = (props) => {
 
 
     const filteredPlayers = players.filter(p =>
-        p.user.firstName.toLowerCase().includes(search.toLowerCase()) ||
-        p.user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-        (p.team && p.team.label.toLowerCase().includes(search.toLowerCase())))
+        (p.user.firstName.toLowerCase() + " " + p.user.lastName.toLowerCase()).includes(search.toLowerCase()) ||
+        (p.user.lastName.toLowerCase() + " " + p.user.firstName.toLowerCase()).includes(search.toLowerCase()) ||
+        (p.team && (p.team.category.toLowerCase() + " " + p.team.label.toLowerCase()).includes(search.toLowerCase())) ||
+        (p.team && (p.team.label.toLowerCase() + " " + p.team.category.toLowerCase()).includes(search.toLowerCase()))
+    )
+
+
+
     const filteredPlayersNT = playersNoTeam.filter(p =>
-        p.user.firstName.toLowerCase().includes(search2.toLowerCase()) ||
-        p.user.lastName.toLowerCase().includes(search2.toLowerCase()) ||
-        (p.team && p.team.label.toLowerCase().includes(search2.toLowerCase())))
+        (p.user.firstName.toLowerCase() + " " + p.user.lastName.toLowerCase()).includes(search2.toLowerCase()) ||
+        (p.user.lastName.toLowerCase() + " " + p.user.firstName.toLowerCase()).includes(search2.toLowerCase())
+    )
 
 
 
