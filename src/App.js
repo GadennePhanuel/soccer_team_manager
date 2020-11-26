@@ -27,6 +27,7 @@ import FormationPage from "./js/pages/FormationPage";
 import PreLivePage from "./js/pages/PreLivePage";
 import LivePage from "./js/pages/LivePage";
 import MatchLiveContext from "./js/contexts/MatchLiveContext";
+import 'react-notifications-component/dist/theme.css'
 
 
 function App() {
