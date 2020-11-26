@@ -6,7 +6,8 @@ import authAPI from '../services/authAPI';
 import '../../scss/pages/ProfilForm.scss';
 import playerAPI from '../services/playerAPI';
 import Loader from 'react-loader-spinner';
-
+import ImageUpload from '../components/Crop/ImageUpload';
+import notification from "../services/notification";
 
 const ProfilForm = (props) => {
     authAPI.setup();
@@ -60,7 +61,6 @@ const ProfilForm = (props) => {
     const [loading2, setLoading2] = useState(false)
     const [loading3, setLoading3] = useState(false)
     const [loading4, setLoading4] = useState(false)
-    const [loading5, setLoading5] = useState(false)
     const [loading6, setLoading6] = useState(false)
 
     /**
@@ -189,17 +189,22 @@ const ProfilForm = (props) => {
         if (user.password !== user.passwordConfirm) {
             apiErrors.passwordConfirm =
                 "Votre confimation de mot de passe n'est pas conforme";
-            setErrorsPlayer(apiErrors);
+            setErrors(apiErrors);
+            setLoading4(false)
+            notification.errorNotif("Un des champs est incorrect")
             return;
         }
 
         try {
             await usersAPI.putUserProfil(userId, user)
 
-            //TODO : faire un Flash Success
             fetchUser(userId)
             setErrors('')
             setLoading4(false)
+
+            //TODO : faire un Flash Success
+            notification.successNotif("Votre profil a bien été modifié")
+
 
         } catch (error) {
             const { violations } = error.response.data;
@@ -211,6 +216,7 @@ const ProfilForm = (props) => {
                 setErrors(apiErrors);
             }
             setLoading4(false)
+            notification.errorNotif("Un des champs est incorrect")
         }
     }
 
@@ -218,40 +224,8 @@ const ProfilForm = (props) => {
     /**
      * ENVOIE D UNE NOUVELLE PHOTO DE PROFIL  -> FORMULAIRE 2
      */
-    const [binaryPicture, setBinaryPicture] = useState({})
-
-    const onChange = (event) => {
-        setBinaryPicture(event.target.files[0])
-    }
-
-
-    var bodyFormData = new FormData();
-    bodyFormData.append('image', binaryPicture)
-
-    const handleSubmitPicture = (event) => {
-        event.preventDefault();
-        setLoading5(true)
-        setErrorsPlayer("");
-
-        playerAPI.uploadNewPicture(bodyFormData)
-                .then(response => {
-                    //handle success
-                    fetchPlayer(userId);
-                    setErrorsPlayer('')
-                    setLoading5(false)
-                })
-                .catch(error => {
-                    //handle error
-                    console.log(error.response.data.violations);
-                    //errorsPlayer.picture
-                    const violations = error.response.data.violations;
-                    if (violations) {
-                        setErrorsPlayer({...errorsPlayer, 
-                                        "picture": violations
-                                    });
-                    }
-                    setLoading5(false)
-            });
+    const childCallBackUploadSuccess = () => {
+        fetchPlayer(userId);
     }
 
 
@@ -375,8 +349,7 @@ const ProfilForm = (props) => {
                 {(role === 'ROLE_PLAYER') && (
 
                     <div className="formPlayer">
-                        <form className="formPicture" onSubmit={handleSubmitPicture}>
-
+                        
                             {player.picture && (
                                 <img src={`data:image/jpeg;base64,${blobPicture}`} alt=""></img>
                             )}
@@ -384,29 +357,11 @@ const ProfilForm = (props) => {
                                 <div className="user-picture"></div>
                             )}
 
-                            <div className="input-picture">
+                            <ImageUpload 
+                                parentCallBack={childCallBackUploadSuccess}
+                            ></ImageUpload>
 
-                                <label htmlFor="picture">Changer la photo de profil</label>
-                                <input type="file" onChange={onChange}
-                                    id="picture" name="picture"
-                                    accept="image/png, image/jpeg"
-                                    style={{visibility:"hidden"}}/>
 
-                            </div>
-                            <div className="form-group submit-btn">
-                                {!loading5 && (
-                                    <button className="btn btn-success">
-                                        Enregistrer
-                                    </button>
-                                )}
-                                {loading5 && (
-                                    <div className="LoaderModal">
-                                        <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
-                                    </div>
-                                )}
-                            </div>
-                            {errorsPlayer.picture && <p className="invalid-feedback-custom">{errorsPlayer.picture}</p>}
-                        </form>
 
 
                         <form onSubmit={handleSubmitPlayer}>
