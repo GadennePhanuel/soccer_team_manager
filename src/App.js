@@ -27,6 +27,7 @@ import FormationPage from "./js/pages/FormationPage";
 import PreLivePage from "./js/pages/PreLivePage";
 import LivePage from "./js/pages/LivePage";
 import MatchLiveContext from "./js/contexts/MatchLiveContext";
+import ReactNotification from 'react-notifications-component'
 import 'react-notifications-component/dist/theme.css'
 
 
@@ -64,6 +65,7 @@ function App() {
             }}
           >
             <main className="container-fluid">
+              <ReactNotification />
               <Switch>
                 <Route path="/registerUser/:token" component={RegisterUserPage} />
                 <PrivateRoute path="/createClub/:id" component={ClubFormPage} />

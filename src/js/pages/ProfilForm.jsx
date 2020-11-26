@@ -7,7 +7,7 @@ import '../../scss/pages/ProfilForm.scss';
 import playerAPI from '../services/playerAPI';
 import Loader from 'react-loader-spinner';
 import ImageUpload from '../components/Crop/ImageUpload';
-
+import notification from "../services/notification";
 
 const ProfilForm = (props) => {
     authAPI.setup();
@@ -189,17 +189,22 @@ const ProfilForm = (props) => {
         if (user.password !== user.passwordConfirm) {
             apiErrors.passwordConfirm =
                 "Votre confimation de mot de passe n'est pas conforme";
-            setErrorsPlayer(apiErrors);
+            setErrors(apiErrors);
+            setLoading4(false)
+            notification.errorNotif("Un des champs est incorrect")
             return;
         }
 
         try {
             await usersAPI.putUserProfil(userId, user)
 
-            //TODO : faire un Flash Success
             fetchUser(userId)
             setErrors('')
             setLoading4(false)
+
+            //TODO : faire un Flash Success
+            notification.successNotif("Votre profil a bien été modifié")
+
 
         } catch (error) {
             const { violations } = error.response.data;
@@ -211,6 +216,7 @@ const ProfilForm = (props) => {
                 setErrors(apiErrors);
             }
             setLoading4(false)
+            notification.errorNotif("Un des champs est incorrect")
         }
     }
 
