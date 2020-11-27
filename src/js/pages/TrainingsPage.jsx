@@ -11,8 +11,9 @@ import trainingMissedsAPI from "../services/trainingMissedsAPI"
 import Loader from "react-loader-spinner";
 import CurrentUser from "../components/CurrentUser";
 import notification from '../services/notification'
+import usersAPI from "../services/usersAPI";
 
-const TrainingsPage = () => {
+const TrainingsPage = (props) => {
     const { currentTeamId } = useContext(TeamContext)
 
     const [trainings, setTrainings] = useState([])
@@ -24,6 +25,14 @@ const TrainingsPage = () => {
     const [loading3, setLoading3] = useState(false)
 
     useEffect(() => {
+        //série de controle, est-ce bien un Coach de connecté?
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_ADMIN") {
+            props.history.replace("/dashboardAdmin")
+        } else if (role === "ROLE_PLAYER") {
+            props.history.replace("/dashboardPlayer")
+        }
+
         setLoading(true)
         //au chargement de la page on récupére l'id de la currentTeam selectionné
         if (currentTeamId !== '') {
@@ -42,7 +51,7 @@ const TrainingsPage = () => {
         } else {
             setLoading(false)
         }
-    }, [currentTeamId, refreshKey])
+    }, [currentTeamId, props.history, refreshKey])
 
 
     const [show, setShow] = useState(false)

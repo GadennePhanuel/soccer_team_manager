@@ -26,7 +26,7 @@ const PlanningPlayer = (props) => {
     const [loading4, setLoading4] = useState(false)
 
     useEffect(() => {
-        //série de controle, est-ce bien un Coach de connecté?
+        //série de controle, est-ce bien un Player de connecté?
         let role = usersAPI.checkRole()
         if (role === "ROLE_ADMIN") {
             props.history.replace("/dashboardAdmin")
