@@ -5,6 +5,7 @@ import jwt_decode from "jwt-decode";
 import UserAPI from "../services/usersAPI";
 import { Link } from 'react-router-dom';
 import Loader from 'react-loader-spinner';
+import notification from '../services/notification';
 
 const RegisterUserPage = (props) => {
   const { token } = props.match.params;
@@ -35,7 +36,6 @@ const RegisterUserPage = (props) => {
   //à l'arrivée sur la page -> série de controle
   //1. je logout si jamais il y a déja un token de stocké dans le localstorage (cas où un autre utilisateur s'est connecté à l'appil précédemment avec le meme ordi/tablette )
   if (window.localStorage.getItem("authToken")) {
-    //TODO : message flash pour lui dire de recliquer sur le lien qu'il a reçu par email
     authAPI.logout();
   }
 
@@ -82,6 +82,7 @@ const RegisterUserPage = (props) => {
         "Votre confimation de mot de passe n'est pas conforme";
       setErrors(apiErrors);
       setLoading(false)
+      notification.errorNotif("Erreur dans le formulaire d'inscription")
       return;
     }
 
@@ -99,7 +100,7 @@ const RegisterUserPage = (props) => {
         }
 
         //TODO : faire un petit FLASH de success
-
+        notification.successNotif("Bravo vous compte a été créé !")
         //on efface les messages d'erreur et on renvoi sur la page de login
         setErrors("");
         props.history.push("/login");
@@ -110,6 +111,7 @@ const RegisterUserPage = (props) => {
         setLoading(false)
       }
     } catch (error) {
+      notification.errorNotif("Erreur dans le formulaire d'inscription")
       const { violations } = error.response.data;
       //si l'utilisateur essaye de se créer un second compte à partir du lien d'inscription qu'il a reçu, il y aura dans les violations
       //  le message concernant l'adresse mail (violations['email'] = 'cette email est déja utilisé)
