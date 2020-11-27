@@ -4,6 +4,8 @@ import usersAPI from '../services/usersAPI';
 import encounterAPI from "../services/encounterAPI";
 import dateFormat from 'dateformat';
 import Select from "../components/forms/Select";
+import Modal from '../components/Modal';
+import notification from "../services/notification";
 import "../../scss/pages/EncountersAdminPage.scss";
 import Loader from "react-loader-spinner";
 
@@ -47,6 +49,21 @@ const EncountersAdminPage = (props) => {
         labelOpposingTeam: "",
         categoryOpposingTeam: ""
     });
+
+    const [show, setShow] = useState(false)
+    const [idTarget, setIdTarget] = useState('')
+    const[modalType, setModalType] = useState('')
+
+    
+    const showModal = (modalType,idTarget) => {
+        setModalType(modalType)
+        setIdTarget(idTarget)
+        setShow(true)
+    }
+
+    const hideModal = () => {
+        setShow(false)
+    }
 
     const handleSearch = event => {
         const value = event.currentTarget.value;
@@ -192,13 +209,12 @@ const EncountersAdminPage = (props) => {
             encounterAPI.putEncounter(id, putEncounter.team, putEncounter.date, putEncounter.labelOpposingTeam, putEncounter.categoryOpposingTeam)
                 //met à jour le tableau
                 .then(response => {
-                    console.log(response)
                     setLoading2(false)
                     document.getElementById("div-loader-" + id).hidden = true
+                    notification.successNotif("La modification du match a bien été effectuée")
                     setRefreshKey(refreshKey + 1)
                 })
                 .catch(error => {
-                    console.log(error.response)
                     const { violations } = error.response.data;
 
                     const apiErrors = [''];
@@ -213,11 +229,13 @@ const EncountersAdminPage = (props) => {
                     document.getElementById("btn-put-" + id).hidden = false
                     document.getElementById("btn-canceled-" + id).hidden = false
                     document.getElementById("div-loader-" + id).hidden = true
+                    notification.errorNotif("une erreur s'est produite lors de la modification")
                 })
         } else {
             const apiErrors = [''];
             apiErrors["date"] = "Vous ne pouvez modifier un match à une date inférieur à celle du jour";
             setError(apiErrors);
+            notification.errorNotif("une erreur s'est produite lors de la modification")
             setLoading2(false)
         }
     }
@@ -248,10 +266,12 @@ const EncountersAdminPage = (props) => {
         setEncounters(encounters.filter(encounter => encounter.id !== id))
 
         //si la suppression coté serveur n'a pas fonctionné, je raffiche mon tableau initial 
+        hideModal()
         encounterAPI.deleteEncounter(id)
-            .then(response => console.log("ok"))
+            .then(response => notification.successNotif("La suppression du match a bien été effectuée"))
             .catch(error => {
                 setEncounters(originalEncounters);
+                notification.errorNotif("Une erreur s'est produite lors de la suppression du match")
             });
     };
 
@@ -378,7 +398,7 @@ const EncountersAdminPage = (props) => {
                                                     editer
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDelete(encounter.id)}
+                                                    onClick={() => showModal("Supprimer la rencontre",encounter.id)}
                                                     id={"btn-delete-" + encounter.id}
                                                     className="btn btn-sm btn-danger">
                                                     Supprimer
@@ -510,6 +530,16 @@ const EncountersAdminPage = (props) => {
                     </tbody>
                 </table>
             )}
+            <Modal
+                show={show}
+                handleClose={hideModal}
+                title= {modalType}
+            >
+                <div>
+                    <h6>Êtes-vous sur de vouloir supprimer cette rencontre ? </h6>
+                    <button onClick={() => handleDelete(idTarget)} className="btn btn-primary">Confirmer</button>
+                </div>
+            </Modal>
         </div>
 
 

@@ -27,7 +27,6 @@ const DashboardPlayerPage = (props) => {
 
 
     const [encounters, setEncounters] = useState([]);
-    const [oldEncounters, setOldEncounters] = useState([]);
     const [trainings, setTrainings] = useState([])
     const [team, setTeam] = useState({});
     const[player,setPlayer] = useState ({});
@@ -73,7 +72,6 @@ const DashboardPlayerPage = (props) => {
             encounterAPI.findEncountersById(currentTeamId)
                 .then(response => {
                     var encountersArray = [];
-                    var oldEncountersArray = [];
                     response.data['hydra:member'].forEach(function (encounter) {
                         let day = new Date()
                         let today = day.setHours(0, 0, 0, 0)
@@ -85,14 +83,10 @@ const DashboardPlayerPage = (props) => {
 
                             encountersArray.push(encounter)
 
-                        } else {
-
-                            oldEncountersArray.push(encounter)
                         }
 
                     })
                     setEncounters(encountersArray)
-                    setOldEncounters(oldEncountersArray)
 
                     setLoading(false)
                 })

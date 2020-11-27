@@ -4,6 +4,8 @@ import usersAPI from '../services/usersAPI';
 import Field from '../components/forms/Field'
 import coachAPI from '../services/coachAPI';
 import teamAPI from '../services/teamAPI';
+import Modal from '../components/Modal';
+import notification from "../services/notification";
 import "../../scss/pages/CoachsAdminPage.scss";
 import Loader from 'react-loader-spinner';
 
@@ -37,6 +39,20 @@ const CoachAdminPage = (props) => {
         setEmail(value);
     };
 
+    const [show, setShow] = useState(false)
+    const [idTarget, setIdTarget] = useState('')
+    const[modalType, setModalType] = useState('')
+
+    
+    const showModal = (modalType,idTarget) => {
+        setModalType(modalType)
+        setIdTarget(idTarget)
+        setShow(true)
+    }
+
+    const hideModal = () => {
+        setShow(false)
+    }
 
     useEffect(() => {
         setLoading(true)
@@ -56,23 +72,27 @@ const CoachAdminPage = (props) => {
 
         //supression de l'affichage du coach selectionné
         setCoachs(coachs.filter((coach) => coach.id !== id));
-
+        hideModal()
         coachAPI.deleteCoach(id)
-            .then(response => console.log("ok"))
+            .then(response => {
+                notification.successNotif("Le coach a bien été supprimé")                
+            })
             .catch(error => {
                 setCoachs(originalCoachs);
-                console.log(error.response);
+                notification.errorNotif("Une erreur s'est produite lors de la suppression")
             })
     }
 
-    const handeDeleteTeam = (id) => {
+    const handleDeleteTeam = (id) => {
+        hideModal()
         teamAPI.deleteCoachOnTeam(id)
             .then(response => {
-                console.log("ok")
+                notification.successNotif("Le coach a bien été supprimé de l'équipe")
                 setRefreshKey(refreshKey + 1)
+                
             })
             .catch(error => {
-                console.log(error.response);
+                notification.errorNotif("Une erreur s'est produite lors de la suppression")
             })
     }
 
@@ -104,11 +124,13 @@ const CoachAdminPage = (props) => {
                 document.getElementById('btn-invit').hidden = false
                 document.getElementById('form-invit').hidden = true
                 setEmail('');
+                notification.successNotif("L'invitation a bien été envoyée")
             })
             .catch(error => {
                 const { violations } = error.response.data;
                 if (violations) {
                     setError(violations);
+                    notification.errorNotif("Une erreur s'est produite lors de l'envoi de l'invitation")
                 }
             })
 
@@ -181,7 +203,7 @@ const CoachAdminPage = (props) => {
                                                     <tr key={team.id}>
                                                         <td>{team.label} - {team.category}</td>
                                                         <td>
-                                                            <button onClick={() => handeDeleteTeam(team.id)} className="cancelBtn"></button>
+                                                            <button onClick={() => showModal("Supprimer l'équipe",team.id)} className="cancelBtn"></button>
                                                         </td>
                                                     </tr>
                                                 ))}
@@ -189,9 +211,7 @@ const CoachAdminPage = (props) => {
                                         </table>
                                     </td>
                                     <td>
-                                        <button onClick={() => handleDelete(coach.id)} className="btn btn-sm btn-danger">
-                                            Supprimer
-                                </button>
+                                        <button onClick={() => showModal("Supprimer un coach",coach.id)} className="btn btn-sm btn-danger">Supprimer</button>
                                     </td>
                                 </tr>
                             ))}
@@ -199,6 +219,25 @@ const CoachAdminPage = (props) => {
                     </table>
                 </div>
             )}
+
+            <Modal
+                show={show}
+                handleClose={hideModal}
+                title= {modalType}
+            >
+                {modalType === "Supprimer l'équipe" &&
+                    <div>
+                        <h6>Êtes-vous sur de vouloir supprimer cette équipe ? </h6>
+                        <button onClick={() => handleDeleteTeam(idTarget)} className="btn btn-primary">Confirmer</button>
+                    </div>
+                }
+                {modalType === "Supprimer un coach" &&
+                    <div>
+                        <h6>Êtes-vous sur de vouloir supprimer ce coach ? </h6>
+                        <button onClick={() => handleDelete(idTarget)} className="btn btn-primary">Supprimer</button>
+                    </div>
+                }
+            </Modal>    
         </div>
     );
 }

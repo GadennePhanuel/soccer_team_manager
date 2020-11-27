@@ -10,6 +10,7 @@ import {Link} from "react-router-dom";
 import Loader from "react-loader-spinner";
 import playerAPI from "../services/playerAPI";
 import teamAPI from "../services/teamAPI";
+import notification from "../services/notification";
 import "../../scss/pages/DashboardAdminPage.scss";
 
 const DashboardAdminPage = (props) => {
@@ -60,6 +61,7 @@ const DashboardAdminPage = (props) => {
             await clubAPI.putClub(id, club)
                 setLoading2(false)
                 setErrors('')
+                notification.successNotif("Le nom du club a bien été modifié")
             }catch (error) {
                 console.log(error.response)
                 const { violations } = error.response.data;
@@ -69,6 +71,7 @@ const DashboardAdminPage = (props) => {
                         apiErrors[violation.propertyPath] = violation.message;
                     });
                     setErrors(apiErrors);
+                    notification.errorNotif("Une erreur s'est produite")
             }
         }
     }
@@ -195,7 +198,7 @@ const DashboardAdminPage = (props) => {
                 </div>
                 <div>
                     <p>Equipes</p>
-                    <Link to={"/encountersAdmin"} className="btn btn-link">
+                    <Link to={"/teams"} className="btn btn-link">
                         <p className="rowNb">{teams.length}</p>
                     </Link>
                 </div>
