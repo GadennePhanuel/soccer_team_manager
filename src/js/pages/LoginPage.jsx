@@ -6,6 +6,7 @@ import AuthContext from "../contexts/AuthContext";
 import AuthAPI from "../services/authAPI";
 import "../../scss/pages/Login.scss";
 import usersAPI from "../services/usersAPI";
+import notification from '../services/notification'
 
 const LoginPage = ({ history }) => {
   const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
@@ -44,8 +45,6 @@ const LoginPage = ({ history }) => {
       setError("");
       setIsAuthenticated(true);
 
-      //TODO : affichage d'un notif 
-
       const token = window.localStorage.getItem("authToken");
       //je fait la redirection, en fonction du role de l'user
       const jwtData = JwtDecode(token);
@@ -59,7 +58,7 @@ const LoginPage = ({ history }) => {
       }
 
     } catch (error) {
-      console.log(error.response);
+      notification.errorNotif("Erreur dans l'un des champs du formulaire")
       setError(
         "Aucun compte pour cette utilisateur ou alors les informations ne correspondent pas"
       );
