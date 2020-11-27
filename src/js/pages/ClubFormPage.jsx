@@ -41,14 +41,14 @@ const ClubFormPage = (props) => {
 
 
     useEffect(() => {
-        //commencer par verifier que la personne connecté soir biien un Admin, si c'est pas le cas --> redirection vers son dashboard correspondant
+        //commencer par verifier que la personne connecté soit biien un Admin, si c'est pas le cas --> redirection vers son dashboard correspondant
         let role = usersAPI.checkRole()
         if (role === "ROLE_COACH") {
             props.history.replace("/dashboardCoach")
         } else if (role === "ROLE_PLAYER") {
             props.history.replace("/dashboardPlayer")
         }
-        //ensuite vérifier qu'il n'a pas déja un club d'assigner, si il a déja un club, l'id de son club doit étre la méme que dans l'url, sinon ---> redirection (donc meme si l'url est à "new" il dégage puisquil a déja un club)
+        //ensuite vérifier qu'il n'a pas déja un club d'assigner, si il a déja un club ---> redirection 
         let club = usersAPI.checkClub()
         if (club !== "new") {
             props.history.replace("/dashboardAdmin")
