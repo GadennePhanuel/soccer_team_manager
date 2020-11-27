@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import ImageCropper from './ImageCropper'
 import Modal from "../Modal";
 import playerAPI from '../../services/playerAPI';
+import notification from '../../services/notification';
 
 const ImageUpload = ({ parentCallBack }) => {
     const [blob, setBlob] = useState(null)
@@ -37,6 +38,7 @@ const ImageUpload = ({ parentCallBack }) => {
 
         playerAPI.uploadNewPicture(bodyFormData)
             .then(response => {
+                notification.successNotif('nouvelle photo de profil bien enregistrée')
                 parentCallBack()
                 hideModal()
             })

@@ -81,7 +81,8 @@ const ProfilForm = (props) => {
             setUser({ email, lastName, firstName, birthday, phone, password, passwordConfirm })
             setLoading(false)
         } catch (error) {
-            console.log(error.response)
+            notification.errorNotif("Une erreur est survenue")
+            setLoading(false)
         }
     }
 
@@ -116,7 +117,7 @@ const ProfilForm = (props) => {
                                     setLoading3(false)
                                 })
                                 .catch(error => {
-                                    console.log(error.response)  
+                                    notification.errorNotif("Une erreur est survenue")
                                 })
                         }
                         setLoading2(false)
@@ -126,7 +127,8 @@ const ProfilForm = (props) => {
 
             })
             .catch(error => {
-                console.log(error.response)
+                notification.errorNotif("Une erreur est survenue")
+                setLoading2(false)
             })
     }
 
@@ -241,12 +243,12 @@ const ProfilForm = (props) => {
         playerAPI.setPlayer(player)
             .then(response => {
                 console.log(response.data)
-                //TODO flash success
                 setErrorsPlayer('')
                 setLoading6(false)
+                //TODO flash success
+                notification.successNotif("modifications bien enregistrées")
             })
             .catch(error => {
-                console.log(error.response.data.violations)
                 const violations = error.response.data.violations;
                 const apiErrors = {};
                 if (violations) {
@@ -256,6 +258,7 @@ const ProfilForm = (props) => {
                 }
                 setErrorsPlayer(apiErrors);
                 setLoading6(false)
+                notification.errorNotif("Erreur dans un des champs")
             })
     }
 

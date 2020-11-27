@@ -14,6 +14,8 @@ import SlotOnField from '../components/live/SlotOnField';
 import Modal from "../components/Modal";
 import MatchLiveContext from '../contexts/MatchLiveContext';
 import playerAPI from '../services/playerAPI';
+import notification from '../services/notification'
+import usersAPI from '../services/usersAPI';
 
 export const LivePlayersContext = createContext({
     playersSelected: [],
@@ -65,6 +67,15 @@ const LivePage = (props) => {
      * MISE EN PLACE AU CHARGEMENT DE LA PAGE
      */
     useEffect(() => {
+        //série de controle, est-ce bien un Coach de connecté?
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_ADMIN") {
+            props.history.replace("/dashboardAdmin")
+        } else if (role === "ROLE_PLAYER") {
+            props.history.replace("/dashboardPlayer")
+        }
+
+
         setLoading(true)
         setLoading3(true)
         setLoading4(true)
@@ -546,96 +557,111 @@ const LivePage = (props) => {
         setLoading7(true)
         setLoading8(true)
 
-        //call Axios -> putEncounter.   On lui envoie home, visitor
-        Axios.put('http://localhost:8000/api/encounters/' + encounter.id,
-            {
-                home: home,
-                visitor: visitor
+        try {
+
+            //call Axios -> putEncounter.   On lui envoie home, visitor
+            Axios.put('http://localhost:8000/api/encounters/' + encounter.id,
+                {
+                    home: home,
+                    visitor: visitor
+                })
+                .then(response => {
+                    setLoading6(false)
+                })
+                .catch(error => {
+                    console.log(error.response)
+                    setLoading6(false)
+                })
+
+            let playersSubstituteIRI = []
+            playersSubstitute.forEach(player => {
+                playersSubstituteIRI.push("/api/players/" + player.id)
             })
-            .then(response => {
-                console.log(response.data)
-                setLoading6(false)
-            })
-            .catch(error => {
-                console.log(error.response)
-                setLoading6(false)
+            let playersSubstituteOutIRI = []
+            playersOut.forEach(player => {
+                playersSubstituteOutIRI.push("/api/players/" + player.id)
             })
 
-        let playersSubstituteIRI = []
-        playersSubstitute.forEach(player => {
-            playersSubstituteIRI.push("/api/players/" + player.id)
-        })
-        let playersSubstituteOutIRI = []
-        playersOut.forEach(player => {
-            playersSubstituteOutIRI.push("/api/players/" + player.id)
-        })
+            //call Axios -> putTacticArch, on lui envoie tactic
+            Axios.put("http://localhost:8000/api/tactic_arches/" + tactic.id,
+                {
+                    pos1: "/api/players/" + tactic.pos1.id,
+                    pos2: "/api/players/" + tactic.pos2.id,
+                    pos3: "/api/players/" + tactic.pos3.id,
+                    pos4: "/api/players/" + tactic.pos4.id,
+                    pos5: "/api/players/" + tactic.pos5.id,
+                    pos6: "/api/players/" + tactic.pos6.id,
+                    pos7: "/api/players/" + tactic.pos7.id,
+                    pos8: "/api/players/" + tactic.pos8.id,
+                    pos9: "/api/players/" + tactic.pos9.id,
+                    pos10: "/api/players/" + tactic.pos10.id,
+                    pos11: "/api/players/" + tactic.pos11.id,
+                    type: tactic.type,
+                    substitutes: playersSubstituteIRI,
+                    substitutesOut: playersSubstituteOutIRI
+                })
+                .then(response => {
+                    setLoading7(false)
+                })
+                .catch(error => {
+                    console.log(error.response)
+                    setLoading7(false)
+                })
 
-        //call Axios -> putTacticArch, on lui envoie tactic
-        Axios.put("http://localhost:8000/api/tactic_arches/" + tactic.id,
-            {
-                pos1: "/api/players/" + tactic.pos1.id,
-                pos2: "/api/players/" + tactic.pos2.id,
-                pos3: "/api/players/" + tactic.pos3.id,
-                pos4: "/api/players/" + tactic.pos4.id,
-                pos5: "/api/players/" + tactic.pos5.id,
-                pos6: "/api/players/" + tactic.pos6.id,
-                pos7: "/api/players/" + tactic.pos7.id,
-                pos8: "/api/players/" + tactic.pos8.id,
-                pos9: "/api/players/" + tactic.pos9.id,
-                pos10: "/api/players/" + tactic.pos10.id,
-                pos11: "/api/players/" + tactic.pos11.id,
-                type: tactic.type,
-                substitutes: playersSubstituteIRI,
-                substitutesOut: playersSubstituteOutIRI
-            })
-            .then(response => {
-                console.log(response.data)
-                setLoading7(false)
-            })
-            .catch(error => {
-                console.log(error.response)
-                setLoading7(false)
-            })
+            let statsArrayTmp = [...stats]
+            //call Axios -> sauvegarde de toutes les stats en put ou post si oui ou non elles existait deja
+            stats.forEach((statObj, index) => {
+                setLoading8(true)
+                if (statObj) {
+                    if (statObj.id) {
+                        Axios.put("http://localhost:8000/api/stats/" + statObj.id, {
+                            redCard: statObj.redCard,
+                            yellowCard: statObj.yellowCard,
+                            goal: statObj.goal,
+                            passAssist: statObj.passAssist
+                        })
+                            .then(response => {
+                                setLoading8(false)
+                            })
+                            .catch(error => {
+                                console.log(error.response)
+                                setLoading8(false)
+                            })
+                    } else {
+                        Axios.post("http://localhost:8000/api/stats", {
+                            encounter: "/api/encounters/" + encounter.id,
+                            player: "/api/players/" + index,
+                            redCard: statObj.redCard,
+                            yellowCard: statObj.yellowCard,
+                            goal: statObj.goal,
+                            passAssist: statObj.passAssist
+                        })
+                            .then(response => {
+                                setLoading8(false)
+                                //dans le tableau stats à l'index du joueur je dois rajouter l'id ses stats perso
+                                // statsArrayTmp[index].id = response.data.id
+                                // setStats(statsArrayTmp)
+                                statsArrayTmp[response.data.player.id] = {
+                                    id: response.data.id,
+                                    goal: response.data.goal,
+                                    passAssist: response.data.passAssist,
+                                    redCard: response.data.redCard,
+                                    yellowCard: response.data.yellowCard
+                                }
+                                setStats(statsArrayTmp)
 
-        //call Axios -> sauvegarde de toutes les stats en put ou post si oui ou non elles existait deja
-        stats.forEach((statObj, index) => {
-            setLoading8(true)
-            if (statObj) {
-                if (statObj.id) {
-                    Axios.put("http://localhost:8000/api/stats/" + statObj.id, {
-                        redCard: statObj.redCard,
-                        yellowCard: statObj.yellowCard,
-                        goal: statObj.goal,
-                        passAssist: statObj.passAssist
-                    })
-                        .then(response => {
-                            console.log(response.data)
-                            setLoading8(false)
-                        })
-                        .catch(error => {
-                            console.log(error.response)
-                            setLoading8(false)
-                        })
-                } else {
-                    Axios.post("http://localhost:8000/api/stats", {
-                        encounter: "/api/encounters/" + encounter.id,
-                        player: "/api/players/" + index,
-                        redCard: statObj.redCard,
-                        yellowCard: statObj.yellowCard,
-                        goal: statObj.goal,
-                        passAssist: statObj.passAssist
-                    })
-                        .then(response => {
-                            console.log(response.data)
-                            setLoading8(false)
-                        })
-                        .catch(error => {
-                            console.log(error.response)
-                            setLoading8(false)
-                        })
+                            })
+                            .catch(error => {
+                                console.log(error.response)
+                                setLoading8(false)
+                            })
+                    }
                 }
-            }
-        })
+            })
+            notification.successNotif("Le live a été enregistré")
+        } catch {
+            notification.errorNotif("une erreur est survenue")
+        }
         setModif(false)
     }
 
@@ -651,6 +677,7 @@ const LivePage = (props) => {
         setShowQuit(false)
     }
     const handleConfirmQuit = () => {
+        console.log(stats)
         showModalQuit()
     }
     const cancelQuit = () => {
@@ -712,10 +739,10 @@ const LivePage = (props) => {
                 .catch(error => {
                     console.log(error)
                 })
-
+            notification.successNotif("Le live a bien été supprimé")
         }
         catch (error) {
-            console.log(error)
+            notification.errorNotif("Une erreur est survenue")
             setLoading9(false)
         }
         finally {

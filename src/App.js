@@ -68,9 +68,9 @@ function App() {
               <ReactNotification />
               <Switch>
                 <Route path="/registerUser/:token" component={RegisterUserPage} />
-                <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
                 <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
                 <PrivateRoute path="/player/:id/planning" component={PlanningPlayer} />
+                <PrivateRoute path="/createClub" component={ClubFormPage} />
                 <Route path="/RegisterAdmin" component={RegisterAdminPage} />
                 <Route path="/login" component={LoginPage} />
                 <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />

@@ -10,8 +10,10 @@ import playerAPI from "../services/playerAPI";
 import trainingMissedsAPI from "../services/trainingMissedsAPI"
 import Loader from "react-loader-spinner";
 import CurrentUser from "../components/CurrentUser";
+import notification from '../services/notification'
+import usersAPI from "../services/usersAPI";
 
-const TrainingsPage = () => {
+const TrainingsPage = (props) => {
     const { currentTeamId } = useContext(TeamContext)
 
     const [trainings, setTrainings] = useState([])
@@ -23,6 +25,14 @@ const TrainingsPage = () => {
     const [loading3, setLoading3] = useState(false)
 
     useEffect(() => {
+        //série de controle, est-ce bien un Coach de connecté?
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_ADMIN") {
+            props.history.replace("/dashboardAdmin")
+        } else if (role === "ROLE_PLAYER") {
+            props.history.replace("/dashboardPlayer")
+        }
+
         setLoading(true)
         //au chargement de la page on récupére l'id de la currentTeam selectionné
         if (currentTeamId !== '') {
@@ -41,7 +51,7 @@ const TrainingsPage = () => {
         } else {
             setLoading(false)
         }
-    }, [currentTeamId, refreshKey])
+    }, [currentTeamId, props.history, refreshKey])
 
 
     const [show, setShow] = useState(false)
@@ -186,7 +196,7 @@ const TrainingsPage = () => {
             trainingsAPI.createTrainings(training)
                 .then(response => {
                     //flash success
-
+                    notification.successNotif("L'entrainement a bien été créé")
                     //vider les message d'erreur eventuels
                     setErrors('');
                     //fermer la fenetre modal
@@ -194,6 +204,7 @@ const TrainingsPage = () => {
                     setRefershKey(refreshKey + 1)
                 })
                 .catch(error => {
+                    notification.errorNotif("Erreur dans le formulaire")
                     //si echec ---> affichage des violations dans le formulaire
                     const violations = error.response.data.violations;
                     const apiErrors = {};
@@ -217,13 +228,14 @@ const TrainingsPage = () => {
                             console.log(error.response)
                         })
                     //flash success
-
+                    notification.successNotif("L'entrainement a bien été modifié")
                     //vider les message d'erreur eventuels
                     setErrors('');
                     //fermer la fenetre modal
                     hideModal()
                 })
                 .catch(error => {
+                    notification.errorNotif("Erreur dans le formulaire")
                     //si echec ---> affichage des violations dans le formulaire
                     const violations = error.response.data.violations;
                     const apiErrors = {};
@@ -256,11 +268,12 @@ const TrainingsPage = () => {
         trainingsAPI.delTraining(trainingId)
             .then(response => {
                 //si réussite --> falsh success
+                notification.successNotif("L'entrainement a bien été supprimé")
                 hideModal()
             })
             .catch(error => {
                 //en cas d'echec remettre le tableau trainings comme avant
-                console.log(error.response)
+                notification.errorNotif("Une erreur est survenue")
                 setTrainings(originalTrainings)
             })
     }
@@ -281,11 +294,11 @@ const TrainingsPage = () => {
                         setLoading3(false)
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        notification.errorNotif("Une erreur est survenue")
                     })
             })
             .catch(error => {
-                console.log(error.response)
+                notification.errorNotif("Une erreur est survenue")
             })
     }
 
@@ -319,15 +332,15 @@ const TrainingsPage = () => {
                                 setLoading3(false)
                             })
                             .catch(error => {
-                                console.log(error.response)
+                                notification.errorNotif("Une erreur est survenue")
                             })
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        notification.errorNotif("Une erreur est survenue")
                     })
             })
             .catch(error => {
-                console.log(error.response)
+                notification.errorNotif("Une erreur est survenue")
             })
     }
 

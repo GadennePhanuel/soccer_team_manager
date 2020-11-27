@@ -8,6 +8,7 @@ import trainingsAPI from '../services/trainingsAPI';
 import usersAPI from '../services/usersAPI';
 import '../../scss/pages/PlanningPlayer.scss'
 import Loader from 'react-loader-spinner';
+import notification from "../services/notification";
 
 const PlanningPlayer = (props) => {
     const { isAuthenticated } = useContext(AuthContext);
@@ -25,6 +26,15 @@ const PlanningPlayer = (props) => {
     const [loading4, setLoading4] = useState(false)
 
     useEffect(() => {
+        //série de controle, est-ce bien un Player de connecté?
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_ADMIN") {
+            props.history.replace("/dashboardAdmin")
+        } else if (role === "ROLE_COACH") {
+            props.history.replace("/dashboardCoach")
+        }
+
+
         setLoading(true)
         setLoading2(true)
         if (isAuthenticated) {
@@ -53,7 +63,7 @@ const PlanningPlayer = (props) => {
                 })
         }
 
-    }, [id, isAuthenticated, teamId])
+    }, [id, isAuthenticated, props.history, teamId])
 
 
     const [show, setShow] = useState(false)
@@ -152,12 +162,12 @@ const PlanningPlayer = (props) => {
                         console.log(response.data)
                         setLoading4(false)
                         checkTrainingOfDayClick(currentDate)
-
+                        notification.successNotif("Votre présence a l'entrainement a été mis a jour")
                     })
                     .catch(error => {
+                        notification.errorNotif("Une erreur est survenu")
                         setAbsence(true)
                         setLoading4(false)
-                        console.log(error.response)
                     })
             }
             if (value === "false") {
@@ -167,9 +177,10 @@ const PlanningPlayer = (props) => {
                     .then(response => {
                         setLoading4(false)
                         checkTrainingOfDayClick(currentDate)
+                        notification.successNotif("Votre présence a l'entrainement a été mis a jour")
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        notification.errorNotif("Une erreur est survenu")
                         setLoading4(false)
                         setAbsence(false)
                     })

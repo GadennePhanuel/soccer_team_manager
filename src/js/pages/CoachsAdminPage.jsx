@@ -21,7 +21,7 @@ const CoachAdminPage = (props) => {
     //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
     const club = usersAPI.checkClub();
     if (club === "new") {
-        props.history.replace("/createClub/new")
+        props.history.replace("/createClub")
     }
 
     const [refreshKey, setRefreshKey] = useState(0)
