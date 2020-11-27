@@ -108,8 +108,6 @@ const DashboardCoachPage = (props) => {
     return (
         <div className="DashboardCoachPage wrapper_container">
             <CurrentUser />
-
-            <p>{console.log(oldEncountersReverse)}</p>
             {coach.user && !loading &&
                 <h1>Bonjour {coach.user.firstName}</h1>
             }

@@ -7,6 +7,8 @@ import TeamContext from "../contexts/TeamContext";
 import Field from "../components/forms/Field";
 import Select from "../components/forms/Select";
 import dateFormat from 'dateformat';
+import Modal from '../components/Modal';
+import notification from "../services/notification";
 import "../../scss/pages/EncountersPage.scss";
 import Loader from "react-loader-spinner";
 import CurrentUser from "../components/CurrentUser";
@@ -68,6 +70,22 @@ const EncountersPage = (props) => {
         labelOpposingTeam: "",
         categoryOpposingTeam: ""
     });
+
+    const [show, setShow] = useState(false)
+    const [idTarget, setIdTarget] = useState('')
+    const[modalType, setModalType] = useState('')
+
+    
+    const showModal = (modalType,idTarget) => {
+        setModalType(modalType)
+        setIdTarget(idTarget)
+        setShow(true)
+    }
+
+    const hideModal = () => {
+        setShow(false)
+    }
+
 
     const changeHidden = (btnName, id) => {
         return document.getElementById(btnName + id).hidden === true ?
@@ -164,6 +182,7 @@ const EncountersPage = (props) => {
                     setLoading3(false)
                     setRefreshKey(refreshKey + 1)
                     setErrorForm('')
+                    notification.successNotif("Le match a bien été crée")
                 })
                 .catch(errorForm => {
                     console.log(errorForm.response)
@@ -176,6 +195,7 @@ const EncountersPage = (props) => {
                             apiErrorsForm[violation.propertyPath] = violation.message;
                         });
                         setErrorForm(apiErrorsForm);
+                        notification.errorNotif("Une erreur s'est produite lors de la création de match")
                     }
                     setLoading3(false)
                 })
@@ -267,6 +287,7 @@ const EncountersPage = (props) => {
                 .then(response => {
                     setLoading2(false)
                     document.getElementById("div-loader-" + id).hidden = true
+                    notification.successNotif("La modification du match a bien été effectuée")
                     setRefreshKey(refreshKey + 1)
                     handleCanceled(id)
                 })
@@ -286,11 +307,13 @@ const EncountersPage = (props) => {
                     document.getElementById("btn-put-" + id).hidden = false
                     document.getElementById("btn-canceled-" + id).hidden = false
                     document.getElementById("div-loader-" + id).hidden = true
+                    notification.errorNotif("une erreur s'est produite lors de la modification")
                 })
         } else {
             const apiErrors = [''];
             apiErrors["date"] = "Vous ne pouvez modifier un match à une date inférieur à celle du jour";
             setError(apiErrors);
+            notification.errorNotif("une erreur s'est produite lors de la modification")
             setLoading2(false)
 
         }
@@ -319,13 +342,15 @@ const EncountersPage = (props) => {
         //Delete l'affichage du match avant de le delete en bdd
         setEncounters(encounters.filter(encounter => encounter.id !== id))
 
+        hideModal()
         //si la suppression coté serveur n'a pas fonctionné, je raffiche mon tableau initial 
         encounterAPI.deleteEncounter(id)
             .then(response => {
-                //TODO : FLASH SUCCESS
+                notification.successNotif("La suppression du match a bien été effectuée")
             })
             .catch(error => {
                 setEncounters(originalEncounters);
+                notification.errorNotif("Une erreur s'est produite lors de la suppression du match")
             });
     };
 
@@ -493,7 +518,7 @@ const EncountersPage = (props) => {
                                                 editer
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(encounter.id)}
+                                                onClick={() => showModal("Supprimer la rencontre", encounter.id)}
                                                 id={"btn-delete-" + encounter.id}
                                                 className="btn btn-sm btn-danger">
                                                 Supprimer
@@ -624,6 +649,16 @@ const EncountersPage = (props) => {
                     </tbody>
                 </table>
             )}
+            <Modal
+                show={show}
+                handleClose={hideModal}
+                title= {modalType}
+            >
+                <div>
+                    <h6>Êtes-vous sur de vouloir supprimer cette rencontre ? </h6>
+                    <button onClick={() => handleDelete(idTarget)} className="btn btn-primary">Confirmer</button>
+                </div>
+            </Modal>
         </div>
     );
 

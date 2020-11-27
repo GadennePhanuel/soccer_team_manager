@@ -4,6 +4,8 @@ import teamAPI from '../services/teamAPI';
 import '../../scss/pages/MyPlayersCoachPage.scss';
 import { Link } from 'react-router-dom';
 import playerAPI from '../services/playerAPI';
+import Modal from '../components/Modal';
+import notification from "../services/notification";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import CurrentUser from '../components/CurrentUser';
@@ -19,6 +21,21 @@ const MyPlayersCoachPage = (props) => {
 
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
+
+    const [show, setShow] = useState(false)
+    const [player, setPlayer] = useState({})
+    const[modalType, setModalType] = useState('')
+
+    
+    const showModal = (modalType,player) => {
+        setModalType(modalType)
+        setPlayer(player)
+        setShow(true)
+    }
+
+    const hideModal = () => {
+        setShow(false)
+    }
 
     function getAge(dateString) {
         var today = new Date();
@@ -75,14 +92,14 @@ const MyPlayersCoachPage = (props) => {
 
         //supression de l'affichage du player exclu
         setPlayers(players.filter((playerItem) => playerItem.id !== player.id))
-
+        hideModal()
         //PUT player/id -> on set team à null
         playerAPI.excludePlayerOfTeam(player.id)
             .then(response => {
-                //TODO : FLASH SUCCESS
+                notification.successNotif("Le joueur a été expulsé de l'équipe")
             })
             .catch(error => {
-                console.log(error.response)
+                notification.errorNotif("Une erreur s'est produite lors de l'expulsion du joueur")
                 setPlayers(originalPlayers)
             })
 
@@ -170,14 +187,25 @@ const MyPlayersCoachPage = (props) => {
 
                                 <div className="btns-card">
                                     <Link to={"/player/" + player.id + "/stats"} className="btn btn-primary btn-infos">Détails</Link>
-                                    <button className="btn btn-secondary btn-exclude" onClick={() => handleExclude(player)}>Exclure</button>
+                                    <button className="btn btn-secondary btn-exclude" onClick={() => showModal("Exclure le joueur", player)}>Exclure</button>
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
             )}
-
+            <Modal
+                show={show}
+                handleClose={hideModal}
+                title= {modalType}
+            >
+                {modalType === "Exclure le joueur" &&
+                    <div>
+                        <h6>Êtes-vous sur de vouloir exclure ce joueur ? </h6>
+                        <button onClick={() => handleExclude(player)} className="btn btn-primary">Confirmer</button>
+                    </div>
+                }
+            </Modal>
         </div >
     );
 }
