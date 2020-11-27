@@ -119,6 +119,7 @@ const RegisterUserPage = (props) => {
       if (violations) {
         violations.forEach((violation) => {
           if (violation.propertyPath === 'email') {
+            notification.warningNotif("Vous avez déja un compte utilisateur pour cette email")
             props.history.push("/login");
           }
           apiErrors[violation.propertyPath] = violation.message;

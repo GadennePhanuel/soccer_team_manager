@@ -37,7 +37,7 @@ function warningNotif(message) {
     store.addNotification({
         title: "Attention",
         message: message,
-        type: "danger",
+        type: "warning",
         insert: "top",
         container: "top-center",
         animationIn: ["animate__animated", "animate__fadeIn"],
