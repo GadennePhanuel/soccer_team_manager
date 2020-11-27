@@ -10,6 +10,7 @@ import "../../scss/pages/MailPage.scss";
 import adminAPI from '../services/adminAPI';
 import mailAPI from '../services/mailAPI';
 import Loader from 'react-loader-spinner';
+import notification from "../services/notification"
 
 const MailPage = (props) => {
     authAPI.setup();
@@ -177,6 +178,7 @@ const MailPage = (props) => {
                 "Veuillez sélectionner au moins un destinataire";
             setErrors(apiErrors);
             setLoading5(false)
+            notification.errorNotif("Erreur dans le formulaire d'envoi")
             return;
         }
         if (email.subject.length === 0) {
@@ -184,6 +186,7 @@ const MailPage = (props) => {
                 "Veuillez préciser le sujet de votre email";
             setErrors(apiErrors);
             setLoading5(false)
+            notification.errorNotif("Erreur dans le formulaire d'envoi")
             return;
         }
         if (email.message.length === 0) {
@@ -191,6 +194,7 @@ const MailPage = (props) => {
                 "Veuillez saisir un message...";
             setErrors(apiErrors);
             setLoading5(false)
+            notification.errorNotif("Erreur dans le formulaire d'envoi")
             return;
         }
 
@@ -200,6 +204,7 @@ const MailPage = (props) => {
         mailAPI.sendMail(email)
             .then(response => {
                 //TODO : FLASH SUCCES  && on vide les champs sujet et message du formulaire
+                notification.successNotif("Votre mail a bien été envoyé")
                 setEmail({
                     ...email,
                     subject: "",
@@ -208,10 +213,9 @@ const MailPage = (props) => {
                 setLoading5(false)
             })
             .catch(error => {
-                console.log(error.response)
+                notification.errorNotif("Erreur dans le formulaire d'envoi")
                 if (error.response.status === 500) {
-                    console.log("une ou plusieur adresses destinataires fausses ou inactive, impossible d'envoyer le message...")
-                    //TODO : FLASH ERROR 
+                    notification.warningNotif("une ou plusieur adresses destinataires fausses ou inactive, impossible d'envoyer le message...")
                 }
                 if (error.response.data.violations) {
                     if (error.response.data.violations.receivers) {
@@ -227,11 +231,6 @@ const MailPage = (props) => {
                 }
                 setLoading5(false)
             })
-
-        //TODO : flash success
-        //on vide le formulaire
-
-
     }
 
     return (
