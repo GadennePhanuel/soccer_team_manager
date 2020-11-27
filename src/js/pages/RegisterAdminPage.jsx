@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Loader from "react-loader-spinner";
 import { Link } from "react-router-dom";
 import Field from "../components/forms/Field";
+import notification from "../services/notification";
 import UserAPI from "../services/usersAPI";
 
 const RegisterAdminPage = ({ history }) => {
@@ -58,20 +59,19 @@ const RegisterAdminPage = ({ history }) => {
         await UserAPI.registerAdmin(response);
 
         //TODO : faire un petit FLASH de success
+        notification.successNotif("Votre compte a bien été créé, vous pouvez vous connecter")
 
         //on efface les messages d'erreur et on renvoi sur la page de login
         setErrors("");
         setLoading(false)
         history.replace("/login");
       } catch (error) {
-        alert(
-          "Erreur interne, compte utilisateur créé mais non assigné en tant que ROLE_ADMIN. contactez administrateur du site"
-        );
+        notification.errorNotif("Erreur interne, compte utilisateur créé mais non assigné en tant que ROLE_ADMIN.contactez administrateur du site")
         setLoading(false)
       }
     } catch (error) {
       const { violations } = error.response.data;
-
+      notification.errorNotif("Erreur dans la formualire d'inscription")
       if (violations) {
         violations.forEach((violation) => {
           apiErrors[violation.propertyPath] = violation.message;
