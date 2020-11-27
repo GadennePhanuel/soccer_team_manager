@@ -10,6 +10,7 @@ import playerAPI from "../services/playerAPI";
 import trainingMissedsAPI from "../services/trainingMissedsAPI"
 import Loader from "react-loader-spinner";
 import CurrentUser from "../components/CurrentUser";
+import notification from '../services/notification'
 
 const TrainingsPage = () => {
     const { currentTeamId } = useContext(TeamContext)
@@ -186,7 +187,7 @@ const TrainingsPage = () => {
             trainingsAPI.createTrainings(training)
                 .then(response => {
                     //flash success
-
+                    notification.successNotif("L'entrainement a bien été créé")
                     //vider les message d'erreur eventuels
                     setErrors('');
                     //fermer la fenetre modal
@@ -194,6 +195,7 @@ const TrainingsPage = () => {
                     setRefershKey(refreshKey + 1)
                 })
                 .catch(error => {
+                    notification.errorNotif("Erreur dans le formulaire")
                     //si echec ---> affichage des violations dans le formulaire
                     const violations = error.response.data.violations;
                     const apiErrors = {};
@@ -217,13 +219,14 @@ const TrainingsPage = () => {
                             console.log(error.response)
                         })
                     //flash success
-
+                    notification.successNotif("L'entrainement a bien été modifié")
                     //vider les message d'erreur eventuels
                     setErrors('');
                     //fermer la fenetre modal
                     hideModal()
                 })
                 .catch(error => {
+                    notification.errorNotif("Erreur dans le formulaire")
                     //si echec ---> affichage des violations dans le formulaire
                     const violations = error.response.data.violations;
                     const apiErrors = {};
@@ -256,11 +259,12 @@ const TrainingsPage = () => {
         trainingsAPI.delTraining(trainingId)
             .then(response => {
                 //si réussite --> falsh success
+                notification.successNotif("L'entrainement a bien été supprimé")
                 hideModal()
             })
             .catch(error => {
                 //en cas d'echec remettre le tableau trainings comme avant
-                console.log(error.response)
+                notification.errorNotif("Une erreur est survenue")
                 setTrainings(originalTrainings)
             })
     }
@@ -281,11 +285,11 @@ const TrainingsPage = () => {
                         setLoading3(false)
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        notification.errorNotif("Une erreur est survenue")
                     })
             })
             .catch(error => {
-                console.log(error.response)
+                notification.errorNotif("Une erreur est survenue")
             })
     }
 
@@ -319,15 +323,15 @@ const TrainingsPage = () => {
                                 setLoading3(false)
                             })
                             .catch(error => {
-                                console.log(error.response)
+                                notification.errorNotif("Une erreur est survenue")
                             })
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        notification.errorNotif("Une erreur est survenue")
                     })
             })
             .catch(error => {
-                console.log(error.response)
+                notification.errorNotif("Une erreur est survenue")
             })
     }
 
