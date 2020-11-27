@@ -65,11 +65,7 @@ const PlayerCard = ({ player, className, posOrigin, tactic, setTactic, tacticsMo
                                 tabModifiedList.push(tactic);
 
                                 setTacticsModified(tabModifiedList)
-                                //   console.log("endDrop: tacticModifiedList : ")
-                                //   console.log(tacticModifiedList)
                                 setTactic(tactic);
-                                //   console.log("endDrop : tacticsList : ")
-                                //   console.log(tacticsList)
                                 setRefreshSelection(refreshSelection + 1)
                             }
 

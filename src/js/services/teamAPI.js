@@ -15,7 +15,6 @@ function findTeam(id) {
 function postTeam(team) {
     if(team.coach) {team.coach = team.coach["@id"]}
     return Axios.post(TEAMS_API, team)
-    // .then(response => response.data['hydra:member'])
 }
 
 function deleteTeam(id) {
@@ -29,22 +28,12 @@ function deleteCoachOnTeam(id) {
     )
 }
 
-function putTeam(team) {
-    console.log("teamAPI")
-    console.log(team)
-    return Axios
-        .put(TEAMS_API + "/" + team.id,
-            {
-                coach: team.coach,
-                label: team.label,
-            }
-        )
-    //.then(response => response.data['hydra:member'])
+function putTeam(teamId, label, coach) {
+    return Axios.put(TEAMS_API + "/" + teamId,{coach: coach,label: label})
 }
 
 function findAllTacticsByTeam(id){
     return Axios.get(TEAMS_API + "/" +id+"/tactics")
-        .then(response => response.data['hydra:member'])
 }
 
 export default {

@@ -26,27 +26,16 @@ const TeamsAdminPage = (props) => {
     const [teams, setTeams] = useState([])
     const [coachs, setCoachs] = useState([])
 
-    const getCoachOptions = team => {
-        return (
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter, index) => (
-                !categories.filter(cat => cat.name === team.category)[0].options.includes(letter) &&
-                <option key={index} value={"Equipe " + letter}>
-                    {"Equipe " + letter}
-                </option>
-            ))
-        )
-    }
-
     const [categories, setCategories] = useState([
         {name:"Cadet",options:[]},
         {name:"Junior",options:[]},
         {name:"Senior",options:[]}
     ])
- //   console.log(categories)
 
     const handleLabel = (handle, team) => {
         let labelLetter = team.label.substr(7);
         let cat = categories.filter(cat => cat.name === team.category)[0]
+
         switch(handle){
             case "add":
                 if(!cat.options.includes(labelLetter)){
@@ -58,6 +47,7 @@ const TeamsAdminPage = (props) => {
                     cat.options.splice(labelLetter)
                 }
                 break;
+            default:
         }
     }
 
@@ -83,9 +73,7 @@ const TeamsAdminPage = (props) => {
         category: ""
     })
 
-    const [editTeams, setEditTeams] = useState([]);
-    console.log("editTeams")
-    console.log(editTeams)
+    const [editTeam, setEditTeam] = useState(null);
 
     const [loadingNew, setLoadingNew] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -108,26 +96,23 @@ const TeamsAdminPage = (props) => {
         setLoading2(true)
         teamAPI.findAllTeams()
             .then(data => {
-                let tabLabel = categories
                 data.forEach(team => {
                     if (!(team.coach)) {
                         team.coach = "non assigné"
                     }
                     handleLabel("add", team)
-                //    let labelLetter = team.label.substr(7);
-                 //   categories.filter(cat => cat.name === team.category)[0].options.push(labelLetter)
                 })
                 setTeams(data)
+            })
+            .catch(error => console.log(error.response))
+            .finally(()=>{
                 setLoading(false)
                 setLoading2(false)
             })
-            .catch(error => console.log(error.response))
         coachAPI.findAllCoach()
             .then(data => setCoachs(data))
             .catch(error => console.log(error.response))
     }, []);
-
-
 
     const handleNewTeamChange = (event) => {
         const { name, value } = event.currentTarget;
@@ -136,22 +121,8 @@ const TeamsAdminPage = (props) => {
 
     //todo
     const handleChange = (event) => {
-        //"input-labelTeam-"coachSelect-
-        const { id, name, value } = event.currentTarget;
-        let idEditTeam = null
-        if(name === "label") {
-            idEditTeam = id.substr(16)
-        }
-        else if (name === "coach") {
-            idEditTeam = id.substr(12)
-        }
-        /*console.log(name)
-        console.log(value)
-        console.log(idEditTeam)
-        console.log(editTeams)
-        console.log(editTeams.filter(team => team.id === Number(idEditTeam)))*/
-        editTeams.filter(team => team.id === Number(idEditTeam))[0][name] = value
-    //    setEditTeams({ ...editTeams, [name]: value })
+        const {name, value } = event.currentTarget;
+        setEditTeam({...editTeam, [name]: value })
     }
 
     const handleSubmit = async (event) => {
@@ -169,19 +140,16 @@ const TeamsAdminPage = (props) => {
                 if (!(response.data.coach)) {
                     response.data.coach = "non assigné"
                 }
-                teams.push(response.data)
+                teams.unshift(response.data)
                 handleLabel("add", response.data)
                 setErrorsNewTeam({ label: "", category: "" })
                 setNewTeam({ label: "", category: "" })
 
-                setLoadingNew(false)
                 document.getElementById('showFormDiv').hidden = false
                 document.getElementById('form-create').hidden = true
             })
             .catch(error => {
-                console.log(error)
-                setLoadingNew(false)
-                const { violations } = error.data;
+                const violations = error.response.data.violations
                 const apiErrors = {};
                 if (violations) {
                     violations.forEach((violation) => {
@@ -190,6 +158,7 @@ const TeamsAdminPage = (props) => {
                 }
                 setErrorsNewTeam(apiErrors)
             })
+            .finally(()=>setLoadingNew(false))
     }
 
     const handleDelete = id => {
@@ -218,52 +187,41 @@ const TeamsAdminPage = (props) => {
         handleCanceled(id)
         setLoading3(id)
 
-        let editTeam = editTeams.filter(team => team.id === id)[0]
+        let coachURI = null;
         if (editTeam.coach !== "non assigné") {
-            editTeam.coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]["@id"]
+            let tCoach
+            if(typeof editTeam.coach === "string") {
+                tCoach = Number(editTeam.coach)
+            }else {
+                tCoach = editTeam.coach.id
+            }
+            coachURI = coachs.filter(coach => tCoach === coach.id)[0]["@id"]
         }
-        else {editTeam.coach = null}
 
-        console.log("putTeam")
-        console.log(editTeam)
-        teamAPI.putTeam(editTeam)
+        teamAPI.putTeam(editTeam.id, editTeam.label, coachURI)
             .then(response => {
-                handleLabel("remove", teams.filter(team => editTeam.id === team.id)[0].label)
-                handleLabel("add", editTeam.label)
-            //    updatedTeam.label = editTeam
-                //teams.filter(team => id === team.id)[0].label = editTeam.label
-                editTeam.coach !== "non assigné" ?
-                    editTeam.coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]
-                    :
-                    editTeam.coach = "non assigné"
-                teams.filter(team => id === team.id)[0] = editTeam
-               /* if (editTeam.coach !== "non assigné") {
-                    //teams.filter(team => id === team.id)[0].coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]
-                    oldTeam.coach = coachs.filter(coach => Number(editTeam.coach) === coach.id)[0]
-                }
-                else {
-                   // teams.filter(team => id === team.id)[0].coach = "non assigné"
-                    oldTeam.coach = "non assigné"
-                }*/
+                let team = response.data
+                handleLabel("remove", teams.filter(tm => editTeam.id === tm.id)[0])
+                handleLabel("add", team)
 
-                setEditTeams(editTeams.filter(team => id !== team.id))
-                setErrors({ label: "" })
-                setLoading3(false)
+                if(team.coach === undefined){
+                    team.coach = "non assigné"
+                }
+                let teamIndex = teams.findIndex(team => id === team.id)
+                teams.splice(teamIndex, 1, team)
+                setEditTeam(null)
             })
             .catch(error => {
-                console.log(error)
-                //todo a remettre en place quand le control back sera au point
-               /* const { violations } = error.response;
+                const violations = error.response.data.violations
                 const apiErrors = {};
                 if (violations) {
                     violations.forEach((violation) => {
                         apiErrors[violation.propertyPath] = { teamId: id, message: violation.message };
                     });
-                }*/
-                setLoading3(false)
-                //todo idem
-             //   setErrors(apiErrors)
+                }
+                setErrors(apiErrors)
             })
+            .finally(()=>setLoading3(false))
     }
 
     const btnList = ['btn-delete-','btn-put-', 'coachSelect-','labelCoach-','labelTeam-','input-labelTeam-','btn-edit-','btn-canceled-']
@@ -272,37 +230,27 @@ const TeamsAdminPage = (props) => {
      */
     const handleEdit = (teamId) => {
 
+        if(editTeam !== null){
+            btnList.map(btnName => (
+                changeHidden(btnName,editTeam.id)
+            ))
+        }
         btnList.map(btnName => (
             changeHidden(btnName,teamId)
         ))
-        /*changeHidden('btn-delete-', teamId)
-        changeHidden('btn-put-', teamId)
-        changeHidden('coachSelect-', teamId)
-        changeHidden('labelCoach-', teamId)
-        changeHidden('labelTeam-', teamId)
-        changeHidden('input-labelTeam-', teamId)
-        changeHidden('btn-edit-', teamId)
-        changeHidden('btn-canceled-', teamId)*/
-        setEditTeams([...editTeams,{
+        let team = teams.find(team => team.id === teamId)
+        setEditTeam({
             id:teamId,
-            label: document.getElementById('input-labelTeam-' + teamId).value,
-            coach: document.getElementById('coachSelect-' + teamId).value
-        } ])
+            label: team.label,
+            coach: team.coach
+        })
     }
 
     const handleCanceled = (teamId) => {
         btnList.map(btnName => (
             changeHidden(btnName,teamId)
         ))
-        /*changeHidden('btn-delete-', teamId)
-        changeHidden('btn-put-', teamId)
-        changeHidden('coachSelect-', teamId)
-        changeHidden('labelCoach-', teamId)
-        changeHidden('labelTeam-', teamId)
-        changeHidden('input-labelTeam-', teamId)
-        changeHidden('btn-edit-', teamId)
-        changeHidden('btn-canceled-', teamId)*/
-        setEditTeams(editTeams.filter(team => teamId !== team.id))
+        setEditTeam(null)
     }
 
     const changeHidden = (btnName, id) => {
@@ -382,7 +330,6 @@ const TeamsAdminPage = (props) => {
                                     label="Equipe :"
                                     id="labelSelect"
                                     onChange={handleNewTeamChange}
-                                //    value={newTeam && newTeam.label ? newTeam.label : ""}
                                     error={errorsNewTeam.label}
                                     children= {[<option key="" value=""> choix du label </option>,
                                             newTeam.category &&
@@ -479,60 +426,22 @@ const TeamsAdminPage = (props) => {
                                                     : <p id={"labelCoach-" + team.id}> {"non assigné"}</p>
 
                                             )}
-                                            {/*<Select
-                                                name="label"
+                                            <Select
                                                 id={"coachSelect-" + team.id}
                                                 name="coach"
                                                 onChange={handleChange}
+                                                value={(editTeam !== null && editTeam.coach !== "non assigné") ? editTeam.coach.id : "non assigné"}
                                                 children= {[
-                                                    <option key="" value={team.coach && team.coach !== "non assigné" ? team.coach : "non assigné"   }>
-                                                    {team.coach && team.coach !== "non assigné" ? team.coach : "non assigné"   }
-                                                    </option>,
+                                                    <option key="" value="non assigné"> non Assigné</option>,
                                                     coachs.map(coach => (
-                                                        team.coach && team.coach !== "non assigné" && team.coach !== coach.id &&
                                                             <option key={coach.id} value={coach.id}>
                                                                 {coach.user.firstName} {coach.user.lastName}
                                                             </option>
-                                                        ))
+                                                        )
+                                                    )
                                                 ]}
                                                 hidden
-                                            />*/}
-                                            {/*<Select
-                                                id={"coachSelect-" + team.id}
-                                                name="coach"
-                                                //value={team.coach !== "non assigné" ? team.coach.id : "non assigné"}
-                                                onChange={handleChange}
-                                                children={[
-                                                        <option key=""
-                                                                value={team.coach !== "non assigné" ? team.coach.id : "non assigné"}>
-                                                                {team.coach !== "non assigné" ? team.coach.user.firstName + " " + team.coach.user.lastName : "non assigné"}
-                                                        </option>,
-                                                    coachs.map(coach => (
-                                                        coach.id !== team.coach.id &&
-                                                        <option key={coach.id} value={coach.id}>
-                                                            {coach.user.firstName} {coach.user.lastName}
-                                                        </option>
-                                                    ))
-                                                ]}
-                                                hidden
-                                            />*/}
-                                            <select
-                                                hidden
-                                                id={"coachSelect-" + team.id}
-                                                name="coach"
-                                                onChange={handleChange}
-                                                value={(team.coach && team.coach !== "non assigné") ? team.coach.id : "non assigné"}
-                                            // value={tm.coach ? tm.coach.id :""}
-                                                //todo maybe Select with default value
-                                            >
-                                                <option value="non assigné"> non Assigné</option>
-                                                {coachs.map(coach => (
-                                                    <option key={coach.id} value={coach.id}>
-                                                        {coach.user.firstName} {coach.user.lastName}
-                                                    </option>
-                                                )
-                                                )}
-                                            </select>
+                                            />
                                         </td>
                                         <td>
                                             <button
@@ -593,7 +502,7 @@ const TeamsAdminPage = (props) => {
 
                 {modalType && modalType.type === "update" && (
                     <div>
-                        <p>Êtes vous sûr de vouloir modifier cette équipe?</p>
+                        <p>Comfirmer la modification?</p>
                         <button type="button" className="btn btn-danger" onClick={() => handlePutTeam(modalType.target)}>
                             Comfirmer
                         </button>
