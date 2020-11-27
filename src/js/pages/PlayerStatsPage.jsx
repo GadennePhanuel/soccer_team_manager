@@ -107,7 +107,6 @@ const PlayerStatsPage = (props) => {
                     encounterAPI.findEncountersById(response.data.team.id)
                         .then(response => {
                             setEncounters(response.data['hydra:member'])
-                            console.log(response.data['hydra:member'])
                             //on parcours les rencontres et on crée un 2éme tableau contenant celles où le player à participer
                             response.data['hydra:member'].forEach(encounter => {
                                 encounter.stats.forEach(stat => {
