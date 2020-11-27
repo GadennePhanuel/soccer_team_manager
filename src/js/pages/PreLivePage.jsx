@@ -10,6 +10,7 @@ import encounterAPI from '../services/encounterAPI';
 import playerAPI from "../services/playerAPI";
 import tacticArchAPI from "../services/tacticArchAPI";
 import teamAPI from '../services/teamAPI';
+import usersAPI from '../services/usersAPI';
 
 const PreLivePage = (props) => {
 
@@ -47,6 +48,16 @@ const PreLivePage = (props) => {
     }
 
     useEffect(() => {
+        //série de controle, est-ce bien un Coach de connecté?
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_ADMIN") {
+            props.history.replace("/dashboardAdmin")
+        } else if (role === "ROLE_PLAYER") {
+            props.history.replace("/dashboardPlayer")
+        }
+
+
+
         setLoading(true)
         setLoading2(true)
         setLoading3(true)

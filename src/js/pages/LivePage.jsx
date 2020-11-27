@@ -15,6 +15,7 @@ import Modal from "../components/Modal";
 import MatchLiveContext from '../contexts/MatchLiveContext';
 import playerAPI from '../services/playerAPI';
 import notification from '../services/notification'
+import usersAPI from '../services/usersAPI';
 
 export const LivePlayersContext = createContext({
     playersSelected: [],
@@ -66,6 +67,15 @@ const LivePage = (props) => {
      * MISE EN PLACE AU CHARGEMENT DE LA PAGE
      */
     useEffect(() => {
+        //série de controle, est-ce bien un Coach de connecté?
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_ADMIN") {
+            props.history.replace("/dashboardAdmin")
+        } else if (role === "ROLE_PLAYER") {
+            props.history.replace("/dashboardPlayer")
+        }
+
+
         setLoading(true)
         setLoading3(true)
         setLoading4(true)
