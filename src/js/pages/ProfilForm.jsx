@@ -241,9 +241,10 @@ const ProfilForm = (props) => {
         playerAPI.setPlayer(player)
             .then(response => {
                 console.log(response.data)
-                //TODO flash success
                 setErrorsPlayer('')
                 setLoading6(false)
+                //TODO flash success
+                notification.successNotif("modifications bien enregistrées")
             })
             .catch(error => {
                 console.log(error.response.data.violations)
@@ -256,6 +257,7 @@ const ProfilForm = (props) => {
                 }
                 setErrorsPlayer(apiErrors);
                 setLoading6(false)
+                notification.errorNotif("Erreur dans un des champs")
             })
     }
 
