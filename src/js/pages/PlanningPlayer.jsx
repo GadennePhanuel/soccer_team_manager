@@ -26,6 +26,15 @@ const PlanningPlayer = (props) => {
     const [loading4, setLoading4] = useState(false)
 
     useEffect(() => {
+        //série de controle, est-ce bien un Coach de connecté?
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_ADMIN") {
+            props.history.replace("/dashboardAdmin")
+        } else if (role === "ROLE_COACH") {
+            props.history.replace("/dashboardCoach")
+        }
+
+
         setLoading(true)
         setLoading2(true)
         if (isAuthenticated) {
@@ -54,7 +63,7 @@ const PlanningPlayer = (props) => {
                 })
         }
 
-    }, [id, isAuthenticated, teamId])
+    }, [id, isAuthenticated, props.history, teamId])
 
 
     const [show, setShow] = useState(false)
