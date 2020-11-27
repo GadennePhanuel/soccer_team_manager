@@ -19,7 +19,6 @@ const SideNav = (props) => {
 
   const [playerId, setPlayerId] = useState({})
   const [roles, setRoles] = useState('')
-  const [club, setClub] = useState('');
   const [userId, setUserId] = useState('');
   const [loading, setLoading] = useState(false)
 
@@ -27,7 +26,6 @@ const SideNav = (props) => {
     setLoading(true)
     if (isAuthenticated) {
       setRoles(usersAPI.checkRole());
-      setClub(usersAPI.checkClub());
       setUserId(usersAPI.findUserId())
     }
     if (roles === 'ROLE_PLAYER') {
@@ -46,9 +44,6 @@ const SideNav = (props) => {
             {roles === "ROLE_ADMIN" && (
               <>
                 <NavLink to="/dashboardAdmin" className="home">
-                </NavLink>
-
-                <NavLink to={'/createClub/' + club} className="club">
                 </NavLink>
 
                 <NavLink to="/coachs" className="coachs">
