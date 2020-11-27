@@ -8,6 +8,7 @@ import trainingsAPI from '../services/trainingsAPI';
 import usersAPI from '../services/usersAPI';
 import '../../scss/pages/PlanningPlayer.scss'
 import Loader from 'react-loader-spinner';
+import notification from "../services/notification";
 
 const PlanningPlayer = (props) => {
     const { isAuthenticated } = useContext(AuthContext);
@@ -152,12 +153,12 @@ const PlanningPlayer = (props) => {
                         console.log(response.data)
                         setLoading4(false)
                         checkTrainingOfDayClick(currentDate)
-
+                        notification.successNotif("Votre présence a l'entrainement a été mis a jour")
                     })
                     .catch(error => {
+                        notification.errorNotif("Une erreur est survenu")
                         setAbsence(true)
                         setLoading4(false)
-                        console.log(error.response)
                     })
             }
             if (value === "false") {
@@ -167,9 +168,10 @@ const PlanningPlayer = (props) => {
                     .then(response => {
                         setLoading4(false)
                         checkTrainingOfDayClick(currentDate)
+                        notification.successNotif("Votre présence a l'entrainement a été mis a jour")
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        notification.errorNotif("Une erreur est survenu")
                         setLoading4(false)
                         setAbsence(false)
                     })
