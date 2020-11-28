@@ -16,8 +16,10 @@ const LoginPage = ({ history }) => {
       history.replace('/dashboardAdmin')
     } else if (role === 'ROLE_COACH') {
       history.replace('/dashboardCoach')
-    } else {
+    } else if (role === 'ROLE_PLAYER'){
       history.replace('/dashboardPlayer')
+    }else if (role === 'ROLE_NOT_ALLOWED'){
+      history.replace("/notAllowedUser")
     }
   }
 
@@ -54,8 +56,10 @@ const LoginPage = ({ history }) => {
         history.replace("/dashboardAdmin");
       } else if (roles === "ROLE_COACH") {
         history.replace("/dashboardCoach");
-      } else {
+      } else if (roles === "ROLE_PLAYER"){
         history.replace("/dashboardPlayer");
+      } else if (roles === "ROLE_NOT_ALLOWED"){
+        history.replace("/notAllowedUser");
       }
 
     } catch (error) {

@@ -19,6 +19,8 @@ const DashboardCoachPage = (props) => {
         props.history.replace("/dashboardAdmin")
     } else if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
+    } else if(role === 'ROLE_NOT_ALLOWED') {
+        props.history.replace("/notAllowedUser")
     }
 
 

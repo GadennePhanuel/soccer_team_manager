@@ -13,7 +13,6 @@ function findCoach(id) {
         .get(COACHS_API + "/" + id)
 }
 
-
 function deleteCoach(id){
     return Axios
             .delete(COACHS_API + "/" + id)

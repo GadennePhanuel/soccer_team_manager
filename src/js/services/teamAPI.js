@@ -1,5 +1,5 @@
 import Axios from "axios"
-import { TEAMS_API } from "../../config";
+import {ADMINS_API, TEAMS_API} from "../../config";
 
 function findAllTeams() {
     return Axios
@@ -28,8 +28,19 @@ function deleteCoachOnTeam(id) {
     )
 }
 
-function putTeam(teamId, label, coach) {
-    return Axios.put(TEAMS_API + "/" + teamId,{coach: coach,label: label})
+function excludeCoachOnAllTeams(coachId) {
+    return Axios.patch(ADMINS_API + "/coach/" + coachId + "/excludeOnTeams")
+}
+
+function putTeam(teamId, teamLabel, teamCoach) {
+    return Axios
+        .put(TEAMS_API + "/" + teamId,
+            {
+                coach: teamCoach,
+                label: teamLabel,
+            }
+        )
+    //.then(response => response.data['hydra:member'])
 }
 
 function findAllTacticsByTeam(id){
@@ -43,5 +54,6 @@ export default {
     findTeam,
     deleteTeam,
     putTeam,
-    findAllTacticsByTeam
+    findAllTacticsByTeam,
+    excludeCoachOnAllTeams
 }

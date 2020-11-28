@@ -27,6 +27,7 @@ import FormationPage from "./js/pages/FormationPage";
 import PreLivePage from "./js/pages/PreLivePage";
 import LivePage from "./js/pages/LivePage";
 import MatchLiveContext from "./js/contexts/MatchLiveContext";
+import NotAllowedPage from "./js/pages/NotAllowedPage";
 
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
                 <PrivateRoute path="/encountersAdmin" component={EncountersAdminPage} />
                 <PrivateRoute path="/trainings" component={TrainingsPage} />
                 <PrivateRoute path="/formation" component={FormationPage} />
+                <PrivateRoute path="/notAllowedUser" component={NotAllowedPage} />
 
                 <PrivateRoute path="/preLive" component={PreLivePage} />
                 <PrivateRoute path="/live/:matchId" component={LivePage} />

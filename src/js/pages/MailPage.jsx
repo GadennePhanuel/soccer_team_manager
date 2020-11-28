@@ -245,23 +245,27 @@ const MailPage = (props) => {
                 <div>
                     <h1>Messagerie</h1>
                     <div className="SelectList">
-                        {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
+                        {(role !== 'ROLE_ADMIN') &&
                             <button onClick={handleSelect} className="btn btn-primary btnSelectList">
                                 Admins
                         </button>
                         }
-                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
-                            Coachs
-                    </button>
-                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
-                            Joueurs
-                    </button>
-                        <button onClick={handleSelect} className="btn btn-primary btnSelectList">
-                            Equipes
-                    </button>
+                        {role !== 'ROLE_NOT_ALLOWED' &&
+                            <>
+                            <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                                Coachs
+                            </button>
+                            <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                                Joueurs
+                            </button>
+                            <button onClick={handleSelect} className="btn btn-primary btnSelectList">
+                                Equipes
+                            </button>
+                            </>
+                        }
                     </div>
                     <div>
-                        {(role === 'ROLE_COACH' || role === 'ROLE_PLAYER') &&
+                        {(role !== 'ROLE_ADMIN') &&
                             <div className="btnSelectItem" id="Admins" hidden>
                                 {admins.map((admin) => (
                                     <div key={admin.id}>
@@ -272,16 +276,18 @@ const MailPage = (props) => {
                                 ))}
                             </div>
                         }
-                        <div className="btnSelectItem" id="Coachs" hidden>
-                            {coachs.map((coach) => (
-                                <div key={coach.id}>
-                                    <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email}>
-                                        {coach.user.lastName} {coach.user.firstName}
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="btnSelectItem" id="Joueurs" hidden>
+                        { role !== 'ROLE_NOT_ALLOWED' &&
+                            <>
+                            <div className="btnSelectItem" id="Coachs" hidden>
+                                {coachs.map((coach) => (
+                                    <div key={coach.id}>
+                                        <button onClick={() => handleAdd(coach.user.email)} id={coach.user.email}>
+                                            {coach.user.lastName} {coach.user.firstName}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="btnSelectItem" id="Joueurs" hidden>
                             {players.map((player) => (
                                 <div key={player.id}>
                                     <button onClick={() => handleAdd(player.user.email)} id={player.user.email}>
@@ -289,8 +295,8 @@ const MailPage = (props) => {
                                     </button>
                                 </div>
                             ))}
-                        </div>
-                        <div className="btnSelectItem" id="Equipes" hidden>
+                            </div>
+                            <div className="btnSelectItem" id="Equipes" hidden>
                             {teams.map((team) => (
                                 <div key={team.id}>
                                     <button onClick={() => handleAddTeam(team)} id={team.label + team.category}>
@@ -298,7 +304,9 @@ const MailPage = (props) => {
                                     </button>
                                 </div>
                             ))}
-                        </div>
+                            </div>
+                            </>
+                            }
                     </div>
                 </div>
             )}

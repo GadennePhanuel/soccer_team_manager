@@ -15,6 +15,8 @@ const PlayersAdminPage = (props) => {
     const role = usersAPI.checkRole();
     if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
+    }else if(role === 'ROLE_NOT_ALLOWED') {
+        props.history.replace("/notAllowedUser")
     }
 
     //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
@@ -69,7 +71,7 @@ const PlayersAdminPage = (props) => {
     }, [refreshKey])
 
 
-    const handleDelete = id => {
+    /*const handleDelete = id => {
         //copie le tableau players
         const originalPlayers = [...players];
 
@@ -82,7 +84,25 @@ const PlayersAdminPage = (props) => {
             .catch(error => {
                 setPlayers(originalPlayers);
             });
-    };
+    };*/
+
+    const handleAllowed = (player, allowed)=> {
+        usersAPI.switchAllowed(player.user.id, "player", allowed)
+            .then(response => {
+                playerAPI.excludePlayerOfTeam(player.id)
+                    .then(response2 => {
+                        console.log(response2)
+                    })
+                    .catch(error => {
+                        console.log(error.response)
+                    })
+                console.log(response)
+                setRefreshKey(refreshKey + 1)
+            })
+            .catch(error => {
+                console.log(error.response)
+            })
+    }
 
     const handleSearch = event => {
         const value = event.currentTarget.value;
@@ -120,7 +140,7 @@ const PlayersAdminPage = (props) => {
         event.preventDefault()
         setLoading2(true)
         //call ajax vers controller particulier
-        //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du coach) vers le back qui se chargera d'envoyer un mail au coach qui se fait inviter
+        //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du Coach) vers le back qui se chargera d'envoyer un mail au Coach qui se fait inviter
         playerAPI.sendMailToPlayer(email, club)
             .then(response => {
                 console.log(response.data)
@@ -243,11 +263,15 @@ const PlayersAdminPage = (props) => {
                                         </td>
                                         {role === 'ROLE_ADMIN' &&
                                             <td>
-                                                <button
-                                                    onClick={() => handleDelete(player.id)}
-                                                    className="btn btn-sm btn-danger">
-                                                    Supprimer
-                                        </button>
+                                                {player.user.roles[0] === "ROLE_NOT_ALLOWED"  ?
+                                                    <button onClick={() => handleAllowed(player, "debloquer")} className="btn btn-sm btn-success">
+                                                        Débloquer
+                                                    </button>
+                                                    :
+                                                    <button onClick={() => handleAllowed(player, "bloquer")} className="btn btn-sm btn-danger">
+                                                        Bloquer
+                                                    </button>
+                                                }
                                             </td>
                                         }
                                     </tr>
@@ -288,11 +312,15 @@ const PlayersAdminPage = (props) => {
                                         <td>non attribué</td>
                                         {role === 'ROLE_ADMIN' &&
                                             <td>
-                                                <button
-                                                    onClick={() => handleDelete(player.id)}
-                                                    className="btn btn-sm btn-danger">
-                                                    Supprimer
-                                        </button>
+                                                {player.user.roles[0] === "ROLE_NOT_ALLOWED" ?
+                                                    <button onClick={() => handleAllowed(player, "debloquer")} className="btn btn-sm btn-success">
+                                                        Débloquer
+                                                    </button>
+                                                    :
+                                                    <button onClick={() => handleAllowed(player, "bloquer")} className="btn btn-sm btn-danger">
+                                                        Bloquer
+                                                    </button>
+                                                }
                                             </td>
                                         }
                                         {(role === 'ROLE_COACH' && currentTeamId !== '') &&
