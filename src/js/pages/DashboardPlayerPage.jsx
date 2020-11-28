@@ -18,8 +18,9 @@ const DashboardPlayerPage = (props) => {
         props.history.replace("/dashboardAdmin")
     } else if (role === 'ROLE_COACH') {
         props.history.replace("/dashboardCoach")
+    } else if(role === 'ROLE_NOT_ALLOWED') {
+        props.history.replace("/notAllowedUser")
     }
-
 
     if (club === "new") {
         props.history.replace("/createClub/new")

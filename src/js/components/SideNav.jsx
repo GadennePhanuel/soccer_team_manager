@@ -43,74 +43,79 @@ const SideNav = (props) => {
         <nav className="SideNav">
 
           <div className="SideNav-items">
-            {roles === "ROLE_ADMIN" && (
+            {roles !== "ROLE_NOT_ALLOWED" && (
               <>
-                <NavLink to="/dashboardAdmin" className="home">
-                </NavLink>
+              {roles === "ROLE_ADMIN" && (
+                  <>
+                    <NavLink to="/dashboardAdmin" className="home">
+                    </NavLink>
 
-                <NavLink to={'/createClub/' + club} className="club">
-                </NavLink>
+                    <NavLink to={'/createClub/' + club} className="club">
+                    </NavLink>
 
-                <NavLink to="/coachs" className="coachs">
-                </NavLink>
+                    <NavLink to="/coachs" className="coachs">
+                    </NavLink>
 
-                <NavLink to="/players" className="players">
-                </NavLink>
+                    <NavLink to="/players" className="players">
+                    </NavLink>
 
-                <NavLink to="/teams" className="teams">
-                </NavLink>
+                    <NavLink to="/teams" className="teams">
+                    </NavLink>
 
-                <NavLink to="/encountersAdmin" className="encounter-management" >
-                </NavLink>
-              </>
-            )}
-            {roles === "ROLE_COACH" && (
-              <>
-                <NavLink to="/dashboardCoach" className="home">
-                </NavLink>
+                    <NavLink to="/encountersAdmin" className="encounter-management" >
+                    </NavLink>
+                  </>
+              )}
+              {roles === "ROLE_COACH" && (
+                  <>
+                    <NavLink to="/dashboardCoach" className="home">
+                    </NavLink>
 
-                <NavLink to="/players" className="players">
-                </NavLink>
+                    <NavLink to="/players" className="players">
+                    </NavLink>
 
-                <NavLink to="/myPlayers" className="myPlayers">
-                </NavLink>
+                    <NavLink to="/myPlayers" className="myPlayers">
+                    </NavLink>
 
-                <NavLink to="/trainings" className="trainings">
-                </NavLink>
+                    <NavLink to="/trainings" className="trainings">
+                    </NavLink>
 
-                <NavLink to="/encountersCoach" className="encounter-management">
-                </NavLink>
+                    <NavLink to="/encountersCoach" className="encounter-management">
+                    </NavLink>
 
-                <NavLink to="/formation" className="formation">
-                </NavLink>
+                    <NavLink to="/formation" className="formation">
+                    </NavLink>
 
-                <NavLink to="/preLive" className="preLive">
-                </NavLink>
-              </>
-            )}
-            {roles === "ROLE_PLAYER" && (
-              <>
-                <NavLink to="/dashboardPlayer" className="home">
-                </NavLink>
+                    <NavLink to="/preLive" className="preLive">
+                    </NavLink>
+                  </>
+              )}
+              {roles === "ROLE_PLAYER" && (
+                  <>
+                    <NavLink to="/dashboardPlayer" className="home">
+                    </NavLink>
 
-                <NavLink to={"/player/" + playerId + "/stats"} className="stats">
-                </NavLink>
+                    <NavLink to={"/player/" + playerId + "/stats"} className="stats">
+                    </NavLink>
 
-                <NavLink to={"/player/" + playerId + "/planning"} className="planningPlayer" >
-                </NavLink>
-              </>
-            )}
+                    <NavLink to={"/player/" + playerId + "/planning"} className="planningPlayer" >
+                    </NavLink>
+                  </>
+              )}
+          </>
+          )}
             <NavLink to="/mail" className="mail">
             </NavLink>
 
-            <NavLink to="/profil" className="profil">
-            </NavLink>
-          </div>
-          <div>
-            <button onClick={handleLogout} className="logout">
+              <NavLink to="/profil" className="profil">
+              </NavLink>
+            </div>
+            <div>
+              <button onClick={handleLogout} className="logout">
 
-            </button>
-          </div>
+              </button>
+            </div>
+
         </nav>
       )}
     </>

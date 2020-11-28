@@ -15,6 +15,8 @@ const CoachAdminPage = (props) => {
         props.history.replace("/dashboardCoach")
     } else if (role === 'ROLE_PLAYER') {
         props.history.replace("/dashboardPlayer")
+    }else if(role === 'ROLE_NOT_ALLOWED') {
+        props.history.replace("/notAllowedUser")
     }
     //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
     const club = usersAPI.checkClub();
@@ -51,11 +53,12 @@ const CoachAdminPage = (props) => {
     }, [refreshKey])
 
     const handleDelete = (id) => {
+    /*const handleDelete = (id) => {
         //copie du tableau original
         const originalCoachs = [...coachs];
 
-        //supression de l'affichage du coach selectionné
-        setCoachs(coachs.filter((coach) => coach.id !== id));
+        //supression de l'affichage du Coach selectionné
+        setCoachs(coachs.filter((Coach) => Coach.id !== id));
 
         coachAPI.deleteCoach(id)
             .then(response => console.log("ok"))
@@ -63,12 +66,11 @@ const CoachAdminPage = (props) => {
                 setCoachs(originalCoachs);
                 console.log(error.response);
             })
-    }
+    }*/
 
     const handeDeleteTeam = (id) => {
         teamAPI.deleteCoachOnTeam(id)
             .then(response => {
-                console.log("ok")
                 setRefreshKey(refreshKey + 1)
             })
             .catch(error => {
@@ -76,6 +78,25 @@ const CoachAdminPage = (props) => {
             })
     }
 
+    const handleAllowed = (coach, allowed)=> {
+        usersAPI.switchAllowed(coach.user.id, "coach", allowed)
+            .then(response => {
+                if(allowed === "bloquer"){
+                    teamAPI.excludeCoachOnAllTeams(coach.id)
+                        .then(response => {
+                            console.log(response)
+                        })
+                        .catch(error => {
+                            console.log(error.response)
+                        })
+                }
+                console.log(response)
+                setRefreshKey(refreshKey + 1)
+            })
+            .catch(error => {
+                console.log(error.response)
+            })
+    }
 
     const handleInvit = () => {
         document.getElementById('btn-invit').hidden = true
@@ -93,7 +114,7 @@ const CoachAdminPage = (props) => {
         event.preventDefault()
         setLoading2(true)
         //call ajax vers controller particulier
-        //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du coach) vers le back qui se chargera d'envoyer un mail au coach qui se fait inviter
+        //1.envoie de l'adresse email (et de l'url du front correspondant à la page d'inscription du Coach) vers le back qui se chargera d'envoyer un mail au Coach qui se fait inviter
         coachAPI.sendMailToCoach(email, club)
             .then(response => {
                 console.log(response.data)
@@ -189,9 +210,18 @@ const CoachAdminPage = (props) => {
                                         </table>
                                     </td>
                                     <td>
-                                        <button onClick={() => handleDelete(coach.id)} className="btn btn-sm btn-danger">
+                                        {/*<button onClick={() => handleDelete(Coach.id)} className="btn btn-sm btn-danger">
                                             Supprimer
-                                </button>
+                                        </button>*/}
+                                        {coach.user.roles[0] === "ROLE_NOT_ALLOWED" ?
+                                            <button className="btn btn-sm btn-success" onClick={() => handleAllowed(coach, "debloquer")} >
+                                                Autoriser
+                                            </button>
+                                        :
+                                            <button className="btn btn-sm btn-danger" onClick={() => handleAllowed(coach, "bloquer")} >
+                                                Bloquer
+                                            </button>
+                                        }
                                     </td>
                                 </tr>
                             ))}
