@@ -2,6 +2,10 @@
 @import "../utilities//mixins.scss";
 
 .DashboardPlayerPage{
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: auto;
+
     h1{
         text-align: center;
     }
@@ -26,7 +30,8 @@
          margin-top:40px;
          background-color:#fff;
          padding-bottom : 30px;
-         width: 97%;
+         min-width: 97%;
+         max-width: 97%;
          border-radius: 10px;
          
 
@@ -34,6 +39,7 @@
                 background-color:#e0e1e7;
                 padding : 16px 25px ;
                 text-align: center;
+                min-width: 90%;
                 max-width: 90%;
                 margin:auto;
                 border-radius: 10px;
@@ -97,11 +103,13 @@
         }
 
         #nextEncounters{
-            width : 40%;
+            min-width : 40%;
+            max-width : 40%;
         }
 
         #nextTrainings{
-            width : 55%;
+            min-width : 55%;
+            max-width: 55%;
         }
         .vs{
             background-color:#adaeb4;
@@ -115,7 +123,6 @@
         }
 
         .nextEncounters, .nextTrainings{
-            //margin-top:10px;
             background-color:#e0e1e7;
             padding : 10px 25px ;
             text-align: center;
@@ -143,4 +150,11 @@
         padding:0px;
         color:rgb(26, 24, 24);
     }
+
+    .btn-link:hover{
+        text-decoration: none;
+        color:rgb(26, 24, 24);
+    }
+
+
 }

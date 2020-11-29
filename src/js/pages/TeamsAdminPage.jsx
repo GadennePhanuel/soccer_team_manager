@@ -298,7 +298,7 @@ const TeamsAdminPage = (props) => {
                     <div id="showFormDiv" className="wrapper">
                         <button onClick={() => handleCreate()} className="btn btn-primary">
                             Créer une équipe
-                    </button>
+                        </button>
                     </div>
                     <form id="form-create" className='formTeam' onSubmit={handleSubmit} hidden>
                         <fieldset>
@@ -388,7 +388,6 @@ const TeamsAdminPage = (props) => {
                                 <th scope="col">Categorie</th>
                                 <th scope="col">Coach</th>
                                 <th></th>
-                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -447,31 +446,29 @@ const TeamsAdminPage = (props) => {
                                             <button
                                                 onClick={() => handleEdit(team.id)}
                                                 id={"btn-edit-" + team.id}
-                                                className="btn btn-sm btn-success">
-                                                edit
-                                    </button>
-                                            <button
-                                                hidden
-                                                onClick={() => handleCanceled(team.id)}
-                                                id={"btn-canceled-" + team.id}
-                                                className="btn btn-sm btn-success">
-                                                annuler
-                                    </button>
+                                                className="btn btn-sm btn-warning">
+                                                editer
+                                            </button>
                                             <button
                                                 hidden
                                                 onClick={() => showModal("update", team.id)}
                                                 id={"btn-put-" + team.id}
                                                 className="btn btn-sm btn-success">
                                                 valider
-                                    </button>
-                                        </td>
-                                        <td>
+                                            </button>
+                                            <button
+                                                hidden
+                                                onClick={() => handleCanceled(team.id)}
+                                                id={"btn-canceled-" + team.id}
+                                                className="btn btn-sm btn-danger">
+                                                annuler
+                                            </button>
                                             <button
                                                 onClick={() => showModal("delete", team.id)}
                                                 id={"btn-delete-" + team.id}
                                                 className="btn btn-sm btn-danger">
                                                 supprimer
-                                    </button>
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
@@ -504,6 +501,7 @@ const TeamsAdminPage = (props) => {
                     <div>
                         <p>Comfirmer la modification?</p>
                         <button type="button" className="btn btn-danger" onClick={() => handlePutTeam(modalType.target)}>
+
                             Comfirmer
                         </button>
                         <button type="button" className="btn btn-danger" onClick={() => hideModal()}>

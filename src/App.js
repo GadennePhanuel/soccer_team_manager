@@ -29,6 +29,10 @@ import LivePage from "./js/pages/LivePage";
 import MatchLiveContext from "./js/contexts/MatchLiveContext";
 import NotAllowedPage from "./js/pages/NotAllowedPage";
 
+import ReactNotification from 'react-notifications-component'
+import 'react-notifications-component/dist/theme.css'
+
+
 
 function App() {
   AuthAPI.setup();
@@ -64,11 +68,12 @@ function App() {
             }}
           >
             <main className="container-fluid">
+              <ReactNotification />
               <Switch>
                 <Route path="/registerUser/:token" component={RegisterUserPage} />
-                <PrivateRoute path="/createClub/:id" component={ClubFormPage} />
                 <PrivateRoute path="/player/:id/stats" component={PlayerStatsPage} />
                 <PrivateRoute path="/player/:id/planning" component={PlanningPlayer} />
+                <PrivateRoute path="/createClub" component={ClubFormPage} />
                 <Route path="/RegisterAdmin" component={RegisterAdminPage} />
                 <Route path="/login" component={LoginPage} />
                 <PrivateRoute path="/dashboardAdmin" component={DashboardAdminPage} />

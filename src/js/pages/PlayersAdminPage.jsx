@@ -5,6 +5,8 @@ import Field from "../components/forms/Field";
 import playerAPI from "../services/playerAPI";
 import "../../scss/pages/PlayersAdminPage.scss";
 import TeamContext from "../contexts/TeamContext";
+import Modal from '../components/Modal';
+import notification from "../services/notification";
 import Loader from "react-loader-spinner";
 import CurrentUser from "../components/CurrentUser";
 
@@ -48,6 +50,21 @@ const PlayersAdminPage = (props) => {
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
 
+    const [show, setShow] = useState(false)
+    const [idTarget, setIdTarget] = useState('')
+    const [modalType, setModalType] = useState('')
+
+    
+    const showModal = (modalType,idTarget) => {
+        setModalType(modalType)
+        setIdTarget(idTarget)
+        setShow(true)
+    }
+
+    const hideModal = () => {
+        setShow(false)
+    }
+
     useEffect(() => {
         setLoading(true)
         setLoading2(true)
@@ -78,11 +95,15 @@ const PlayersAdminPage = (props) => {
         //Delete l'affichage du player avant de le delete en bdd
         setPlayers(players.filter(player => player.id !== id))
 
-        //si la suppression coté serveur n'a pas fonctionné, je raffiche mon tableau initial 
+        //si la suppression coté serveur n'a pas fonctionné, je raffiche mon tableau initial
+        hideModal() 
         playerAPI.deletePlayer(id)
-            .then(response => console.log("ok"))
+            .then(response => {
+                notification.successNotif("Le joueur a bien été supprimé") 
+            })
             .catch(error => {
                 setPlayers(originalPlayers);
+                notification.errorNotif("Une erreur s'est produite")
             });
     };*/
 
@@ -115,13 +136,18 @@ const PlayersAdminPage = (props) => {
 
 
     const filteredPlayers = players.filter(p =>
-        p.user.firstName.toLowerCase().includes(search.toLowerCase()) ||
-        p.user.lastName.toLowerCase().includes(search.toLowerCase()) ||
-        (p.team && p.team.label.toLowerCase().includes(search.toLowerCase())))
+        (p.user.firstName.toLowerCase() + " " + p.user.lastName.toLowerCase()).includes(search.toLowerCase()) ||
+        (p.user.lastName.toLowerCase() + " " + p.user.firstName.toLowerCase()).includes(search.toLowerCase()) ||
+        (p.team && (p.team.category.toLowerCase() + " " + p.team.label.toLowerCase()).includes(search.toLowerCase())) ||
+        (p.team && (p.team.label.toLowerCase() + " " + p.team.category.toLowerCase()).includes(search.toLowerCase()))
+    )
+
+
+
     const filteredPlayersNT = playersNoTeam.filter(p =>
-        p.user.firstName.toLowerCase().includes(search2.toLowerCase()) ||
-        p.user.lastName.toLowerCase().includes(search2.toLowerCase()) ||
-        (p.team && p.team.label.toLowerCase().includes(search2.toLowerCase())))
+        (p.user.firstName.toLowerCase() + " " + p.user.lastName.toLowerCase()).includes(search2.toLowerCase()) ||
+        (p.user.lastName.toLowerCase() + " " + p.user.firstName.toLowerCase()).includes(search2.toLowerCase())
+    )
 
 
 
@@ -151,11 +177,13 @@ const PlayersAdminPage = (props) => {
                 document.getElementById('btn-invit').hidden = false
                 document.getElementById('form-invit').hidden = true
                 setEmail('');
+                notification.successNotif("L'invitation a bien été envoyée")  
             })
             .catch(error => {
                 const { violations } = error.response.data;
                 if (violations) {
                     setError(violations);
+                    notification.errorNotif("Une erreur s'est produite lors de l'envoi de l'invitation")
                 }
             })
 
@@ -166,9 +194,10 @@ const PlayersAdminPage = (props) => {
         setLoading(true)
         playerAPI.setTeamToPlayer(player, currentTeamId)
             .then(response => {
+                notification.successNotif("Le joueur a bien été séléctionné") 
                 setRefreshKey(refreshKey + 1)
             })
-            .catch(error => console.log(error.response))
+            .catch(error => notification.errorNotif("Une erreur s'est produite lors de la sélection"))
     }
 
     const HandleHS = () => {
@@ -216,10 +245,7 @@ const PlayersAdminPage = (props) => {
                                 error={error}
                             >
                             </Field>
-                            <button type="submit" className="sendBtn">
-
-                            </button>
-
+                            <button type="submit" className="sendBtn"></button>
                         </form>
                     </div>
 
@@ -272,6 +298,12 @@ const PlayersAdminPage = (props) => {
                                                         Bloquer
                                                     </button>
                                                 }
+                                                {/*<button
+                                                    onClick={() => showModal("Supprimer le joueur",player.id)}
+                                                    className="btn btn-sm btn-danger">
+                                                    Supprimer
+                                                </button>
+                                                */}
                                             </td>
                                         }
                                     </tr>
@@ -321,6 +353,12 @@ const PlayersAdminPage = (props) => {
                                                         Bloquer
                                                     </button>
                                                 }
+                                                {/*<button
+                                                    onClick={() => showModal("Supprimer le joueur",player.id)}
+                                                    className="btn btn-sm btn-danger">
+                                                    Supprimer
+                                                </button>
+                                                */}
                                             </td>
                                         }
                                         {(role === 'ROLE_COACH' && currentTeamId !== '') &&
@@ -328,7 +366,7 @@ const PlayersAdminPage = (props) => {
                                                 {!player.team &&
                                                     <button onClick={() => handleChoice(player)} className="btn btn-success">
                                                         Selectionner
-                                            </button>
+                                                    </button>
                                                 }
                                             </td>
                                         }
@@ -336,7 +374,7 @@ const PlayersAdminPage = (props) => {
                                 ))}
                                 {filteredPlayersNT.length === 0 && (
                                     <tr className="no-player">
-                                        <td> Aucun joueurs </td>
+                                        <td> Aucun joueur </td>
                                     </tr>
                                 )}
                             </tbody>
@@ -344,6 +382,19 @@ const PlayersAdminPage = (props) => {
                     </div>
                 </div>
             )}
+
+            <Modal
+                show={show}
+                handleClose={hideModal}
+                title= {modalType}
+            >
+                {modalType === "Supprimer le joueur" &&
+                    <div>
+                        <h6>Êtes-vous sur de vouloir supprimer ce joueur ? </h6>
+                        <button onClick={() => handleDelete(idTarget)} className="btn btn-primary">Confirmer</button>
+                    </div>
+                }
+            </Modal>
         </div>
 
     );

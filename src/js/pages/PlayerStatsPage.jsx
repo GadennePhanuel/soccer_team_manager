@@ -107,12 +107,12 @@ const PlayerStatsPage = (props) => {
                     encounterAPI.findEncountersById(response.data.team.id)
                         .then(response => {
                             setEncounters(response.data['hydra:member'])
-
                             //on parcours les rencontres et on crée un 2éme tableau contenant celles où le player à participer
                             response.data['hydra:member'].forEach(encounter => {
                                 encounter.stats.forEach(stat => {
                                     if (stat.player.id === parseInt(id, 10)) {
                                         setSelections(selections => [...selections, encounter])
+                                        console.log(encounter)
                                     }
                                 })
                             })
@@ -213,7 +213,7 @@ const PlayerStatsPage = (props) => {
                     </div>
                     <div className="matchs">
                         <h3>Matchs</h3>
-                        <p>Sélections: {selections.length + " sur " + encounters.length + " (" + (selections.length / encounters.length) * 100 + "%)"}</p>
+                        <p>Sélections: {selections.length + " sur " + encounters.length + " (" + Math.round((selections.length / encounters.length) * 100) + "%)"}</p>
                         {selections.length === 0 && (
                             <div className="medal2"></div>
                         )}

@@ -4,6 +4,8 @@ import usersAPI from '../services/usersAPI';
 import Field from '../components/forms/Field'
 import coachAPI from '../services/coachAPI';
 import teamAPI from '../services/teamAPI';
+import Modal from '../components/Modal';
+import notification from "../services/notification";
 import "../../scss/pages/CoachsAdminPage.scss";
 import Loader from 'react-loader-spinner';
 import Modal from "../components/Modal";
@@ -22,7 +24,7 @@ const CoachAdminPage = (props) => {
     //si c'est bien un admin, verifier si il a bien un club d'assigner. Si c'est non -> redirection sur "/createClub/new"
     const club = usersAPI.checkClub();
     if (club === "new") {
-        props.history.replace("/createClub/new")
+        props.history.replace("/createClub")
     }
 
     const [refreshKey, setRefreshKey] = useState(0)
@@ -40,6 +42,20 @@ const CoachAdminPage = (props) => {
         setEmail(value);
     };
 
+    const [show, setShow] = useState(false)
+    const [idTarget, setIdTarget] = useState('')
+    const[modalType, setModalType] = useState('')
+
+    
+    const showModal = (modalType,idTarget) => {
+        setModalType(modalType)
+        setIdTarget(idTarget)
+        setShow(true)
+    }
+
+    const hideModal = () => {
+        setShow(false)
+    }
 
     useEffect(() => {
         setLoading(true)
@@ -58,25 +74,28 @@ const CoachAdminPage = (props) => {
             //copie du tableau original
             const originalCoachs = [...coachs];
 
-            //supression de l'affichage du Coach selectionné
-            setCoachs(coachs.filter((Coach) => Coach.id !== id));
-
-            coachAPI.deleteCoach(id)
-                .then(response => console.log("ok"))
-                .catch(error => {
-                    setCoachs(originalCoachs);
-                    console.log(error.response);
-                })
-        }*!/*/
+            setCoachs(coachs.filter((coach) => coach.id !== id));
+        hideModal()
+        coachAPI.deleteCoach(id)
+            .then(response => {
+                notification.successNotif("Le coach a bien été supprimé")                
+            })
+            .catch(error => {
+                setCoachs(originalCoachs);
+                notification.errorNotif("Une erreur s'est produite lors de la suppression")
+            })
+    }*!/*/
 
         const handeDeleteTeam = (id) => {
             teamAPI.deleteCoachOnTeam(id)
-                .then(response => {
-                    setRefreshKey(refreshKey + 1)
-                })
-                .catch(error => {
-                    console.log(error.response);
-                })
+            .then(response => {
+                notification.successNotif("Le coach a bien été supprimé de l'équipe")
+                setRefreshKey(refreshKey + 1)
+                
+            })
+            .catch(error => {
+                notification.errorNotif("Une erreur s'est produite lors de la suppression")
+            })
         }
 
         const handleAllowed = (coach, allowed) => {
@@ -127,11 +146,13 @@ const CoachAdminPage = (props) => {
                     document.getElementById('btn-invit').hidden = false
                     document.getElementById('form-invit').hidden = true
                     setEmail('');
+                    notification.successNotif("L'invitation a bien été envoyée")
                 })
                 .catch(error => {
                     const {violations} = error.response.data;
                     if (violations) {
                         setError(violations);
+                        notification.errorNotif("Une erreur s'est produite lors de l'envoi de l'invitation")
                     }
                 })
 
@@ -209,14 +230,14 @@ const CoachAdminPage = (props) => {
                                     <td>{coach.user.email}</td>
                                     <td>{coach.user.phone}</td>
                                     <td>
+
                                         <table>
                                             <tbody>
                                             {coach.teams.map((team) => (
                                                 <tr key={team.id}>
                                                     <td>{team.label} - {team.category}</td>
                                                     <td>
-                                                        <button onClick={() => handeDeleteTeam(team.id)}
-                                                                className="cancelBtn"></button>
+                                                        <button onClick={() => showModal("Supprimer l'équipe",team.id)} className="cancelBtn"></button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -224,9 +245,7 @@ const CoachAdminPage = (props) => {
                                         </table>
                                     </td>
                                     <td>
-                                        {/*<button onClick={() => handleDelete(Coach.id)} className="btn btn-sm btn-danger">
-                                            Supprimer
-                                        </button>*/}
+                                        {/*<button onClick={() => showModal("Supprimer un coach",coach.id)} className="btn btn-sm btn-danger">Supprimer</button>*/}
                                         {coach.user.roles[0] === "ROLE_NOT_ALLOWED" ?
                                             <button className="btn btn-sm btn-success"
                                                  //   onClick={() => handleAllowed(coach, "debloquer")}>
@@ -249,6 +268,20 @@ const CoachAdminPage = (props) => {
                 )}
 
                 <Modal show={show} handleClose={hideModal} title={modalType.type}>
+
+                    {modalType === "Supprimer l'équipe" &&
+                    <div>
+                        <h6>Êtes-vous sur de vouloir supprimer cette équipe ? </h6>
+                        <button onClick={() => handleDeleteTeam(idTarget)} className="btn btn-primary">Confirmer</button>
+                    </div>
+                    }
+
+                    {/*{modalType === "Supprimer un coach" &&
+                    <div>
+                        <h6>Êtes-vous sur de vouloir supprimer ce coach ? </h6>
+                        <button onClick={() => handleDelete(idTarget)} className="btn btn-primary">Supprimer</button>
+                    </div>
+                    }*/}
 
                     {modalType && modalType.type === "debloquer" && (
                         <div>

@@ -9,12 +9,12 @@ import clubAPI from '../services/clubAPI';
 import usersAPI from '../services/usersAPI';
 import '../../scss/pages/ClubFormPage.scss';
 import Loader from 'react-loader-spinner';
+import notification from '../services/notification';
 
 const ClubFormPage = (props) => {
     authAPI.setup();
 
     const { setIsAuthenticated } = useContext(AuthContext);
-    const { id } = props.match.params;
 
     const [club, setClub] = useState({
         label: ""
@@ -23,9 +23,7 @@ const ClubFormPage = (props) => {
         label: ""
     });
 
-    const [editing, setEditing] = useState(false);
 
-    const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
 
     const handleChange = (event) => {
@@ -40,54 +38,43 @@ const ClubFormPage = (props) => {
     const jwtData = JwtDecode(token);
     const userId = jwtData.id
 
-    /**
-     * récupération du club en fonction de l'id
-     * @param {} id
-     */
-    const fetchClub = async id => {
-        setLoading(true)
-        //si on est sur la modif de son club, requete HTTP pour récupérer le club en question
-        try {
-            const data = await clubAPI.findClub(id)
-            const { label } = data;
-            setClub({ label })
-            setLoading(false)
-        } catch (error) {
-            console.log(error.response)
-        }
-    }
+
 
     useEffect(() => {
-        if (id !== "new") {
-            setEditing(true)
-            fetchClub(id)
+        //commencer par verifier que la personne connecté soit biien un Admin, si c'est pas le cas --> redirection vers son dashboard correspondant
+        let role = usersAPI.checkRole()
+        if (role === "ROLE_COACH") {
+            props.history.replace("/dashboardCoach")
+        } else if (role === "ROLE_PLAYER") {
+            props.history.replace("/dashboardPlayer")
         }
-    }, [id])
+        //ensuite vérifier qu'il n'a pas déja un club d'assigner, si il a déja un club ---> redirection 
+        let club = usersAPI.checkClub()
+        if (club !== "new") {
+            props.history.replace("/dashboardAdmin")
+        }
+    }, [props.history])
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         setLoading2(true)
         try {
-            if (editing) {
-                await clubAPI.putClub(id, club)
 
-                //TODO : falsh success
-                setLoading2(false)
-            } else {
-                const response = await clubAPI.postClub(club)
-                const clubId = response.data.id
+            const response = await clubAPI.postClub(club)
+            const clubId = response.data.id
 
-                await usersAPI.putUserClub(userId, clubId)
+            await usersAPI.putUserClub(userId, clubId)
 
-                //TODO: falsh Success
-                //déconnection auto pour forcer un relog
-                AuthAPI.logout();
-                setIsAuthenticated(false);
-                props.history.push("/login");
-            }
+            //TODO: falsh Success
+            notification.successNotif("Votre club a bien été créé ! Vous pouvez vous reconnecter")
+            //déconnection auto pour forcer un relog
+            AuthAPI.logout();
+            setIsAuthenticated(false);
+            props.history.push("/login");
+
             setErrors('')
         } catch (error) {
-            console.log(error.response)
+            notification.errorNotif("Une erreur est survenue")
             const { violations } = error.response.data;
             const apiErrors = [''];
             if (violations) {
@@ -101,37 +88,32 @@ const ClubFormPage = (props) => {
 
     return (
         <div className="ClubFormPage wrapper_container">
-            {(!editing && <h1>Création de votre club</h1>) || <h1>Modification du club</h1>}
-            {loading && (
-                <div className="bigLoader">
-                    <Loader type="Circles" height="200" width="200" color="LightGray" />
+            <h1>Création de votre club</h1>
+
+            <form onSubmit={handleSubmit} className='formClub'>
+                <Field
+                    name="label"
+                    label="Nom du club"
+                    value={club.label}
+                    placeholder="Nom du club..."
+                    error={errors.label}
+                    onChange={handleChange}
+                >
+                </Field>
+                <div >
+                    {!loading2 && (
+                        <button type="submit" className="btn btn-primary">
+                            Enregistrer
+                        </button>
+                    )}
+                    {loading2 && (
+                        <div className="LoaderModal">
+                            <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
+                        </div>
+                    )}
                 </div>
-            )}
-            {!loading && (
-                <form onSubmit={handleSubmit} className='formClub'>
-                    <Field
-                        name="label"
-                        label="Nom du club"
-                        value={club.label}
-                        placeholder="Nom du club..."
-                        error={errors.label}
-                        onChange={handleChange}
-                    >
-                    </Field>
-                    <div >
-                        {!loading2 && (
-                            <button type="submit" className="btn btn-primary">
-                                Enregistrer
-                            </button>
-                        )}
-                        {loading2 && (
-                            <div className="LoaderModal">
-                                <Loader type="ThreeDots" height="20" width="508" color="LightGray" />
-                            </div>
-                        )}
-                    </div>
-                </form>
-            )}
+            </form>
+
         </div>
     );
 }

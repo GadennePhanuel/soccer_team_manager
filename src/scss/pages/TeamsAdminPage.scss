@@ -4,6 +4,10 @@
 .TeamsAdminPage{
   @include component-size(flex, column, center, flex-start);
 
+  .btn-danger{
+    margin-left:5px;
+  }
+
   h1 {
     margin: 5px 5px 20px 5px;
   }
@@ -17,9 +21,8 @@
     position:sticky;
     top:0;
     width: 97%;
-    margin-bottom: 0;
     .search {
-      width: 100%;
+      width: 30%;
       }
     }
   }

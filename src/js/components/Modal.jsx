@@ -12,7 +12,7 @@ const Modal = ({ handleClose, show, title = 'Modal Title', children }) => {
                 <div className="modal-content">
                     <div className="modal-header">
                         <h5 className="modal-title">{title}</h5>
-                        <button onClick={handleClose} className="btn btn-primary close-btn"> X </button>
+                        <button onClick={handleClose} className="btn btn-primary close-btn" type="button"> X </button>
 
                     </div>
                     <div className="modal-body">
