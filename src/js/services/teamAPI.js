@@ -45,6 +45,7 @@ function putTeam(teamId, teamLabel, teamCoach) {
 
 function findAllTacticsByTeam(id){
     return Axios.get(TEAMS_API + "/" +id+"/tactics")
+        .then(response => response.data['hydra:member'])
 }
 
 export default {

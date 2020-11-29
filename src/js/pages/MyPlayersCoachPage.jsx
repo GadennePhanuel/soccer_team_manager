@@ -128,6 +128,7 @@ const MyPlayersCoachPage = (props) => {
             {!loading && (
                 <div className="cardsDiv">
                     {players.map(player => (
+                        !(player.user.roles[0] === "ROLE_NOT_ALLOWED") &&
                         <div className="card" key={player.id}>
                             {(player.picture && loading2) && (
                                 <div className="cardLoader">

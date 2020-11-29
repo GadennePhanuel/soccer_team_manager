@@ -8,7 +8,6 @@ import Modal from '../components/Modal';
 import notification from "../services/notification";
 import "../../scss/pages/CoachsAdminPage.scss";
 import Loader from 'react-loader-spinner';
-import Modal from "../components/Modal";
 
 const CoachAdminPage = (props) => {
     authAPI.setup();
@@ -42,21 +41,6 @@ const CoachAdminPage = (props) => {
         setEmail(value);
     };
 
-    const [show, setShow] = useState(false)
-    const [idTarget, setIdTarget] = useState('')
-    const[modalType, setModalType] = useState('')
-
-    
-    const showModal = (modalType,idTarget) => {
-        setModalType(modalType)
-        setIdTarget(idTarget)
-        setShow(true)
-    }
-
-    const hideModal = () => {
-        setShow(false)
-    }
-
     useEffect(() => {
         setLoading(true)
         setLoading2(true)
@@ -86,7 +70,7 @@ const CoachAdminPage = (props) => {
             })
     }*!/*/
 
-        const handeDeleteTeam = (id) => {
+        const handleDeleteTeam = (id) => {
             teamAPI.deleteCoachOnTeam(id)
             .then(response => {
                 notification.successNotif("Le coach a bien été supprimé de l'équipe")
@@ -102,19 +86,26 @@ const CoachAdminPage = (props) => {
             hideModal()
             usersAPI.switchAllowed(coach.user.id, "coach", allowed)
                 .then(response => {
+                    let msg = "L'utilisateur a bien été débloqué"
                     if (allowed === "bloquer") {
+                        msg = "L'utilisateur a bien été bloqué"
                         teamAPI.excludeCoachOnAllTeams(coach.id)
                             .then(response => {
                                 console.log(response)
+                                setRefreshKey(refreshKey + 1)
                             })
                             .catch(error => {
                                 console.log(error.response)
                             })
                     }
-                    console.log(response)
-                    setRefreshKey(refreshKey + 1)
+                    else {
+                        console.log(response)
+                        setRefreshKey(refreshKey + 1)
+                    }
+                    notification.successNotif(msg)
                 })
                 .catch(error => {
+                    notification.errorNotif("Une erreur s'est produite")
                     console.log(error.response)
                 })
         }
@@ -160,8 +151,8 @@ const CoachAdminPage = (props) => {
 
     const [modalType, setModalType] = useState({})
     const [show, setShow] = useState(false)
-    const showModal = (modalType, coachTarget) => {
-        setModalType({ type: modalType, target: coachTarget })
+    const showModal = (modalType, target) => {
+        setModalType({ type: modalType, target: target })
         setShow(true)
     }
     const hideModal = () => {
@@ -271,8 +262,16 @@ const CoachAdminPage = (props) => {
 
                     {modalType === "Supprimer l'équipe" &&
                     <div>
-                        <h6>Êtes-vous sur de vouloir supprimer cette équipe ? </h6>
-                        <button onClick={() => handleDeleteTeam(idTarget)} className="btn btn-primary">Confirmer</button>
+                        <div className="messageBox">
+                            <h6>Retirer ce coach de la gestion de cette équipe? </h6>
+                        </div>
+                        <div className="btnBox">
+                            <button onClick={() => handleDeleteTeam(modalType.target)}
+                                    className="btn btn-secondary">Confirmer
+                            </button>
+                            <button type="button" className="btn btn-primary" onClick={() => hideModal()}>Annuler
+                            </button>
+                        </div>
                     </div>
                     }
 
@@ -283,31 +282,41 @@ const CoachAdminPage = (props) => {
                     </div>
                     }*/}
 
-                    {modalType && modalType.type === "debloquer" && (
-                        <div>
-                            <p>Débloquer {modalType.target.user.firstName} {modalType.target.user.lastName} ? </p>
-                            <button type="button" className="btn btn-danger" onClick={() => handleAllowed(modalType.target, "debloquer")}>
-                                Comfirmer
+                    {modalType && modalType.type === "debloquer" &&
+                    <div>
+                        <div className="messageBox">
+                            <p>Débloquer {modalType.target && modalType.target.user.firstName} {modalType.target && modalType.target.user.lastName} ? </p>
+                        </div>
+                        <div className="btnBox">
+                            <button type="button" className="btn btn-secondary"
+                                    onClick={() => handleAllowed(modalType.target, "debloquer")}>Confirmer
                             </button>
-                            <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
-                                Annuler
+                            <button type="button" className="btn btn-primary" onClick={() => hideModal()}>Annuler
                             </button>
                         </div>
-                    )
+                    </div>
+
                     }
 
-                    {modalType && modalType.type === "bloquer" && (
-                        <div>
-                            <p>Bloquer {modalType.target.user.firstName} {modalType.target.user.lastName} ?</p>
-                            <p>Attention, le bloquage exclura de toutes équipe l'utilisateur. Il n'aura pluq accès qu'à un contact admin et à son profile</p>
-                            <button type="button" className="btn btn-danger" onClick={() => handleAllowed(modalType.target, "bloquer")}>
-                                Comfirmer
-                            </button>
-                            <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
-                                Annuler
-                            </button>
+                    {modalType && modalType.type === "bloquer" &&
+                    <div>
+                        <div className="messageBox">
+                            <h6>Bloquer {modalType.target && modalType.target.user.firstName} {modalType.target && modalType.target.user.lastName} ?</h6>
+                            <p>{modalType.target && modalType.target.user.firstName} {modalType.target && modalType.target.user.lastName} sera exclude de toutes ces équipes.
+                                <br/>Il n'aura accés qu'à son profil et à sa messagerie pour contacter l'administrateur.</p>
                         </div>
-                    )}
+                        <div className="messageBox">
+                            <div className="btnBox">
+                                <button type="button" className="btn btn-secondary"
+                                        onClick={() => handleAllowed(modalType.target, "bloquer")}>Confirmer
+                                </button>
+                                <button type="button" className="btn btn-primary"
+                                        onClick={() => hideModal()}>Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    }
                 </Modal>
 
             </div>

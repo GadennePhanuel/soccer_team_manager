@@ -50,19 +50,15 @@ const PlayersAdminPage = (props) => {
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
 
+    const [modalType, setModalType] = useState({})
     const [show, setShow] = useState(false)
-    const [idTarget, setIdTarget] = useState('')
-    const [modalType, setModalType] = useState('')
-
-    
-    const showModal = (modalType,idTarget) => {
-        setModalType(modalType)
-        setIdTarget(idTarget)
+    const showModal = (modalType, target) => {
+        setModalType({ type: modalType, target: target })
         setShow(true)
     }
-
     const hideModal = () => {
         setShow(false)
+        setModalType('')
     }
 
     useEffect(() => {
@@ -108,19 +104,29 @@ const PlayersAdminPage = (props) => {
     };*/
 
     const handleAllowed = (player, allowed)=> {
+        hideModal()
         usersAPI.switchAllowed(player.user.id, "player", allowed)
             .then(response => {
-                playerAPI.excludePlayerOfTeam(player.id)
-                    .then(response2 => {
-                        console.log(response2)
-                    })
-                    .catch(error => {
-                        console.log(error.response)
-                    })
-                console.log(response)
-                setRefreshKey(refreshKey + 1)
+                let msg = "L'utilisateur a bien été débloqué"
+                if (allowed === "bloquer") {
+                    msg = "L'utilisateur a bien été bloqué"
+                    playerAPI.excludePlayerOfTeam(player.id)
+                        .then(response2 => {
+                            console.log(response2)
+                            setRefreshKey(refreshKey + 1)
+                        })
+                        .catch(error => {
+                            console.log(error.response)
+                        })
+                }
+                else {
+                    console.log(response)
+                    setRefreshKey(refreshKey + 1)
+                }
+                notification.successNotif(msg)
             })
             .catch(error => {
+                notification.errorNotif("Une erreur s'est produite")
                 console.log(error.response)
             })
     }
@@ -290,11 +296,11 @@ const PlayersAdminPage = (props) => {
                                         {role === 'ROLE_ADMIN' &&
                                             <td>
                                                 {player.user.roles[0] === "ROLE_NOT_ALLOWED"  ?
-                                                    <button onClick={() => handleAllowed(player, "debloquer")} className="btn btn-sm btn-success">
+                                                    <button onClick={() => showModal("debloquer", player)} className="btn btn-sm btn-success">
                                                         Débloquer
                                                     </button>
                                                     :
-                                                    <button onClick={() => handleAllowed(player, "bloquer")} className="btn btn-sm btn-danger">
+                                                    <button onClick={() => showModal("bloquer", player)} className="btn btn-sm btn-danger">
                                                         Bloquer
                                                     </button>
                                                 }
@@ -335,8 +341,10 @@ const PlayersAdminPage = (props) => {
                             <tbody>
                                 {
                                     // repetition pour chaque player
+                                    //todo aucun player non selectionné visible pour coach
                                 }
                                 {filteredPlayersNT.map(player => (
+                                    ((role === 'ROLE_COACH' && !(player.user.roles[0] === "ROLE_NOT_ALLOWED")) || role === 'ROLE_ADMIN') &&
                                     <tr key={player.id}>
                                         <td>{player.user.lastName + ' ' + player.user.firstName}</td>
                                         <td>{player.user.email}</td>
@@ -345,11 +353,11 @@ const PlayersAdminPage = (props) => {
                                         {role === 'ROLE_ADMIN' &&
                                             <td>
                                                 {player.user.roles[0] === "ROLE_NOT_ALLOWED" ?
-                                                    <button onClick={() => handleAllowed(player, "debloquer")} className="btn btn-sm btn-success">
+                                                    <button onClick={() => showModal("debloquer", player)} className="btn btn-sm btn-success">
                                                         Débloquer
                                                     </button>
                                                     :
-                                                    <button onClick={() => handleAllowed(player, "bloquer")} className="btn btn-sm btn-danger">
+                                                    <button onClick={() => showModal("bloquer", player)} className="btn btn-sm btn-danger">
                                                         Bloquer
                                                     </button>
                                                 }
@@ -383,18 +391,45 @@ const PlayersAdminPage = (props) => {
                 </div>
             )}
 
-            <Modal
-                show={show}
-                handleClose={hideModal}
-                title= {modalType}
-            >
-                {modalType === "Supprimer le joueur" &&
+            <Modal show={show} handleClose={hideModal} title={modalType.type}>
+
+                {modalType && modalType.type === "debloquer" && (
                     <div>
-                        <h6>Êtes-vous sur de vouloir supprimer ce joueur ? </h6>
-                        <button onClick={() => handleDelete(idTarget)} className="btn btn-primary">Confirmer</button>
+                        <div className="messageBox">
+                            <p>Débloquer {modalType.target && modalType.target.user.firstName} {modalType.target && modalType.target.user.lastName} ? </p>
+                        </div>
+                        <div className="btnBox">
+                            <button type="button" className="btn btn-secondary"
+                                    onClick={() => handleAllowed(modalType.target, "debloquer")}>Confirmer
+                            </button>
+                            <button type="button" className="btn btn-primary" onClick={() => hideModal()}>Annuler
+                            </button>
+                        </div>
                     </div>
+                )
                 }
+
+                {modalType && modalType.type === "bloquer" && (
+                    <div>
+                        <div className="messageBox">
+                            <h6>Bloquer {modalType.target && modalType.target.user.firstName} {modalType.target && modalType.target.user.lastName} ?</h6>
+                            <p>{modalType.target && modalType.target.user.firstName} {modalType.target && modalType.target.user.lastName} sera exclude de son équipe.
+                            <br/>Il n'aura accés qu'à son profil et à sa messagerie pour contacter l'administrateur.</p>
+                        </div>
+                        <div className="messageBox">
+                            <div className="btnBox">
+                                <button type="button" className="btn btn-secondary"
+                                        onClick={() => handleAllowed(modalType.target, "bloquer")}>Confirmer
+                                </button>
+                                <button type="button" className="btn btn-primary"
+                                        onClick={() => hideModal()}>Annuler
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </Modal>
+
         </div>
 
     );

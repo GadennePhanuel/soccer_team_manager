@@ -7,6 +7,7 @@ import "../../scss/pages/TeamsAdminPage.scss";
 import Select from "../components/forms/Select";
 import Loader from "react-loader-spinner";
 import Modal from "../components/Modal";
+import notification from "../services/notification";
 
 const TeamsAdminPage = (props) => {
     authAPI.setup();
@@ -44,7 +45,7 @@ const TeamsAdminPage = (props) => {
                 break;
             case "remove":
                 if(cat.options.includes(labelLetter)){
-                    cat.options.splice(labelLetter)
+                    cat.options = cat.options.filter(label => label !== labelLetter)
                 }
                 break;
             default:
@@ -59,6 +60,18 @@ const TeamsAdminPage = (props) => {
                     {"Equipe " + letter}
                     </option>
             ))
+        )
+    }
+
+    const getCoachOptions = () => {
+        return (
+            coachs.map(coach => (
+                    coach.user.roles[0] !== "ROLE_NOT_ALLOWED" &&
+                    <option key={coach.id} value={coach.id}>
+                        {coach.user.firstName} {coach.user.lastName}
+                    </option>
+                )
+            )
         )
     }
 
@@ -119,7 +132,6 @@ const TeamsAdminPage = (props) => {
         setNewTeam({ ...newTeam, [name]: value })
     }
 
-    //todo
     const handleChange = (event) => {
         const {name, value } = event.currentTarget;
         setEditTeam({...editTeam, [name]: value })
@@ -145,8 +157,10 @@ const TeamsAdminPage = (props) => {
                 setErrorsNewTeam({ label: "", category: "" })
                 setNewTeam({ label: "", category: "" })
 
+                document.getElementById("newTeamCatSelect").value = ""
                 document.getElementById('showFormDiv').hidden = false
                 document.getElementById('form-create').hidden = true
+                notification.successNotif("L'équipe a bien été crée")
             })
             .catch(error => {
                 const violations = error.response.data.violations
@@ -157,6 +171,7 @@ const TeamsAdminPage = (props) => {
                     });
                 }
                 setErrorsNewTeam(apiErrors)
+                notification.errorNotif("Une erreur s'est produite")
             })
             .finally(()=>setLoadingNew(false))
     }
@@ -164,7 +179,7 @@ const TeamsAdminPage = (props) => {
     const handleDelete = id => {
         hideModal()
         const originalTeams = [...teams];
-
+        console.log(teams.filter((team) => team.id === id)[0])
         handleLabel("remove", teams.filter((team) => team.id === id)[0] )
         setTeams(teams.filter((team) => team.id !== id));
 
@@ -172,11 +187,13 @@ const TeamsAdminPage = (props) => {
         teamAPI.deleteTeam(id)
             .then(response => {
                 console.log("delete team success " + id)
+                notification.successNotif("L'équipe a bien été supprimé")
             })
             .catch(error => {
                 console.log(error)
                 setTeams(originalTeams);
                 handleLabel("add", teams.filter((team) => team.id === id)[0] )
+                notification.errorNotif("Une erreur s'est produite")
             });
     };
 
@@ -210,6 +227,7 @@ const TeamsAdminPage = (props) => {
                 let teamIndex = teams.findIndex(team => id === team.id)
                 teams.splice(teamIndex, 1, team)
                 setEditTeam(null)
+                notification.successNotif("L'équipe a bien été modifiée")
             })
             .catch(error => {
                 const violations = error.response.data.violations
@@ -220,6 +238,7 @@ const TeamsAdminPage = (props) => {
                     });
                 }
                 setErrors(apiErrors)
+                notification.errorNotif("Une erreur s'est produite")
             })
             .finally(()=>setLoading3(false))
     }
@@ -312,8 +331,8 @@ const TeamsAdminPage = (props) => {
                                 <div className="select-box" id="select-box-1">
                                     <Select
                                         name="category"
+                                        id="newTeamCatSelect"
                                         label="Categorie"
-                                        value={newTeam && newTeam.category}
                                         error={errorsNewTeam.category}
                                         onChange={handleNewTeamChange}
                                         children={[
@@ -346,11 +365,7 @@ const TeamsAdminPage = (props) => {
                                         onChange={handleNewTeamChange}
                                         children={[
                                             <option key="" value=""> choix du coach </option>,
-                                            coachs.map(coach => (
-                                                <option key={coach.id} value={coach.id}>
-                                                    {coach.user.firstName} {coach.user.lastName}
-                                                </option>
-                                            ))
+                                            getCoachOptions()
                                         ]}
                                     />
                                 </div>
@@ -432,12 +447,7 @@ const TeamsAdminPage = (props) => {
                                                 value={(editTeam !== null && editTeam.coach !== "non assigné") ? editTeam.coach.id : "non assigné"}
                                                 children= {[
                                                     <option key="" value="non assigné"> non Assigné</option>,
-                                                    coachs.map(coach => (
-                                                            <option key={coach.id} value={coach.id}>
-                                                                {coach.user.firstName} {coach.user.lastName}
-                                                            </option>
-                                                        )
-                                                    )
+                                                    getCoachOptions()
                                                 ]}
                                                 hidden
                                             />
@@ -486,27 +496,36 @@ const TeamsAdminPage = (props) => {
 
                 {modalType && modalType.type === "delete" && (
                     <div>
-                        <p>Voulez vous vraiment supprimer cette équipe?</p>
-                        <button type="button" className="btn btn-danger" onClick={() => handleDelete(modalType.target)}>
-                            Supprimer
-                        </button>
-                        <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
-                            Annuler
-                        </button>
+                        <div className="messageBox">
+                            <p>Voulez vous vraiment supprimer cette équipe?</p>
+                        </div>
+                        <div className="btnBox">
+                            <button type="button" className="btn btn-secondary" onClick={() => handleDelete(modalType.target)}>
+                                Supprimer
+                            </button>
+                            <button type="button" className="btn btn-primary" onClick={() => hideModal()}>
+                                Annuler
+                            </button>
+                        </div>
+
                     </div>
                 )
                 }
 
                 {modalType && modalType.type === "update" && (
                     <div>
-                        <p>Comfirmer la modification?</p>
-                        <button type="button" className="btn btn-danger" onClick={() => handlePutTeam(modalType.target)}>
+                        <div className="messageBox">
+                            <p>Comfirmer la modification?</p>
+                        </div>
+                        <div className="btnBox">
+                            <button type="button" className="btn btn-secondary" onClick={() => handlePutTeam(modalType.target)}>
 
-                            Comfirmer
-                        </button>
-                        <button type="button" className="btn btn-danger" onClick={() => hideModal()}>
-                            Annuler
-                        </button>
+                                Comfirmer
+                            </button>
+                            <button type="button" className="btn btn-primary" onClick={() => hideModal()}>
+                                Annuler
+                            </button>
+                        </div>
                     </div>
                 )}
             </Modal>

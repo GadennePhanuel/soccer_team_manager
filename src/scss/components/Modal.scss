@@ -35,3 +35,11 @@
   display: none !important;
 }
 
+.messageBox {
+  text-align: center;
+}
+
+.btnBox {
+  display: flex;
+  justify-content: space-evenly;
+}

@@ -114,11 +114,10 @@ const FormationPage = (props) => {
             if (tactic.id !== "new") {
                 tacticAPI.putTactic(tactic.id, tacticTab)
                     .then(response => {
-                        //   document.getElementById("save").blur()
                         let newList = tacticsList.filter(oldTact => tactic.id !== oldTact.id)
                         newList.push(tactic)
                         setTacticsList(newList)
-                        //etant sauvegarder, on retir la tactic de la liste des tactics modifiées
+                        //etant sauvegarder, on retire la tactic de la liste des tactics modifiées
                         setTacticModifiedList(tacticModifiedList.filter(tacticModified => tactic.id !== tacticModified.id))
                         setLoadingTactics(false)
                     })
@@ -131,13 +130,15 @@ const FormationPage = (props) => {
                 tacticAPI.postTactic(tacticTab)
                     .then(response => {
                         //    document.getElementById("save").blur();
+                        //todo probleme tacticsList.push() is not a function ...
+                        console.log(tacticsList)
                         tacticsList.push(response.data)
                         setTacticsList(tacticsList)
                         setTacticSelected(response.data)
                         setLoadingTactics(false)
                     })
                     .catch(error => {
-                        console.log(error.response)
+                        console.log(error)
                         setLoadingTactics(false)
                     })
             }
@@ -228,19 +229,19 @@ const FormationPage = (props) => {
                                 })
                         }
                     })
-                    setLoadingPlayers(false)
                 })
                 .catch(error => console.log(error.response))
+                .finally(() =>setLoadingPlayers(false))
 
             teamAPI.findAllTacticsByTeam(currentTeamId)
                 .then(response => {
                     setTacticsList(response)
-                    setLoadingTactics(false)
                     setTacticSelected()
                     document.getElementById("selectInit").setAttribute("selected", "selected")
 
                 })
                 .catch(error => console.log(error.response))
+                .finally(()=>setLoadingTactics(false))
         }
     }, [currentTeamId])
 
@@ -337,7 +338,7 @@ const FormationPage = (props) => {
                                         )}
                                     </optgroup>
                                     <optgroup label="Existantes :">
-                                        {tacticsList.map((tactic, index) => (
+                                        {tacticsList.length > 0 && tacticsList.map((tactic, index) => (
                                             tacticModifiedList.filter(tacticModified => tactic.id === tacticModified.id)[0] !== undefined ?
                                                 <option key={tactic.id} className="noSaved" value={"load/" + tactic.id}> {tactic.id + " / " + tactic.type + " no saved"}</option>
                                                 : <option key={tactic.id} id={"optionLoad" + tactic.id} value={"load/" + tactic.id} > {tactic.id + " / " + tactic.type}</option>
@@ -367,7 +368,7 @@ const FormationPage = (props) => {
                                         Annuler
                                         </button>
                                 }
-                                {tacticSelected &&
+                                {tacticSelected && tacticsList.length > 0 &&
                                     tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0] !== undefined &&
                                     <button className="tacticmenu" id="delete"
                                         onClick={() => showModal("delete")}

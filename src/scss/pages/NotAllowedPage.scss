@@ -1,0 +1,26 @@
+@import "../utilities/variables.scss";
+@import "../utilities/mixins.scss";
+
+.NotAllowedPage {
+  display:flex;
+  .NotAllowedBox {
+    border:1px black solid;
+    vertical-align: center;
+    justify-content: center;
+    align-items: center;
+    margin:auto;
+    width:80%;
+    height:80%;
+
+    h1{
+      text-align: center;
+    }
+
+    div {
+      margin:auto;
+      text-align: center;
+      width:50%;
+    }
+  }
+
+}
