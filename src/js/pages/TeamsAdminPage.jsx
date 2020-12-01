@@ -5,6 +5,7 @@ import teamAPI from "../services/teamAPI";
 import coachAPI from "../services/coachAPI";
 import "../../scss/pages/TeamsAdminPage.scss";
 import Select from "../components/forms/Select";
+import Field from "../components/forms/Field";
 import Loader from "react-loader-spinner";
 import Modal from "../components/Modal";
 import notification from "../services/notification";
@@ -27,40 +28,23 @@ const TeamsAdminPage = (props) => {
     const [teams, setTeams] = useState([])
     const [coachs, setCoachs] = useState([])
 
-    const [categories, setCategories] = useState([
-        {name:"Cadet",options:[]},
-        {name:"Junior",options:[]},
-        {name:"Senior",options:[]}
-    ])
+    const [categories, setCategories] = useState(["Cadet","Junior","Senior"])
 
-    const handleLabel = (handle, team) => {
-        let labelLetter = team.label.substr(7);
-        let cat = categories.filter(cat => cat.name === team.category)[0]
+    const labelControl = (team) => {
+        let t
+        team.oldLabel ? t = (team.oldLabel !== team.label || String(team.coach) !== String(team.oldCoachId)) : t = true
 
-        switch(handle){
-            case "add":
-                if(!cat.options.includes(labelLetter)){
-                    cat.options.push(labelLetter)
-                }
-                break;
-            case "remove":
-                if(cat.options.includes(labelLetter)){
-                    cat.options = cat.options.filter(label => label !== labelLetter)
-                }
-                break;
-            default:
-        }
-    }
-
-    const getLabelOptions = team => {
-        return (
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((letter, index) => (
-                !categories.filter(cat => cat.name === team.category)[0].options.includes(letter) &&
-                    <option key={index} value={"Equipe " + letter}>
-                    {"Equipe " + letter}
-                    </option>
-            ))
-        )
+       return  (
+            teams.find(tm => 
+                    (tm.id !== team.id)
+                && (tm.label === team.label)
+                && (tm.category === team.category)
+            ) === undefined
+           && team.label.length > 1
+           && team.label.length < 75
+           && !!team.category
+           && t
+       )
     }
 
     const getCoachOptions = () => {
@@ -113,7 +97,6 @@ const TeamsAdminPage = (props) => {
                     if (!(team.coach)) {
                         team.coach = "non assigné"
                     }
-                    handleLabel("add", team)
                 })
                 setTeams(data)
             })
@@ -153,13 +136,12 @@ const TeamsAdminPage = (props) => {
                     response.data.coach = "non assigné"
                 }
                 teams.unshift(response.data)
-                handleLabel("add", response.data)
                 setErrorsNewTeam({ label: "", category: "" })
                 setNewTeam({ label: "", category: "" })
 
                 document.getElementById("newTeamCatSelect").value = ""
-                document.getElementById('showFormDiv').hidden = false
-                document.getElementById('form-create').hidden = true
+                changeHidden('showFormDiv',"")
+                changeHidden('form-create',"")
                 notification.successNotif("L'équipe a bien été crée")
             })
             .catch(error => {
@@ -179,8 +161,6 @@ const TeamsAdminPage = (props) => {
     const handleDelete = id => {
         hideModal()
         const originalTeams = [...teams];
-        console.log(teams.filter((team) => team.id === id)[0])
-        handleLabel("remove", teams.filter((team) => team.id === id)[0] )
         setTeams(teams.filter((team) => team.id !== id));
 
 
@@ -192,7 +172,7 @@ const TeamsAdminPage = (props) => {
             .catch(error => {
                 console.log(error)
                 setTeams(originalTeams);
-                handleLabel("add", teams.filter((team) => team.id === id)[0] )
+               /* handleLabel("add", teams.filter((team) => team.id === id)[0] )*/
                 notification.errorNotif("Une erreur s'est produite")
             });
     };
@@ -201,7 +181,7 @@ const TeamsAdminPage = (props) => {
         //retrait modal
         hideModal()
         //retrait bouton edit
-        handleCanceled(id)
+        setEditTeam(null)
         setLoading3(id)
 
         let coachURI = null;
@@ -218,8 +198,6 @@ const TeamsAdminPage = (props) => {
         teamAPI.putTeam(editTeam.id, editTeam.label, coachURI)
             .then(response => {
                 let team = response.data
-                handleLabel("remove", teams.filter(tm => editTeam.id === tm.id)[0])
-                handleLabel("add", team)
 
                 if(team.coach === undefined){
                     team.coach = "non assigné"
@@ -238,45 +216,32 @@ const TeamsAdminPage = (props) => {
                     });
                 }
                 setErrors(apiErrors)
+                console.log(editTeam)
+                console.log(apiErrors)
                 notification.errorNotif("Une erreur s'est produite")
             })
             .finally(()=>setLoading3(false))
     }
 
-    const btnList = ['btn-delete-','btn-put-', 'coachSelect-','labelCoach-','labelTeam-','input-labelTeam-','btn-edit-','btn-canceled-']
     /**
      * switch hidden sur clic btn-edit
      */
     const handleEdit = (teamId) => {
 
-        if(editTeam !== null){
-            btnList.map(btnName => (
-                changeHidden(btnName,editTeam.id)
-            ))
-        }
-        btnList.map(btnName => (
-            changeHidden(btnName,teamId)
-        ))
         let team = teams.find(team => team.id === teamId)
         setEditTeam({
+            oldCoachId:team.coach.id,
+            oldLabel:team.label,
             id:teamId,
             label: team.label,
-            coach: team.coach
+            coach: team.coach.id,
+            category: team.category
         })
     }
 
-    const handleCanceled = (teamId) => {
-        btnList.map(btnName => (
-            changeHidden(btnName,teamId)
-        ))
-        setEditTeam(null)
-    }
-
     const changeHidden = (btnName, id) => {
-        return document.getElementById(btnName + id).hidden === true ?
-            document.getElementById(btnName + id).hidden = false
-            :
-            document.getElementById(btnName + id).hidden = true
+        let element = document.getElementById(btnName + id)
+        element.hidden === true ? element.hidden = false : element.hidden = true
     }
 
     const [search, setSearch] = useState("");
@@ -294,14 +259,9 @@ const TeamsAdminPage = (props) => {
         (t.coach !== "non assigné" && t.coach.user.lastName.toLowerCase().includes(search.toLowerCase()))
     )
 
-    const handleCreate = () => {
-        document.getElementById('showFormDiv').hidden = true
-        document.getElementById('form-create').hidden = false
-    }
-
-    const handleCancelCreate = () => {
-        document.getElementById('showFormDiv').hidden = false
-        document.getElementById('form-create').hidden = true
+    const handleCreateHidden = () => {
+        changeHidden('showFormDiv',"")
+        changeHidden('form-create',"")
     }
 
     return (
@@ -315,7 +275,7 @@ const TeamsAdminPage = (props) => {
             {!loading2 && (
                 <div id="createTeam">
                     <div id="showFormDiv" className="wrapper">
-                        <button onClick={() => handleCreate()} className="btn btn-primary">
+                        <button onClick={() => handleCreateHidden()} className="btn btn-primary">
                             Créer une équipe
                         </button>
                     </div>
@@ -338,23 +298,20 @@ const TeamsAdminPage = (props) => {
                                         children={[
                                             <option key="" value=""> choix de la categorie </option>,
                                             categories.map((cat, index) => (
-                                                <option key={index} value={cat.name}>{cat.name}</option>
+                                                <option key={index} value={cat}>{cat}</option>
                                             ))
                                         ]}
                                         required
                                     />
                                 </div>
-                                <Select
+                                <Field
                                     name="label"
-                                    label="Equipe :"
                                     id="labelSelect"
+                                    label="Nom :"
                                     onChange={handleNewTeamChange}
+                                    placeholder="Nom de l'équipe : "
+                                    type="text"
                                     error={errorsNewTeam.label}
-                                    children= {[<option key="" value=""> choix du label </option>,
-                                            newTeam.category &&
-                                            getLabelOptions(newTeam)
-                                        ]}
-                                    disabled = {(!newTeam.category) ? "disabled" : false}
                                     required
                                 />
                                 <div className="select-box">
@@ -372,13 +329,15 @@ const TeamsAdminPage = (props) => {
                             </div>
                             {!loadingNew && (
                                 <div id="sendDiv" className="wrapper">
-                                    <button id="btn-submitCreate" className="btn btn-primary" type="submit">
+                                    <button id="btn-submitCreate" className="btn btn-primary" type="submit"
+                                            disabled = {!labelControl(newTeam)}
+                                    >
                                         Envoyer
-                                </button>
+                                    </button>
                                     <button id="btn-cancelCreate" className="btn btn-danger" type="button"
-                                        onClick={() => handleCancelCreate()}>
+                                        onClick={() => handleCreateHidden()}>
                                         Annuler
-                                </button>
+                                    </button>
                                 </div>
                             )}
                         </fieldset>
@@ -413,20 +372,24 @@ const TeamsAdminPage = (props) => {
                                             {loading3 && loading3 === team.id && (
                                                 <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
                                             )}
-                                            {(!loading3 || loading3 !== team.id) && (
+                                            {(!editTeam || editTeam.id !== team.id) && (!loading3 || loading3 !== team.id) && (
                                                 <p id={"labelTeam-" + team.id}>{team.label}</p>
                                             )}
-                                            <Select
-                                                name="label"
-                                                id={"input-labelTeam-" + team.id}
-                                                onChange={handleChange}
-                                                children= {[<option key="" value={team.label}>{team.label} </option>,
-                                                        getLabelOptions(team)
-                                                ]}
-                                                hidden
-                                            />
+                                            {editTeam && editTeam.id === team.id &&
+                                                <>
+                                                <Field
+                                                    id={"input-labelTeam-" + team.id}
+                                                    name="label"
+                                                    value={editTeam.label}
+                                                    onChange={handleChange}
+                                                    placeholder="Nom de l'équipe : "
+                                                    type="text"
+                                                >
+                                                </Field>
+                                                </>
+                                            }
                                             {errors.label && errors.label.teamId === team.id &&
-                                                <p className="error">{errors.label.message}</p>
+                                            <p className="error">{errors.label.message}</p>
                                             }
                                         </td>
                                         <td>{team.category}</td>
@@ -434,51 +397,60 @@ const TeamsAdminPage = (props) => {
                                             {loading3 && loading3 === team.id && (
                                                 <Loader type="ThreeDots" width="60" height="40" color="LightGray" />
                                             )}
-                                            {(!loading3 || loading3 !== team.id) && (
+                                            {(!editTeam || editTeam.id !== team.id) && (!loading3 || loading3 !== team.id) && (
                                                 team.coach && team.coach !== "non assigné" ?
                                                     <p id={"labelCoach-" + team.id}>{team.coach.user.firstName + " " + team.coach.user.lastName}</p>
                                                     : <p id={"labelCoach-" + team.id}> {"non assigné"}</p>
 
                                             )}
+                                            {editTeam && editTeam.id === team.id &&
                                             <Select
                                                 id={"coachSelect-" + team.id}
                                                 name="coach"
                                                 onChange={handleChange}
-                                                value={(editTeam !== null && editTeam.coach !== "non assigné") ? editTeam.coach.id : "non assigné"}
-                                                children= {[
+                                                value={(editTeam.coach !== "non assigné") ? editTeam.coach : "non assigné"}
+                                                children={[
                                                     <option key="" value="non assigné"> non Assigné</option>,
                                                     getCoachOptions()
                                                 ]}
-                                                hidden
                                             />
+                                            }
                                         </td>
                                         <td>
-                                            <button
-                                                onClick={() => handleEdit(team.id)}
-                                                id={"btn-edit-" + team.id}
-                                                className="btn btn-sm btn-warning">
-                                                editer
-                                            </button>
-                                            <button
-                                                hidden
-                                                onClick={() => showModal("update", team.id)}
-                                                id={"btn-put-" + team.id}
-                                                className="btn btn-sm btn-success">
-                                                valider
-                                            </button>
-                                            <button
-                                                hidden
-                                                onClick={() => handleCanceled(team.id)}
-                                                id={"btn-canceled-" + team.id}
-                                                className="btn btn-sm btn-danger">
-                                                annuler
-                                            </button>
-                                            <button
-                                                onClick={() => showModal("delete", team.id)}
-                                                id={"btn-delete-" + team.id}
-                                                className="btn btn-sm btn-danger">
-                                                supprimer
-                                            </button>
+                                            {(!editTeam || editTeam.id !== team.id) &&
+                                                <>
+                                                <button
+                                                    onClick={() => handleEdit(team.id)}
+                                                    id={"btn-edit-" + team.id}
+                                                    className="btn btn-sm btn-warning">
+                                                    editer
+                                                </button>
+                                                <button
+                                                    onClick={() => showModal("delete", team.id)}
+                                                    id={"btn-delete-" + team.id}
+                                                    className="btn btn-sm btn-danger">
+                                                    supprimer
+                                                </button>
+                                                </>
+                                            }
+                                            {editTeam && editTeam.id === team.id &&
+                                                <>
+                                                <button
+                                                    onClick={() => showModal("update", team.id)}
+                                                    id={"btn-put-" + team.id}
+                                                    className="btn btn-sm btn-success"
+                                                    disabled = {!labelControl(editTeam)}
+                                                >
+                                                    valider
+                                                </button>
+                                                <button
+                                                    onClick={() => setEditTeam(null)}
+                                                    id={"btn-canceled-" + team.id}
+                                                    className="btn btn-sm btn-danger">
+                                                    annuler
+                                                </button>
+                                               </> }
+
                                         </td>
                                     </tr>
                                 ))
@@ -519,7 +491,6 @@ const TeamsAdminPage = (props) => {
                         </div>
                         <div className="btnBox">
                             <button type="button" className="btn btn-secondary" onClick={() => handlePutTeam(modalType.target)}>
-
                                 Comfirmer
                             </button>
                             <button type="button" className="btn btn-primary" onClick={() => hideModal()}>
