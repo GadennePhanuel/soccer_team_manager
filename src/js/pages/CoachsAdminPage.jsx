@@ -53,23 +53,6 @@ const CoachAdminPage = (props) => {
             .catch(error => console.log(error.response))
     }, [refreshKey])
 
-    /*const handleDelete = (id) => {
-        /!*const handleDelete = (id) => {
-            //copie du tableau original
-            const originalCoachs = [...coachs];
-
-            setCoachs(coachs.filter((coach) => coach.id !== id));
-        hideModal()
-        coachAPI.deleteCoach(id)
-            .then(response => {
-                notification.successNotif("Le coach a bien été supprimé")                
-            })
-            .catch(error => {
-                setCoachs(originalCoachs);
-                notification.errorNotif("Une erreur s'est produite lors de la suppression")
-            })
-    }*!/*/
-
         const handleDeleteTeam = (id) => {
             teamAPI.deleteCoachOnTeam(id)
             .then(response => {
@@ -87,8 +70,9 @@ const CoachAdminPage = (props) => {
             usersAPI.switchAllowed(coach.user.id, "coach", allowed)
                 .then(response => {
                     let msg = "L'utilisateur a bien été débloqué"
-                    if (allowed === "bloquer") {
+                    if (allowed === "block") {
                         msg = "L'utilisateur a bien été bloqué"
+                        console.log(coach)
                         teamAPI.excludeCoachOnAllTeams(coach.id)
                             .then(response => {
                                 console.log(response)
@@ -99,7 +83,6 @@ const CoachAdminPage = (props) => {
                             })
                     }
                     else {
-                        console.log(response)
                         setRefreshKey(refreshKey + 1)
                     }
                     notification.successNotif(msg)
@@ -132,7 +115,6 @@ const CoachAdminPage = (props) => {
                     console.log(response.data)
                     //2.si tout s'est bien passé -> flash success, on cache le formulaire et on fait réaparaitre le button d'invit & on vide le formulaire email -> setEmail("") et setError('')
                     setError('');
-                    //TODO : flash success
                     setLoading2(false)
                     document.getElementById('btn-invit').hidden = false
                     document.getElementById('form-invit').hidden = true
@@ -236,7 +218,6 @@ const CoachAdminPage = (props) => {
                                         </table>
                                     </td>
                                     <td>
-                                        {/*<button onClick={() => showModal("Supprimer un coach",coach.id)} className="btn btn-sm btn-danger">Supprimer</button>*/}
                                         {coach.user.roles[0] === "ROLE_NOT_ALLOWED" ?
                                             <button className="btn btn-sm btn-success"
                                                  //   onClick={() => handleAllowed(coach, "debloquer")}>
@@ -260,7 +241,7 @@ const CoachAdminPage = (props) => {
 
                 <Modal show={show} handleClose={hideModal} title={modalType.type}>
 
-                    {modalType === "Supprimer l'équipe" &&
+                    {modalType.type === "Supprimer l'équipe" &&
                     <div>
                         <div className="messageBox">
                             <h6>Retirer ce coach de la gestion de cette équipe? </h6>
@@ -275,13 +256,6 @@ const CoachAdminPage = (props) => {
                     </div>
                     }
 
-                    {/*{modalType === "Supprimer un coach" &&
-                    <div>
-                        <h6>Êtes-vous sur de vouloir supprimer ce coach ? </h6>
-                        <button onClick={() => handleDelete(idTarget)} className="btn btn-primary">Supprimer</button>
-                    </div>
-                    }*/}
-
                     {modalType && modalType.type === "debloquer" &&
                     <div>
                         <div className="messageBox">
@@ -289,7 +263,7 @@ const CoachAdminPage = (props) => {
                         </div>
                         <div className="btnBox">
                             <button type="button" className="btn btn-secondary"
-                                    onClick={() => handleAllowed(modalType.target, "debloquer")}>Confirmer
+                                    onClick={() => handleAllowed(modalType.target, "unblock")}>Confirmer
                             </button>
                             <button type="button" className="btn btn-primary" onClick={() => hideModal()}>Annuler
                             </button>
@@ -308,7 +282,7 @@ const CoachAdminPage = (props) => {
                         <div className="messageBox">
                             <div className="btnBox">
                                 <button type="button" className="btn btn-secondary"
-                                        onClick={() => handleAllowed(modalType.target, "bloquer")}>Confirmer
+                                        onClick={() => handleAllowed(modalType.target, "block")}>Confirmer
                                 </button>
                                 <button type="button" className="btn btn-primary"
                                         onClick={() => hideModal()}>Annuler

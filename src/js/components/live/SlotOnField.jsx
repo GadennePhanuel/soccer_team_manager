@@ -81,7 +81,6 @@ const SlotOnField = ({ id, num, tacticType, className, children, parentCallBackS
     const x = tacticType[num][0]
     const y = tacticType[num][1]
 
-    //todo format slotSelection here
     return (
         <div ref={drop} id={id} className={className} style={{ top: y + "%", left: x + "%", width: slotWidth, height: slotHeight }} >
             <div>

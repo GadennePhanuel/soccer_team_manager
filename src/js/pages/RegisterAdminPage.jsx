@@ -58,7 +58,6 @@ const RegisterAdminPage = ({ history }) => {
       try {
         await UserAPI.registerAdmin(response);
 
-        //TODO : faire un petit FLASH de success
         notification.successNotif("Votre compte a bien été créé, vous pouvez vous connecter")
 
         //on efface les messages d'erreur et on renvoi sur la page de login

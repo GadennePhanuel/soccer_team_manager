@@ -129,8 +129,6 @@ const FormationPage = (props) => {
             else {
                 tacticAPI.postTactic(tacticTab)
                     .then(response => {
-                        //    document.getElementById("save").blur();
-                        //todo probleme tacticsList.push() is not a function ...
                         console.log(tacticsList)
                         tacticsList.push(response.data)
                         setTacticsList(tacticsList)
@@ -146,7 +144,6 @@ const FormationPage = (props) => {
     }
 
     const handleCancel = () => {
-        //  purge tableau des tactics modifées
         setLoadingTactics(true)
         let newTab = tacticModifiedList.filter(tactic => tacticSelected.id !== tactic.id)
         if (newTab !== undefined) {
@@ -155,7 +152,6 @@ const FormationPage = (props) => {
         else {
             setTacticModifiedList([])
         }
-        //recupère l'etat initiale dans tacicsList pour le passer à tacticSelected
         setTacticSelected(clone(tacticsList.filter(tactic => tacticSelected.id === tactic.id)[0]));
         setRefreshPlayerSelected(refreshPlayerSelected + 1);
         setLoadingTactics(false)
@@ -183,7 +179,6 @@ const FormationPage = (props) => {
                 }
                 break;
             case "new":
-                //retrait de la derniere tactic new
                 if (tacticModifiedList && tacticModifiedList.length > 0) {
                     let tabModifiedList = tacticModifiedList.filter(tactic => tactic.id !== "new")
                     setTacticModifiedList(tabModifiedList)

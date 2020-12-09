@@ -83,36 +83,15 @@ const PlayersAdminPage = (props) => {
             .catch(error => console.log(error.response));
     }, [refreshKey])
 
-
-    /*const handleDelete = id => {
-        //copie le tableau players
-        const originalPlayers = [...players];
-
-        //Delete l'affichage du player avant de le delete en bdd
-        setPlayers(players.filter(player => player.id !== id))
-
-        //si la suppression coté serveur n'a pas fonctionné, je raffiche mon tableau initial
-        hideModal() 
-        playerAPI.deletePlayer(id)
-            .then(response => {
-                notification.successNotif("Le joueur a bien été supprimé") 
-            })
-            .catch(error => {
-                setPlayers(originalPlayers);
-                notification.errorNotif("Une erreur s'est produite")
-            });
-    };*/
-
     const handleAllowed = (player, allowed)=> {
         hideModal()
         usersAPI.switchAllowed(player.user.id, "player", allowed)
             .then(response => {
                 let msg = "L'utilisateur a bien été débloqué"
-                if (allowed === "bloquer") {
+                if (allowed === "block") {
                     msg = "L'utilisateur a bien été bloqué"
                     playerAPI.excludePlayerOfTeam(player.id)
                         .then(response2 => {
-                            console.log(response2)
                             setRefreshKey(refreshKey + 1)
                         })
                         .catch(error => {
@@ -120,7 +99,6 @@ const PlayersAdminPage = (props) => {
                         })
                 }
                 else {
-                    console.log(response)
                     setRefreshKey(refreshKey + 1)
                 }
                 notification.successNotif(msg)
@@ -178,7 +156,6 @@ const PlayersAdminPage = (props) => {
                 console.log(response.data)
                 //2.si tout s'est bien passé -> flash success, on cache le formulaire et on fait réaparaitre le button d'invit & on vide le formulaire email -> setEmail("") et setError('')
                 setError('');
-                //TODO : flash success
                 setLoading2(false)
                 document.getElementById('btn-invit').hidden = false
                 document.getElementById('form-invit').hidden = true
@@ -339,10 +316,6 @@ const PlayersAdminPage = (props) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {
-                                    // repetition pour chaque player
-                                    //todo aucun player non selectionné visible pour coach
-                                }
                                 {filteredPlayersNT.map(player => (
                                     ((role === 'ROLE_COACH' && !(player.user.roles[0] === "ROLE_NOT_ALLOWED")) || role === 'ROLE_ADMIN') &&
                                     <tr key={player.id}>
@@ -361,12 +334,6 @@ const PlayersAdminPage = (props) => {
                                                         Bloquer
                                                     </button>
                                                 }
-                                                {/*<button
-                                                    onClick={() => showModal("Supprimer le joueur",player.id)}
-                                                    className="btn btn-sm btn-danger">
-                                                    Supprimer
-                                                </button>
-                                                */}
                                             </td>
                                         }
                                         {(role === 'ROLE_COACH' && currentTeamId !== '') &&
@@ -400,7 +367,7 @@ const PlayersAdminPage = (props) => {
                         </div>
                         <div className="btnBox">
                             <button type="button" className="btn btn-secondary"
-                                    onClick={() => handleAllowed(modalType.target, "debloquer")}>Confirmer
+                                    onClick={() => handleAllowed(modalType.target, "unblock")}>Confirmer
                             </button>
                             <button type="button" className="btn btn-primary" onClick={() => hideModal()}>Annuler
                             </button>
@@ -419,7 +386,7 @@ const PlayersAdminPage = (props) => {
                         <div className="messageBox">
                             <div className="btnBox">
                                 <button type="button" className="btn btn-secondary"
-                                        onClick={() => handleAllowed(modalType.target, "bloquer")}>Confirmer
+                                        onClick={() => handleAllowed(modalType.target, "block")}>Confirmer
                                 </button>
                                 <button type="button" className="btn btn-primary"
                                         onClick={() => hideModal()}>Annuler

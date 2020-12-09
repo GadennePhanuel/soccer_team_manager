@@ -204,7 +204,6 @@ const ProfilForm = (props) => {
             setErrors('')
             setLoading4(false)
 
-            //TODO : faire un Flash Success
             notification.successNotif("Votre profil a bien été modifié")
 
 
@@ -245,7 +244,6 @@ const ProfilForm = (props) => {
                 console.log(response.data)
                 setErrorsPlayer('')
                 setLoading6(false)
-                //TODO flash success
                 notification.successNotif("modifications bien enregistrées")
             })
             .catch(error => {

@@ -7,7 +7,6 @@ const SlotPoste = ({ id, num, tactic, className, children }) => {
     const x = tactic[num][0]
     const y = tactic[num][1]
 
-    //todo format slotSelection here
     return (
         <div id={id} className={className} style={{ top: y + "%", left: x + "%", width: slotWidth, height: slotHeight }} >
             <div title={tactic[num][2]}>

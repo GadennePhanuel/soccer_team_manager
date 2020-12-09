@@ -203,7 +203,6 @@ const MailPage = (props) => {
         //envoie des données saisies vers le BACK pour traitement et envoie du mail
         mailAPI.sendMail(email)
             .then(response => {
-                //TODO : FLASH SUCCES  && on vide les champs sujet et message du formulaire
                 notification.successNotif("Votre mail a bien été envoyé")
                 setEmail({
                     ...email,

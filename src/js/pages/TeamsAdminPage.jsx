@@ -185,12 +185,12 @@ const TeamsAdminPage = (props) => {
         setLoading3(id)
 
         let coachURI = null;
-        if (editTeam.coach !== "non assigné") {
+        if (editTeam.coach !== "non assigné" && editTeam.coach !== undefined) {
             let tCoach
             if(typeof editTeam.coach === "string") {
                 tCoach = Number(editTeam.coach)
             }else {
-                tCoach = editTeam.coach.id
+                tCoach = editTeam.coach
             }
             coachURI = coachs.filter(coach => tCoach === coach.id)[0]["@id"]
         }
@@ -487,11 +487,11 @@ const TeamsAdminPage = (props) => {
                 {modalType && modalType.type === "update" && (
                     <div>
                         <div className="messageBox">
-                            <p>Comfirmer la modification?</p>
+                            <p>Confirmer la modification?</p>
                         </div>
                         <div className="btnBox">
                             <button type="button" className="btn btn-secondary" onClick={() => handlePutTeam(modalType.target)}>
-                                Comfirmer
+                                Confirmer
                             </button>
                             <button type="button" className="btn btn-primary" onClick={() => hideModal()}>
                                 Annuler

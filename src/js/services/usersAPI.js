@@ -50,7 +50,6 @@ function switchAllowed(userId, userType, allowed){
   return Axios.patch(ADMINS_API + "/user/" + userId + "/" + userType + "/" + allowed)
 }
 
-//todo a retirer column allowwed de bdd
 function checkAllowed() {
   const token = window.localStorage.getItem("authToken");
   const jwtData = JwtDecode(token)

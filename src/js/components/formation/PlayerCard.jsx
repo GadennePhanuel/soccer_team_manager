@@ -19,13 +19,6 @@ const PlayerCard = ({ player, className, posOrigin, tactic, setTactic, tacticsMo
     const [, drag] = useDrag({
         item: { type: 'playerCard', player },
 
-        //todo recherche gestion preview #debug double Preview
-        /*dragPreview: {
-
-        },
-        previewOptions:{
-            preview:<MyPreview/>
-        },*/
         end: (item, monitor) => {
             if(tactic) { //si une tactic est selectionné
                 const dropResult = monitor.getDropResult();

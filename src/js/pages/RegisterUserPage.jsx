@@ -46,7 +46,6 @@ const RegisterUserPage = (props) => {
 
       if (decoded.firstName !== '') {  //cas où quelqu'un essaye de se co à cette page avec un token valide récupérer à quelqu'un d'existant....
         console.log("token invalide")
-        //TODO : flash error -> token invalide ! 
         props.history.push('/login')
       }
       setUsers({
@@ -57,7 +56,6 @@ const RegisterUserPage = (props) => {
       })
     } catch (error) {
       console.log(error.message)
-      //TODO : flash error -> token invalide ! 
       props.history.push('/login')
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,7 +97,6 @@ const RegisterUserPage = (props) => {
           setLoading(false)
         }
 
-        //TODO : faire un petit FLASH de success
         notification.successNotif("Bravo vous compte a été créé !")
         //on efface les messages d'erreur et on renvoi sur la page de login
         setErrors("");

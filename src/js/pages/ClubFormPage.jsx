@@ -65,7 +65,6 @@ const ClubFormPage = (props) => {
 
             await usersAPI.putUserClub(userId, clubId)
 
-            //TODO: falsh Success
             notification.successNotif("Votre club a bien été créé ! Vous pouvez vous reconnecter")
             //déconnection auto pour forcer un relog
             AuthAPI.logout();

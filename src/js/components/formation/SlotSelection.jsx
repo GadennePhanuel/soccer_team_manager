@@ -23,7 +23,6 @@ const SlotSelection = ({ id, num, tactic, className, children }) => {
     const x = tactic[num][0] - (slotWidth*100/fieldWitdh/2)
     const y = tactic[num][1] - (num-1)*(slotHeight*100/fieldHeight) - (slotHeight*100/fieldHeight/2)
 
-    //todo format slotSelection here
     return (
         <div ref={drop} id={id} className={className} style={{top:y+"%", left:x+"%", width:slotWidth, height:slotHeight }} >
             <abbr title={tactic[num][2]}>
